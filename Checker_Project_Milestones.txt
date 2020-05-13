@@ -1,0 +1,27 @@
+==============
+Milestones-
+==============
+
+--> Board 
+--> pieces
+
+------------------------------------------------------------------------
+RULES
+------------------------------------------------------------------------
+Parts of rules complete
+Fine tune rules
+---------------------------------
+build side bar
+Build pause menu
+figure out real time distribution
+Build game intro
+Music and sound effects
+
+-----------
+FEATURES
+-----------
+Voice notes
+game stats
+leaderboard
+IM feature
+playlist sharing
