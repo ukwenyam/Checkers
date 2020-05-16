@@ -7,7 +7,7 @@ export class Board {
 
         this.board = [];
 
-        let i, j;
+        let i, j, k = 0;
 
         for(i = 0; i < 8; i++) {
 
@@ -25,10 +25,12 @@ export class Board {
                 } else  {
 
                     if(0 <= i && i <= 2)
-                        this.board[i][j] = new Piece(i, j, 'U');
+                        this.board[i][j] = new Piece(i, j, 'U', k);
                         
                     else 
-                        this.board[i][j] = new Piece(i, j, 'D');
+                        this.board[i][j] = new Piece(i, j, 'D', k);
+
+                    k++;
                 }
             }
         }
@@ -131,7 +133,7 @@ export class Board {
 
         let currPos = piece.getPosition();
 
-        if(piece.side == 'U' && nextPos.isEmpty && currPos.xPos != nextPos.xPos && currPos.yPos != nextPos.yPos) {
+        if(piece.side == 'U' && nextPos.isEmpty) {
 
             let xDiff = nextPos.xPos - currPos.xPos;
 
@@ -165,7 +167,9 @@ export class Board {
             }
         }
 
-        if(piece.side == 'D' && nextPos.isEmpty && currPos.xPos != nextPos.xPos && currPos.yPos != nextPos.yPos) {
+        if(piece.side == 'D' && nextPos.isEmpty) {
+
+            //console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
             let xDiff = currPos.xPos - nextPos.xPos;
 
@@ -173,16 +177,21 @@ export class Board {
 
             if(piece.stack == 1) {
 
+                //console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
+
                 let oneSq = (yDiff == 1 || yDiff == -1) && xDiff == 1;
+
+                //console.log(oneSq);
 
                 let twoSq = (yDiff == 2 || yDiff == -2) && xDiff == 2;
 
-                if(oneSq)
-                    legal = true;
-
-                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) {
+                if(oneSq) {
+                    //console.log(nextPos.xPos + ", " + nextPos.yPos);
                     legal = true;
                 }
+
+                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) 
+                    legal = true;
 
             } else {
 
@@ -193,9 +202,8 @@ export class Board {
                 if(oneSq)
                     legal = true;
 
-                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) {
+                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) 
                     legal = true;
-                }
             }
         }
 
@@ -205,17 +213,23 @@ export class Board {
 
     doMove(piece, nextPos) {
 
+        let moved = false;
+
         if(this.isMoveLegal(piece, nextPos)) {
-            
+
             if(nextPos.xPos == 0 || nextPos.xPos == 7)
                 piece.incrementStack();
 
-            this.board[nextPos.xPos][nextPos.yPos] = piece;
+            this.board[nextPos.xPos][nextPos.yPos] = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id);
 
             let currPos = piece.getPosition();
 
             this.board[currPos.xPos][currPos.yPos] = null;
+
+            moved = true;
         }
+
+        return moved;
     } 
 
 
@@ -228,13 +242,20 @@ export class Board {
 
     }
 
+    getId(i, j) {
+        return this.board[i][j].id;
+    }
+
     getSide(i, j) {
 
         return this.board[i][j].side;
     }
 
     getPiece(i, j) {
-        return this.board[i][j];
+        
+        if(this.board[i][j] != null)
+            return this.board[i][j];
+
     }
 
 }

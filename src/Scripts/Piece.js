@@ -2,8 +2,9 @@ import { Position } from './Position.js';
 
 export class Piece {
 
-    constructor(xPos, yPos, side) {
+    constructor(xPos, yPos, side, id) {
 
+        this.id = id;
         this.positon = new Position(xPos, yPos, side);
         this.side = side;
         this.stack = 1;
@@ -13,8 +14,8 @@ export class Piece {
         return this.positon;
     }
 
-    setPosition(pos) {
-        this.positon = pos;
+    setPosition(xPos, yPos) {
+        this.positon = new Position(xPos, yPos, null);
     }
 
     incrementStack() {
