@@ -404,12 +404,16 @@ var app = (function () {
 
     class Piece {
 
-        constructor(xPos, yPos, side, id) {
+        constructor(xPos, yPos, side, id, stack) {
 
             this.id = id;
             this.positon = new Position(xPos, yPos, side);
             this.side = side;
-            this.stack = 1;
+
+            if(stack != null)
+                this.stack = stack;
+            else
+                this.stack = 1;
         }
 
         getPosition() {
@@ -421,7 +425,7 @@ var app = (function () {
         }
 
         incrementStack() {
-            this.stack++;
+            return this.stack++;
         }
     }
 
@@ -449,10 +453,10 @@ var app = (function () {
                     } else  {
 
                         if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, 'U', k);
+                            this.board[i][j] = new Piece(i, j, 'U', k, null);
                             
                         else 
-                            this.board[i][j] = new Piece(i, j, 'D', k);
+                            this.board[i][j] = new Piece(i, j, 'D', k, null);
 
                         k++;
                     }
@@ -475,7 +479,7 @@ var app = (function () {
                 if(yDiff > 0)
                     yPiece = currPos.yPos + 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
@@ -491,13 +495,13 @@ var app = (function () {
                 if(yDiff > 0)
                     yPiece = currPos.yPos - 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
             }
 
-            if(piece.stack > 2) {
+            if(piece.stack > 1) {
 
                 let xPiece = null;
                 let yPiece = null;
@@ -507,7 +511,7 @@ var app = (function () {
                     xPiece = currPos.xPos - 1;
                     yPiece = currPos.yPos - 1;
 
-                    if(this.board[xPiece][yPiece] != null) {
+                    if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                         this.board[xPiece][yPiece] = null;
                         isTaken = true;
                     }
@@ -529,7 +533,7 @@ var app = (function () {
                     xPiece = currPos.xPos + 1;
                     yPiece = currPos.yPos - 1;
 
-                    if(this.board[xPiece][yPiece] != null) {
+                    if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                         this.board[xPiece][yPiece] = null;
                         isTaken = true;
                     }
@@ -540,7 +544,7 @@ var app = (function () {
                     xPiece = currPos.xPos + 1;
                     yPiece = currPos.yPos + 1;
 
-                    if(this.board[xPiece][yPiece] != null) {
+                    if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                         this.board[xPiece][yPiece] = null;
                         isTaken = true;
                     }
@@ -641,12 +645,14 @@ var app = (function () {
 
             if(this.isMoveLegal(piece, nextPos)) {
 
-                if(nextPos.xPos == 0 || nextPos.xPos == 7)
-                    piece.incrementStack();
+                let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-                this.board[nextPos.xPos][nextPos.yPos] = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id);
+                if(nextPos.xPos == 0 || nextPos.xPos == 7) 
+                    newPiece.incrementStack();
 
-                let currPos = piece.getPosition();
+                this.board[nextPos.xPos][nextPos.yPos] = newPiece;
+                
+                let currPos = piece.getPosition(); 
 
                 this.board[currPos.xPos][currPos.yPos] = null;
 
@@ -852,22 +858,22 @@ var app = (function () {
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[18] = list[i];
+    	child_ctx[22] = list[i];
     	return child_ctx;
     }
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[15] = list[i];
+    	child_ctx[19] = list[i];
     	return child_ctx;
     }
 
-    // (101:37) 
+    // (129:38) 
     function create_if_block_3(ctx) {
     	let if_block_anchor;
 
     	function select_block_type_2(ctx, dirty) {
-    		if (/*i*/ ctx[15] % 2 != 0 && /*j*/ ctx[18] % 2 == 0 || /*i*/ ctx[15] % 2 == 0 && /*j*/ ctx[18] % 2 != 0) return create_if_block_4;
+    		if (/*i*/ ctx[19] % 2 != 0 && /*j*/ ctx[22] % 2 == 0 || /*i*/ ctx[19] % 2 == 0 && /*j*/ ctx[22] % 2 != 0) return create_if_block_4;
     		return create_else_block;
     	}
 
@@ -896,14 +902,14 @@ var app = (function () {
     		block,
     		id: create_if_block_3.name,
     		type: "if",
-    		source: "(101:37) ",
+    		source: "(129:38) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (94:3) {#if !gameBoard.isEmpty(i, j)}
+    // (122:4) {#if !gameBoard.isEmpty(i, j)}
     function create_if_block(ctx) {
     	let rect;
     	let rect_x_value;
@@ -913,9 +919,9 @@ var app = (function () {
     	let if_block_anchor;
 
     	function select_block_type_1(ctx, dirty) {
-    		if (show_if == null || dirty & /*$cirPos, gameBoard*/ 3) show_if = !!(/*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].s == 0);
+    		if (show_if == null || dirty & /*$cirPos, gameBoard*/ 10) show_if = !!(/*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].s == 0);
     		if (show_if) return create_if_block_1;
-    		if (show_if_1 == null || dirty & /*$cirPos, gameBoard*/ 3) show_if_1 = !!(/*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].s == 1);
+    		if (show_if_1 == null || dirty & /*$cirPos, gameBoard*/ 10) show_if_1 = !!(/*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].s == 1);
     		if (show_if_1) return create_if_block_2;
     	}
 
@@ -930,10 +936,9 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[18] * 100);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[15] * 100);
-    			attr_dev(rect, "class", "svelte-16nn48d");
-    			add_location(rect, file, 94, 4, 1819);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
+    			add_location(rect, file, 122, 5, 2540);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, rect, anchor);
@@ -941,6 +946,14 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
+    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "x", rect_x_value);
+    			}
+
+    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "y", rect_y_value);
+    			}
+
     			if (current_block_type === (current_block_type = select_block_type_1(ctx, dirty)) && if_block) {
     				if_block.p(ctx, dirty);
     			} else {
@@ -968,14 +981,14 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(94:3) {#if !gameBoard.isEmpty(i, j)}",
+    		source: "(122:4) {#if !gameBoard.isEmpty(i, j)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (104:4) {:else}
+    // (132:5) {:else}
     function create_else_block(ctx) {
     	let rect;
     	let rect_x_value;
@@ -987,15 +1000,22 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "wheat");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[18] * 100);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[15] * 100);
-    			attr_dev(rect, "class", "svelte-16nn48d");
-    			add_location(rect, file, 104, 5, 2740);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
+    			add_location(rect, file, 132, 6, 3567);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, rect, anchor);
     		},
-    		p: noop,
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "x", rect_x_value);
+    			}
+
+    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "y", rect_y_value);
+    			}
+    		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(rect);
     		}
@@ -1005,14 +1025,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(104:4) {:else}",
+    		source: "(132:5) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (102:4) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+    // (130:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
     function create_if_block_4(ctx) {
     	let rect;
     	let rect_x_value;
@@ -1020,7 +1040,7 @@ var app = (function () {
     	let dispose;
 
     	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[14](/*i*/ ctx[15], /*j*/ ctx[18], ...args);
+    		return /*click_handler_2*/ ctx[18](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
     	}
 
     	const block = {
@@ -1029,10 +1049,9 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[18] * 100);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[15] * 100);
-    			attr_dev(rect, "class", "svelte-16nn48d");
-    			add_location(rect, file, 102, 5, 2606);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
+    			add_location(rect, file, 130, 6, 3417);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -1041,6 +1060,14 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
+
+    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "x", rect_x_value);
+    			}
+
+    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    				attr_dev(rect, "y", rect_y_value);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(rect);
@@ -1052,37 +1079,38 @@ var app = (function () {
     		block,
     		id: create_if_block_4.name,
     		type: "if",
-    		source: "(102:4) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
+    		source: "(130:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (98:52) 
+    // (126:53) 
     function create_if_block_2(ctx) {
     	let circle;
     	let circle_id_value;
     	let circle_cx_value;
     	let circle_cy_value;
+    	let circle_stroke_width_value;
     	let dispose;
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[13](/*i*/ ctx[15], /*j*/ ctx[18], ...args);
+    		return /*click_handler_1*/ ctx[17](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			circle = svg_element("circle");
-    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18]));
-    			attr_dev(circle, "class", "checker svelte-16nn48d");
-    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].y);
-    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].x);
-    			attr_dev(circle, "r", /*$size*/ ctx[2]);
+    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]));
+    			attr_dev(circle, "class", "checker svelte-ib9c5l");
+    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y);
+    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x);
+    			attr_dev(circle, "r", /*$size*/ ctx[4]);
     			attr_dev(circle, "stroke", "white");
-    			attr_dev(circle, "stroke-width", "3");
+    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2);
     			attr_dev(circle, "fill", "red");
-    			add_location(circle, file, 98, 5, 2247);
+    			add_location(circle, file, 126, 6, 3020);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, circle, anchor);
@@ -1092,20 +1120,24 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty & /*gameBoard*/ 1 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18]))) {
+    			if (dirty & /*gameBoard*/ 2 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]))) {
     				attr_dev(circle, "id", circle_id_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 3 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].y)) {
+    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y)) {
     				attr_dev(circle, "cx", circle_cx_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 3 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].x)) {
+    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x)) {
     				attr_dev(circle, "cy", circle_cy_value);
     			}
 
-    			if (dirty & /*$size*/ 4) {
-    				attr_dev(circle, "r", /*$size*/ ctx[2]);
+    			if (dirty & /*$size*/ 16) {
+    				attr_dev(circle, "r", /*$size*/ ctx[4]);
+    			}
+
+    			if (dirty & /*gameBoard*/ 2 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2)) {
+    				attr_dev(circle, "stroke-width", circle_stroke_width_value);
     			}
     		},
     		d: function destroy(detaching) {
@@ -1118,37 +1150,38 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(98:52) ",
+    		source: "(126:53) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (96:4) {#if $cirPos[gameBoard.getId(i, j)].s == 0}
+    // (124:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}
     function create_if_block_1(ctx) {
     	let circle;
     	let circle_id_value;
     	let circle_cx_value;
     	let circle_cy_value;
+    	let circle_stroke_width_value;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[12](/*i*/ ctx[15], /*j*/ ctx[18], ...args);
+    		return /*click_handler*/ ctx[16](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			circle = svg_element("circle");
-    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18]));
-    			attr_dev(circle, "class", "checker svelte-16nn48d");
-    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].y);
-    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].x);
-    			attr_dev(circle, "r", /*$size*/ ctx[2]);
+    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]));
+    			attr_dev(circle, "class", "checker svelte-ib9c5l");
+    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y);
+    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x);
+    			attr_dev(circle, "r", /*$size*/ ctx[4]);
     			attr_dev(circle, "stroke", "white");
-    			attr_dev(circle, "stroke-width", "3");
+    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2);
     			attr_dev(circle, "fill", "black");
-    			add_location(circle, file, 96, 5, 1953);
+    			add_location(circle, file, 124, 6, 2690);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, circle, anchor);
@@ -1158,20 +1191,24 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty & /*gameBoard*/ 1 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18]))) {
+    			if (dirty & /*gameBoard*/ 2 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]))) {
     				attr_dev(circle, "id", circle_id_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 3 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].y)) {
+    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y)) {
     				attr_dev(circle, "cx", circle_cx_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 3 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[1][/*gameBoard*/ ctx[0].getId(/*i*/ ctx[15], /*j*/ ctx[18])].x)) {
+    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x)) {
     				attr_dev(circle, "cy", circle_cy_value);
     			}
 
-    			if (dirty & /*$size*/ 4) {
-    				attr_dev(circle, "r", /*$size*/ ctx[2]);
+    			if (dirty & /*$size*/ 16) {
+    				attr_dev(circle, "r", /*$size*/ ctx[4]);
+    			}
+
+    			if (dirty & /*gameBoard*/ 2 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2)) {
+    				attr_dev(circle, "stroke-width", circle_stroke_width_value);
     			}
     		},
     		d: function destroy(detaching) {
@@ -1184,23 +1221,23 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(96:4) {#if $cirPos[gameBoard.getId(i, j)].s == 0}",
+    		source: "(124:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (93:2) {#each squares as j}
+    // (121:3) {#each squares as j}
     function create_each_block_1(ctx) {
     	let show_if;
     	let show_if_1;
     	let if_block_anchor;
 
     	function select_block_type(ctx, dirty) {
-    		if (show_if == null || dirty & /*gameBoard*/ 1) show_if = !!!/*gameBoard*/ ctx[0].isEmpty(/*i*/ ctx[15], /*j*/ ctx[18]);
+    		if (show_if == null || dirty & /*gameBoard*/ 2) show_if = !!!/*gameBoard*/ ctx[1].isEmpty(/*i*/ ctx[19], /*j*/ ctx[22]);
     		if (show_if) return create_if_block;
-    		if (show_if_1 == null || dirty & /*gameBoard*/ 1) show_if_1 = !!/*gameBoard*/ ctx[0].isEmpty(/*i*/ ctx[15], /*j*/ ctx[18]);
+    		if (show_if_1 == null || dirty & /*gameBoard*/ 2) show_if_1 = !!/*gameBoard*/ ctx[1].isEmpty(/*i*/ ctx[19], /*j*/ ctx[22]);
     		if (show_if_1) return create_if_block_3;
     	}
 
@@ -1242,17 +1279,17 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(93:2) {#each squares as j}",
+    		source: "(121:3) {#each squares as j}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (92:1) {#each squares as i}
+    // (120:2) {#each squares as i}
     function create_each_block(ctx) {
     	let each_1_anchor;
-    	let each_value_1 = /*squares*/ ctx[5];
+    	let each_value_1 = /*squares*/ ctx[6];
     	validate_each_argument(each_value_1);
     	let each_blocks = [];
 
@@ -1276,8 +1313,8 @@ var app = (function () {
     			insert_dev(target, each_1_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*gameBoard, squares, $cirPos, $size, setCurrPos, event, setNextPos*/ 231) {
-    				each_value_1 = /*squares*/ ctx[5];
+    			if (dirty & /*gameBoard, squares, $cirPos, $size, setCurrPos, event, squareSize, setNextPos*/ 478) {
+    				each_value_1 = /*squares*/ ctx[6];
     				validate_each_argument(each_value_1);
     				let i;
 
@@ -1310,7 +1347,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(92:1) {#each squares as i}",
+    		source: "(120:2) {#each squares as i}",
     		ctx
     	});
 
@@ -1322,7 +1359,7 @@ var app = (function () {
     	let svg1;
     	let use;
     	let svg0;
-    	let each_value = /*squares*/ ctx[5];
+    	let each_value = /*squares*/ ctx[6];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -1342,15 +1379,15 @@ var app = (function () {
     			use = svg_element("use");
     			svg0 = svg_element("svg");
     			attr_dev(use, "id", "use");
-    			xlink_attr(use, "xlink:href", "24");
-    			add_location(use, file, 109, 1, 2860);
-    			attr_dev(svg0, "class", "svelte-16nn48d");
-    			add_location(svg0, file, 110, 0, 2893);
-    			attr_dev(svg1, "class", "svelte-16nn48d");
-    			add_location(svg1, file, 90, 0, 1730);
+    			xlink_attr(use, "xlink:href", "#24");
+    			add_location(use, file, 137, 2, 3706);
+    			attr_dev(svg0, "class", "svelte-ib9c5l");
+    			add_location(svg0, file, 138, 1, 3741);
+    			attr_dev(svg1, "class", "svelte-ib9c5l");
+    			add_location(svg1, file, 118, 1, 2447);
     			attr_dev(div, "id", "board");
-    			attr_dev(div, "class", "svelte-16nn48d");
-    			add_location(div, file, 89, 0, 1713);
+    			attr_dev(div, "class", "svelte-ib9c5l");
+    			add_location(div, file, 117, 0, 2429);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1367,8 +1404,8 @@ var app = (function () {
     			append_dev(svg1, svg0);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*squares, gameBoard, $cirPos, $size, setCurrPos, event, setNextPos*/ 231) {
-    				each_value = /*squares*/ ctx[5];
+    			if (dirty & /*squares, gameBoard, $cirPos, $size, setCurrPos, event, squareSize, setNextPos*/ 478) {
+    				each_value = /*squares*/ ctx[6];
     				validate_each_argument(each_value);
     				let i;
 
@@ -1412,25 +1449,46 @@ var app = (function () {
 
     function instance($$self, $$props, $$invalidate) {
     	let $cirPos;
-    	let $size;
-    	let size = spring(40);
+
+    	let $size,
+    		$$unsubscribe_size = noop,
+    		$$subscribe_size = () => ($$unsubscribe_size(), $$unsubscribe_size = subscribe(size, $$value => $$invalidate(4, $size = $$value)), size);
+
+    	$$self.$$.on_destroy.push(() => $$unsubscribe_size());
+    	let currPlayer = 0;
+    	let size;
     	validate_store(size, "size");
-    	component_subscribe($$self, size, value => $$invalidate(2, $size = value));
+    	$$subscribe_size();
     	let gameBoard = new Board();
     	const cirPos = spring([]);
     	validate_store(cirPos, "cirPos");
-    	component_subscribe($$self, cirPos, value => $$invalidate(1, $cirPos = value));
+    	component_subscribe($$self, cirPos, value => $$invalidate(3, $cirPos = value));
     	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
     	let currPos = null, nextPos = null;
+    	let squareSize, boardHeight, factor;
+
+    	if (screen.width <= 800) {
+    		factor = 800 / (screen.width - 12.5);
+    		squareSize = Math.floor((screen.width - 10) / 8);
+    		if (screen.width >= 500) $$subscribe_size(size = spring(25)); else $$subscribe_size(size = spring(12.5));
+    		boardHeight = squareSize * 8;
+    	} else {
+    		factor = 1;
+    		$$subscribe_size(size = spring(40));
+    		squareSize = 100;
+    		boardHeight = squareSize * 8;
+    	}
+
+    	document.documentElement.style.setProperty("--board-height", boardHeight + "px");
     	setCirclePositions();
 
     	function updateCirclePositions(nextPos) {
-    		let a = nextPos.xPos, b = nextPos.yPos;
-    		let id = gameBoard.getId(a, b);
+    		let i = nextPos.xPos, j = nextPos.yPos;
+    		let id = gameBoard.getId(i, j);
 
     		cirPos.update(state => {
-    			state[id].x = (a + a + 1) * 50;
-    			state[id].y = (b + b + 1) * 50;
+    			state[id].x = (i + i + 1) * (50 / factor);
+    			state[id].y = (j + j + 1) * (50 / factor);
     			return state;
     		});
     	}
@@ -1443,8 +1501,8 @@ var app = (function () {
 
     					cirPos.update(state => {
     						state[id] = {};
-    						state[id].x = (i + i + 1) * 50;
-    						state[id].y = (j + j + 1) * 50;
+    						state[id].x = (i + i + 1) * (50 / factor);
+    						state[id].y = (j + j + 1) * (50 / factor);
     						state[id].s = gameBoard.getSide(i, j) == "U" ? 0 : 1;
     						return state;
     					});
@@ -1455,11 +1513,13 @@ var app = (function () {
 
     	function setCurrPos(i, j, evt) {
     		//console.log(i + ", " + j);
-    		let newtarget = evt.target;
-
-    		let topmost = document.getElementById("use");
-    		topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + newtarget.id);
-    		currPos = gameBoard.getPiece(i, j);
+    		if ($cirPos[gameBoard.getId(i, j)].s == currPlayer) {
+    			console.log(gameBoard.getPiece(i, j).stack);
+    			let newtarget = evt.target || event.target;
+    			let topmost = document.getElementById("use");
+    			topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + newtarget.id);
+    			currPos = gameBoard.getPiece(i, j);
+    		}
     	} //let pos = currPos.getPosition();
     	//console.log(pos.xPos + ", " + pos.yPos);
 
@@ -1468,11 +1528,14 @@ var app = (function () {
     			nextPos = new Position(i, j, "E");
     			let move = gameBoard.doMove(currPos, nextPos);
     			console.log(gameBoard);
-    			$$invalidate(0, gameBoard);
+    			$$invalidate(1, gameBoard);
 
     			if (move) {
     				updateCirclePositions(nextPos);
     			}
+
+    			currPlayer = currPlayer == 0 ? 1 : 0;
+    			(currPos = null, nextPos = null);
     		}
     	}
 
@@ -1493,12 +1556,16 @@ var app = (function () {
     		Board,
     		spring,
     		writable,
+    		currPlayer,
     		size,
     		gameBoard,
     		cirPos,
     		squares,
     		currPos,
     		nextPos,
+    		squareSize,
+    		boardHeight,
+    		factor,
     		updateCirclePositions,
     		setCirclePositions,
     		setCurrPos,
@@ -1508,11 +1575,15 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("size" in $$props) $$invalidate(3, size = $$props.size);
-    		if ("gameBoard" in $$props) $$invalidate(0, gameBoard = $$props.gameBoard);
-    		if ("squares" in $$props) $$invalidate(5, squares = $$props.squares);
+    		if ("currPlayer" in $$props) currPlayer = $$props.currPlayer;
+    		if ("size" in $$props) $$subscribe_size($$invalidate(0, size = $$props.size));
+    		if ("gameBoard" in $$props) $$invalidate(1, gameBoard = $$props.gameBoard);
+    		if ("squares" in $$props) $$invalidate(6, squares = $$props.squares);
     		if ("currPos" in $$props) currPos = $$props.currPos;
     		if ("nextPos" in $$props) nextPos = $$props.nextPos;
+    		if ("squareSize" in $$props) $$invalidate(2, squareSize = $$props.squareSize);
+    		if ("boardHeight" in $$props) boardHeight = $$props.boardHeight;
+    		if ("factor" in $$props) factor = $$props.factor;
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -1520,16 +1591,20 @@ var app = (function () {
     	}
 
     	return [
+    		size,
     		gameBoard,
+    		squareSize,
     		$cirPos,
     		$size,
-    		size,
     		cirPos,
     		squares,
     		setCurrPos,
     		setNextPos,
+    		currPlayer,
     		currPos,
     		nextPos,
+    		boardHeight,
+    		factor,
     		updateCirclePositions,
     		setCirclePositions,
     		click_handler,

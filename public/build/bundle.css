@@ -1,3 +1,3 @@
-#board.svelte-16nn48d{width:800px;height:880px;position:absolute}svg.svelte-16nn48d{width:100%;height:800px;background-color:blue}rect.svelte-16nn48d{z-index:0}circle.svelte-16nn48d{z-index:3}
+#board.svelte-ib9c5l{width:800px;height:var(--board-height);box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)}svg.svelte-ib9c5l{width:100%;height:100%;background-color:blue}@media screen and (max-width: 800px){#board.svelte-ib9c5l{width:100%}}
 
 /*# sourceMappingURL=bundle.css.map */

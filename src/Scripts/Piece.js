@@ -2,12 +2,16 @@ import { Position } from './Position.js';
 
 export class Piece {
 
-    constructor(xPos, yPos, side, id) {
+    constructor(xPos, yPos, side, id, stack) {
 
         this.id = id;
         this.positon = new Position(xPos, yPos, side);
         this.side = side;
-        this.stack = 1;
+
+        if(stack != null)
+            this.stack = stack;
+        else
+            this.stack = 1;
     }
 
     getPosition() {
@@ -19,6 +23,6 @@ export class Piece {
     }
 
     incrementStack() {
-        this.stack++;
+        return this.stack++;
     }
 }

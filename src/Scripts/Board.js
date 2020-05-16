@@ -25,10 +25,10 @@ export class Board {
                 } else  {
 
                     if(0 <= i && i <= 2)
-                        this.board[i][j] = new Piece(i, j, 'U', k);
+                        this.board[i][j] = new Piece(i, j, 'U', k, null);
                         
                     else 
-                        this.board[i][j] = new Piece(i, j, 'D', k);
+                        this.board[i][j] = new Piece(i, j, 'D', k, null);
 
                     k++;
                 }
@@ -51,7 +51,7 @@ export class Board {
             if(yDiff > 0)
                 yPiece = currPos.yPos + 1;
 
-            if(this.board[xPiece][yPiece] != null) {
+            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                 this.board[xPiece][yPiece] = null;
                 isTaken = true;
             }
@@ -67,13 +67,13 @@ export class Board {
             if(yDiff > 0)
                 yPiece = currPos.yPos - 1;
 
-            if(this.board[xPiece][yPiece] != null) {
+            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                 this.board[xPiece][yPiece] = null;
                 isTaken = true;
             }
         }
 
-        if(piece.stack > 2) {
+        if(piece.stack > 1) {
 
             let xPiece = null;
             let yPiece = null;
@@ -83,7 +83,7 @@ export class Board {
                 xPiece = currPos.xPos - 1;
                 yPiece = currPos.yPos - 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
@@ -105,7 +105,7 @@ export class Board {
                 xPiece = currPos.xPos + 1;
                 yPiece = currPos.yPos - 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
@@ -116,7 +116,7 @@ export class Board {
                 xPiece = currPos.xPos + 1;
                 yPiece = currPos.yPos + 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
@@ -217,12 +217,14 @@ export class Board {
 
         if(this.isMoveLegal(piece, nextPos)) {
 
-            if(nextPos.xPos == 0 || nextPos.xPos == 7)
-                piece.incrementStack();
+            let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            this.board[nextPos.xPos][nextPos.yPos] = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id);
+            if(nextPos.xPos == 0 || nextPos.xPos == 7) 
+                newPiece.incrementStack();
 
-            let currPos = piece.getPosition();
+            this.board[nextPos.xPos][nextPos.yPos] = newPiece;
+            
+            let currPos = piece.getPosition(); 
 
             this.board[currPos.xPos][currPos.yPos] = null;
 
