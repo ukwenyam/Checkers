@@ -3,36 +3,42 @@ import { Position } from './Position.js';
 
 export class Board {
 
-    constructor() {
+    constructor(state) {
 
-        this.board = [];
+        if(!arguments.length) {
 
-        let i, j, k = 0;
+            this.board = [];
 
-        for(i = 0; i < 8; i++) {
+            let i, j, k = 0;
 
-            this.board[i] = [];
-        
-            for(j = 0; j < 8; j++) {
-        
-                let even = (i % 2 == 0) && (j % 2 == 0);
-                let odd = (i % 2 != 0) && (j % 2 != 0);
-        
-                if(even || odd || i == 3 || i == 4) {
-                
-                    this.board[i][j] = null;
+            for(i = 0; i < 8; i++) {
 
-                } else  {
+                this.board[i] = [];
+            
+                for(j = 0; j < 8; j++) {
+            
+                    let even = (i % 2 == 0) && (j % 2 == 0);
+                    let odd = (i % 2 != 0) && (j % 2 != 0);
+            
+                    if(even || odd || i == 3 || i == 4) {
+                    
+                        this.board[i][j] = null;
 
-                    if(0 <= i && i <= 2)
-                        this.board[i][j] = new Piece(i, j, 'U', k, null);
-                        
-                    else 
-                        this.board[i][j] = new Piece(i, j, 'D', k, null);
+                    } else  {
 
-                    k++;
+                        if(0 <= i && i <= 2)
+                            this.board[i][j] = new Piece(i, j, 'U', k, null);
+                            
+                        else 
+                            this.board[i][j] = new Piece(i, j, 'D', k, null);
+
+                        k++;
+                    }
                 }
             }
+        } else {
+
+            this.board = state;
         }
     }
 
@@ -40,7 +46,7 @@ export class Board {
     takePiece(piece, currPos, yDiff, nextPos) {
 
         let isTaken = false;
-
+/*
         if(piece.side == 'U' && piece.stack == 1) {
 
             let xPiece = currPos.xPos + 1;
@@ -74,7 +80,7 @@ export class Board {
         }
 
         if(piece.stack > 1) {
-
+*/
             let xPiece = null;
             let yPiece = null;
 
@@ -94,7 +100,7 @@ export class Board {
                 xPiece = currPos.xPos - 1;
                 yPiece = currPos.yPos + 1;
 
-                if(this.board[xPiece][yPiece] != null) {
+                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                     this.board[xPiece][yPiece] = null;
                     isTaken = true;
                 }
@@ -121,7 +127,7 @@ export class Board {
                     isTaken = true;
                 }
             }
-        }
+        //}
 
         return isTaken;
     }
@@ -143,7 +149,7 @@ export class Board {
 
                 let oneSq = (yDiff == 1 || yDiff == -1) && xDiff == 1;
 
-                let twoSq = (yDiff == 2 || yDiff == -2) && xDiff == 2;
+                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
 
                 if(oneSq)
                     legal = true;
@@ -183,7 +189,7 @@ export class Board {
 
                 //console.log(oneSq);
 
-                let twoSq = (yDiff == 2 || yDiff == -2) && xDiff == 2;
+                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
 
                 if(oneSq) {
                     //console.log(nextPos.xPos + ", " + nextPos.yPos);
@@ -217,9 +223,14 @@ export class Board {
 
         if(this.isMoveLegal(piece, nextPos)) {
 
+            this.scanBoard(piece, nextPos);
+
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            if(nextPos.xPos == 0 || nextPos.xPos == 7) 
+            if(nextPos.xPos == 0 && newPiece.side == "D" && newPiece.stack == 1) 
+                newPiece.incrementStack();
+
+            if(nextPos.xPos == 7 && newPiece.side == "U" && newPiece.stack == 1) 
                 newPiece.incrementStack();
 
             this.board[nextPos.xPos][nextPos.yPos] = newPiece;
@@ -234,6 +245,73 @@ export class Board {
         return moved;
     } 
 
+    scanBoard(piece, nextPos) {
+
+        let i, j;
+
+        for(i = 0; i < 8; i++) {
+            for(j = 0; j < 8; j++) {
+                if(this.board[i][j] != null && this.board[i][j].id != piece.id && this.board[i][j].side == piece.side) {
+                    if(this.checkPiece(this.board[i][j], piece, nextPos)) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    checkPiece(currPiece, piece, nextPos) {
+
+        //console.log(currPiece.id);
+
+        let autoRemove = false;
+
+        let xNext = nextPos.xPos;
+        let yNext = nextPos.yPos;
+
+        let xPos = currPiece.getPosition().xPos;
+        let yPos = currPiece.getPosition().yPos;
+
+        if(0 <= xPos - 2 && 0 <= yPos - 2 && xPos - 2 <= 7 && yPos - 2 <= 7) {
+            //console.log("Upper Left");
+            if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side && this.board[xPos - 2][yPos - 2] == null) {
+                this.board[xPos][yPos] = null;
+                autoRemove = true;
+                //console.log("Upper Left");
+            }
+        }
+
+        if(0 <= xPos + 2 && 0 <= yPos + 2 && xPos + 2 <= 7 && yPos + 2 <= 7) {
+            //console.log("Lower Right");
+            if(autoRemove == false && this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
+                this.board[xPos][yPos] = null;
+                autoRemove = true;
+                //console.log("Lower Right");
+            }
+        }
+
+        if(0 <= xPos - 2 && 0 <= yPos + 2 && xPos - 2 <= 7 && yPos + 2 <= 7) {
+            //console.log("Upper Right");
+            if(autoRemove == false && this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
+                this.board[xPos][yPos] = null;
+                autoRemove = true;
+                //console.log("Upper Right");
+            }
+        }
+
+        if(0 <= xPos + 2 && 0 <= yPos - 2 && xPos + 2 <= 7 && yPos - 2 <= 7) {
+            //console.log("Lower Left");
+            if(autoRemove == false && this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
+                this.board[xPos][yPos] = null;
+                autoRemove = true;
+                //console.log("Lower Left");
+            }
+        }
+
+        return autoRemove;
+    }
+
 
     isEmpty(xpos, ypos) {
 
@@ -241,7 +319,6 @@ export class Board {
             return false;
         else
             return true;
-
     }
 
     getId(i, j) {
@@ -258,6 +335,10 @@ export class Board {
         if(this.board[i][j] != null)
             return this.board[i][j];
 
+    }
+
+    getBoard() {
+        return this.board;
     }
 
 }

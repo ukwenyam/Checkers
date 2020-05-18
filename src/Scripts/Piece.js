@@ -23,6 +23,6 @@ export class Piece {
     }
 
     incrementStack() {
-        return this.stack++;
+        this.stack = 2;
     }
 }

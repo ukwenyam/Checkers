@@ -99,6 +99,9 @@ var app = (function () {
     function text(data) {
         return document.createTextNode(data);
     }
+    function space() {
+        return text(' ');
+    }
     function empty() {
         return text('');
     }
@@ -115,8 +118,16 @@ var app = (function () {
     function xlink_attr(node, attribute, value) {
         node.setAttributeNS('http://www.w3.org/1999/xlink', attribute, value);
     }
+    function to_number(value) {
+        return value === '' ? undefined : +value;
+    }
     function children(element) {
         return Array.from(element.childNodes);
+    }
+    function set_input_value(input, value) {
+        if (value != null || input.value) {
+            input.value = value;
+        }
     }
     function set_style(node, key, value, important) {
         node.style.setProperty(key, value, important ? 'important' : '');
@@ -201,12 +212,6 @@ var app = (function () {
             block.i(local);
         }
     }
-
-    const globals = (typeof window !== 'undefined'
-        ? window
-        : typeof globalThis !== 'undefined'
-            ? globalThis
-            : global);
     function mount_component(component, target, anchor) {
         const { fragment, on_mount, on_destroy, after_update } = component.$$;
         fragment && fragment.m(target, anchor);
@@ -356,6 +361,13 @@ var app = (function () {
         else
             dispatch_dev("SvelteDOMSetAttribute", { node, attribute, value });
     }
+    function set_data_dev(text, data) {
+        data = '' + data;
+        if (text.data === data)
+            return;
+        dispatch_dev("SvelteDOMSetData", { node: text, data });
+        text.data = data;
+    }
     function validate_each_argument(arg) {
         if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
             let msg = '{#each} only iterates over array-like objects.';
@@ -425,42 +437,48 @@ var app = (function () {
         }
 
         incrementStack() {
-            return this.stack++;
+            this.stack = 2;
         }
     }
 
     class Board {
 
-        constructor() {
+        constructor(state) {
 
-            this.board = [];
+            if(!arguments.length) {
 
-            let i, j, k = 0;
+                this.board = [];
 
-            for(i = 0; i < 8; i++) {
+                let i, j, k = 0;
 
-                this.board[i] = [];
-            
-                for(j = 0; j < 8; j++) {
-            
-                    let even = (i % 2 == 0) && (j % 2 == 0);
-                    let odd = (i % 2 != 0) && (j % 2 != 0);
-            
-                    if(even || odd || i == 3 || i == 4) {
-                    
-                        this.board[i][j] = null;
+                for(i = 0; i < 8; i++) {
 
-                    } else  {
+                    this.board[i] = [];
+                
+                    for(j = 0; j < 8; j++) {
+                
+                        let even = (i % 2 == 0) && (j % 2 == 0);
+                        let odd = (i % 2 != 0) && (j % 2 != 0);
+                
+                        if(even || odd || i == 3 || i == 4) {
+                        
+                            this.board[i][j] = null;
 
-                        if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, 'U', k, null);
-                            
-                        else 
-                            this.board[i][j] = new Piece(i, j, 'D', k, null);
+                        } else  {
 
-                        k++;
+                            if(0 <= i && i <= 2)
+                                this.board[i][j] = new Piece(i, j, 'U', k, null);
+                                
+                            else 
+                                this.board[i][j] = new Piece(i, j, 'D', k, null);
+
+                            k++;
+                        }
                     }
                 }
+            } else {
+
+                this.board = state;
             }
         }
 
@@ -468,7 +486,7 @@ var app = (function () {
         takePiece(piece, currPos, yDiff, nextPos) {
 
             let isTaken = false;
-
+    /*
             if(piece.side == 'U' && piece.stack == 1) {
 
                 let xPiece = currPos.xPos + 1;
@@ -502,7 +520,7 @@ var app = (function () {
             }
 
             if(piece.stack > 1) {
-
+    */
                 let xPiece = null;
                 let yPiece = null;
 
@@ -522,7 +540,7 @@ var app = (function () {
                     xPiece = currPos.xPos - 1;
                     yPiece = currPos.yPos + 1;
 
-                    if(this.board[xPiece][yPiece] != null) {
+                    if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                         this.board[xPiece][yPiece] = null;
                         isTaken = true;
                     }
@@ -549,7 +567,7 @@ var app = (function () {
                         isTaken = true;
                     }
                 }
-            }
+            //}
 
             return isTaken;
         }
@@ -571,7 +589,7 @@ var app = (function () {
 
                     let oneSq = (yDiff == 1 || yDiff == -1) && xDiff == 1;
 
-                    let twoSq = (yDiff == 2 || yDiff == -2) && xDiff == 2;
+                    let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
 
                     if(oneSq)
                         legal = true;
@@ -611,7 +629,7 @@ var app = (function () {
 
                     //console.log(oneSq);
 
-                    let twoSq = (yDiff == 2 || yDiff == -2) && xDiff == 2;
+                    let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
 
                     if(oneSq) {
                         //console.log(nextPos.xPos + ", " + nextPos.yPos);
@@ -645,9 +663,14 @@ var app = (function () {
 
             if(this.isMoveLegal(piece, nextPos)) {
 
+                this.scanBoard(piece, nextPos);
+
                 let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-                if(nextPos.xPos == 0 || nextPos.xPos == 7) 
+                if(nextPos.xPos == 0 && newPiece.side == "D" && newPiece.stack == 1) 
+                    newPiece.incrementStack();
+
+                if(nextPos.xPos == 7 && newPiece.side == "U" && newPiece.stack == 1) 
                     newPiece.incrementStack();
 
                 this.board[nextPos.xPos][nextPos.yPos] = newPiece;
@@ -662,6 +685,73 @@ var app = (function () {
             return moved;
         } 
 
+        scanBoard(piece, nextPos) {
+
+            let i, j;
+
+            for(i = 0; i < 8; i++) {
+                for(j = 0; j < 8; j++) {
+                    if(this.board[i][j] != null && this.board[i][j].id != piece.id && this.board[i][j].side == piece.side) {
+                        if(this.checkPiece(this.board[i][j], piece, nextPos)) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        checkPiece(currPiece, piece, nextPos) {
+
+            //console.log(currPiece.id);
+
+            let autoRemove = false;
+
+            let xNext = nextPos.xPos;
+            let yNext = nextPos.yPos;
+
+            let xPos = currPiece.getPosition().xPos;
+            let yPos = currPiece.getPosition().yPos;
+
+            if(0 <= xPos - 2 && 0 <= yPos - 2 && xPos - 2 <= 7 && yPos - 2 <= 7) {
+                //console.log("Upper Left");
+                if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side && this.board[xPos - 2][yPos - 2] == null) {
+                    this.board[xPos][yPos] = null;
+                    autoRemove = true;
+                    //console.log("Upper Left");
+                }
+            }
+
+            if(0 <= xPos + 2 && 0 <= yPos + 2 && xPos + 2 <= 7 && yPos + 2 <= 7) {
+                //console.log("Lower Right");
+                if(autoRemove == false && this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
+                    this.board[xPos][yPos] = null;
+                    autoRemove = true;
+                    //console.log("Lower Right");
+                }
+            }
+
+            if(0 <= xPos - 2 && 0 <= yPos + 2 && xPos - 2 <= 7 && yPos + 2 <= 7) {
+                //console.log("Upper Right");
+                if(autoRemove == false && this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
+                    this.board[xPos][yPos] = null;
+                    autoRemove = true;
+                    //console.log("Upper Right");
+                }
+            }
+
+            if(0 <= xPos + 2 && 0 <= yPos - 2 && xPos + 2 <= 7 && yPos - 2 <= 7) {
+                //console.log("Lower Left");
+                if(autoRemove == false && this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
+                    this.board[xPos][yPos] = null;
+                    autoRemove = true;
+                    //console.log("Lower Left");
+                }
+            }
+
+            return autoRemove;
+        }
+
 
         isEmpty(xpos, ypos) {
 
@@ -669,7 +759,6 @@ var app = (function () {
                 return false;
             else
                 return true;
-
         }
 
         getId(i, j) {
@@ -686,6 +775,10 @@ var app = (function () {
             if(this.board[i][j] != null)
                 return this.board[i][j];
 
+        }
+
+        getBoard() {
+            return this.board;
         }
 
     }
@@ -852,32 +945,127 @@ var app = (function () {
     }
 
     /* src/App.svelte generated by Svelte v3.22.2 */
-
-    const { console: console_1 } = globals;
     const file = "src/App.svelte";
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[22] = list[i];
+    	child_ctx[33] = list[i];
     	return child_ctx;
     }
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[19] = list[i];
+    	child_ctx[30] = list[i];
     	return child_ctx;
     }
 
-    // (129:38) 
-    function create_if_block_3(ctx) {
+    // (236:0) {:else}
+    function create_else_block_1(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			attr_dev(div, "class", "checker red svelte-47og0n");
+    			add_location(div, file, 236, 1, 4953);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block_1.name,
+    		type: "else",
+    		source: "(236:0) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (234:0) {#if currPlayer == 0}
+    function create_if_block_7(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			attr_dev(div, "class", "checker black svelte-47og0n");
+    			add_location(div, file, 234, 1, 4910);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_7.name,
+    		type: "if",
+    		source: "(234:0) {#if currPlayer == 0}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (242:0) {#if screenWidth > 800}
+    function create_if_block_6(ctx) {
+    	let h2;
+    	let t0;
+    	let t1;
+
+    	const block = {
+    		c: function create() {
+    			h2 = element("h2");
+    			t0 = text("Timer: ");
+    			t1 = text(/*timer*/ ctx[1]);
+    			attr_dev(h2, "id", "time");
+    			attr_dev(h2, "class", "svelte-47og0n");
+    			add_location(h2, file, 242, 1, 5056);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, h2, anchor);
+    			append_dev(h2, t0);
+    			append_dev(h2, t1);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty[0] & /*timer*/ 2) set_data_dev(t1, /*timer*/ ctx[1]);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(h2);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_6.name,
+    		type: "if",
+    		source: "(242:0) {#if screenWidth > 800}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (257:38) 
+    function create_if_block_4(ctx) {
     	let if_block_anchor;
 
-    	function select_block_type_2(ctx, dirty) {
-    		if (/*i*/ ctx[19] % 2 != 0 && /*j*/ ctx[22] % 2 == 0 || /*i*/ ctx[19] % 2 == 0 && /*j*/ ctx[22] % 2 != 0) return create_if_block_4;
+    	function select_block_type_3(ctx, dirty) {
+    		if (/*i*/ ctx[30] % 2 != 0 && /*j*/ ctx[33] % 2 == 0 || /*i*/ ctx[30] % 2 == 0 && /*j*/ ctx[33] % 2 != 0) return create_if_block_5;
     		return create_else_block;
     	}
 
-    	let current_block_type = select_block_type_2(ctx);
+    	let current_block_type = select_block_type_3(ctx);
     	let if_block = current_block_type(ctx);
 
     	const block = {
@@ -900,17 +1088,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_3.name,
+    		id: create_if_block_4.name,
     		type: "if",
-    		source: "(129:38) ",
+    		source: "(257:38) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (122:4) {#if !gameBoard.isEmpty(i, j)}
-    function create_if_block(ctx) {
+    // (250:4) {#if !gameBoard.isEmpty(i, j)}
+    function create_if_block_1(ctx) {
     	let rect;
     	let rect_x_value;
     	let rect_y_value;
@@ -918,14 +1106,14 @@ var app = (function () {
     	let show_if_1;
     	let if_block_anchor;
 
-    	function select_block_type_1(ctx, dirty) {
-    		if (show_if == null || dirty & /*$cirPos, gameBoard*/ 10) show_if = !!(/*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].s == 0);
-    		if (show_if) return create_if_block_1;
-    		if (show_if_1 == null || dirty & /*$cirPos, gameBoard*/ 10) show_if_1 = !!(/*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].s == 1);
-    		if (show_if_1) return create_if_block_2;
+    	function select_block_type_2(ctx, dirty) {
+    		if (show_if == null || dirty[0] & /*$cirPos, gameBoard*/ 160) show_if = !!(/*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].s == 0);
+    		if (show_if) return create_if_block_2;
+    		if (show_if_1 == null || dirty[0] & /*$cirPos, gameBoard*/ 160) show_if_1 = !!(/*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].s == 1);
+    		if (show_if_1) return create_if_block_3;
     	}
 
-    	let current_block_type = select_block_type_1(ctx, -1);
+    	let current_block_type = select_block_type_2(ctx, [-1]);
     	let if_block = current_block_type && current_block_type(ctx);
 
     	const block = {
@@ -936,9 +1124,9 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
-    			add_location(rect, file, 122, 5, 2540);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6]);
+    			add_location(rect, file, 250, 5, 5219);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, rect, anchor);
@@ -946,15 +1134,15 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_x_value !== (rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "x", rect_x_value);
     			}
 
-    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_y_value !== (rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "y", rect_y_value);
     			}
 
-    			if (current_block_type === (current_block_type = select_block_type_1(ctx, dirty)) && if_block) {
+    			if (current_block_type === (current_block_type = select_block_type_2(ctx, dirty)) && if_block) {
     				if_block.p(ctx, dirty);
     			} else {
     				if (if_block) if_block.d(1);
@@ -979,16 +1167,16 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block.name,
+    		id: create_if_block_1.name,
     		type: "if",
-    		source: "(122:4) {#if !gameBoard.isEmpty(i, j)}",
+    		source: "(250:4) {#if !gameBoard.isEmpty(i, j)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (132:5) {:else}
+    // (260:5) {:else}
     function create_else_block(ctx) {
     	let rect;
     	let rect_x_value;
@@ -1000,19 +1188,19 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "wheat");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
-    			add_location(rect, file, 132, 6, 3567);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6]);
+    			add_location(rect, file, 260, 6, 6250);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, rect, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_x_value !== (rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "x", rect_x_value);
     			}
 
-    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_y_value !== (rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "y", rect_y_value);
     			}
     		},
@@ -1025,22 +1213,22 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(132:5) {:else}",
+    		source: "(260:5) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (130:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-    function create_if_block_4(ctx) {
+    // (258:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+    function create_if_block_5(ctx) {
     	let rect;
     	let rect_x_value;
     	let rect_y_value;
     	let dispose;
 
     	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[18](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
+    		return /*click_handler_2*/ ctx[28](/*i*/ ctx[30], /*j*/ ctx[33], ...args);
     	}
 
     	const block = {
@@ -1049,9 +1237,9 @@ var app = (function () {
     			attr_dev(rect, "width", "100");
     			attr_dev(rect, "height", "100");
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2]);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2]);
-    			add_location(rect, file, 130, 6, 3417);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6]);
+    			add_location(rect, file, 258, 6, 6100);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -1061,11 +1249,11 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty & /*squareSize*/ 4 && rect_x_value !== (rect_x_value = /*j*/ ctx[22] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_x_value !== (rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "x", rect_x_value);
     			}
 
-    			if (dirty & /*squareSize*/ 4 && rect_y_value !== (rect_y_value = /*i*/ ctx[19] * /*squareSize*/ ctx[2])) {
+    			if (dirty[0] & /*squareSize*/ 64 && rect_y_value !== (rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[6])) {
     				attr_dev(rect, "y", rect_y_value);
     			}
     		},
@@ -1077,17 +1265,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_4.name,
+    		id: create_if_block_5.name,
     		type: "if",
-    		source: "(130:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
+    		source: "(258:5) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (126:53) 
-    function create_if_block_2(ctx) {
+    // (254:53) 
+    function create_if_block_3(ctx) {
     	let circle;
     	let circle_id_value;
     	let circle_cx_value;
@@ -1096,21 +1284,21 @@ var app = (function () {
     	let dispose;
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[17](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
+    		return /*click_handler_1*/ ctx[27](/*i*/ ctx[30], /*j*/ ctx[33], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			circle = svg_element("circle");
-    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]));
-    			attr_dev(circle, "class", "checker svelte-ib9c5l");
-    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y);
-    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x);
-    			attr_dev(circle, "r", /*$size*/ ctx[4]);
+    			attr_dev(circle, "class", "checkRed svelte-47og0n");
+    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33]));
+    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].y);
+    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].x);
+    			attr_dev(circle, "r", /*$size*/ ctx[8]);
     			attr_dev(circle, "stroke", "white");
-    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2);
+    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[5].getPiece(/*i*/ ctx[30], /*j*/ ctx[33]).stack * 2);
     			attr_dev(circle, "fill", "red");
-    			add_location(circle, file, 126, 6, 3020);
+    			add_location(circle, file, 254, 6, 5702);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, circle, anchor);
@@ -1120,23 +1308,94 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty & /*gameBoard*/ 2 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]))) {
+    			if (dirty[0] & /*gameBoard*/ 32 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33]))) {
     				attr_dev(circle, "id", circle_id_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y)) {
+    			if (dirty[0] & /*$cirPos, gameBoard*/ 160 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].y)) {
     				attr_dev(circle, "cx", circle_cx_value);
     			}
 
-    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x)) {
+    			if (dirty[0] & /*$cirPos, gameBoard*/ 160 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].x)) {
     				attr_dev(circle, "cy", circle_cy_value);
     			}
 
-    			if (dirty & /*$size*/ 16) {
-    				attr_dev(circle, "r", /*$size*/ ctx[4]);
+    			if (dirty[0] & /*$size*/ 256) {
+    				attr_dev(circle, "r", /*$size*/ ctx[8]);
     			}
 
-    			if (dirty & /*gameBoard*/ 2 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2)) {
+    			if (dirty[0] & /*gameBoard*/ 32 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[5].getPiece(/*i*/ ctx[30], /*j*/ ctx[33]).stack * 2)) {
+    				attr_dev(circle, "stroke-width", circle_stroke_width_value);
+    			}
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(circle);
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_3.name,
+    		type: "if",
+    		source: "(254:53) ",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (252:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}
+    function create_if_block_2(ctx) {
+    	let circle;
+    	let circle_id_value;
+    	let circle_cx_value;
+    	let circle_cy_value;
+    	let circle_stroke_width_value;
+    	let dispose;
+
+    	function click_handler(...args) {
+    		return /*click_handler*/ ctx[26](/*i*/ ctx[30], /*j*/ ctx[33], ...args);
+    	}
+
+    	const block = {
+    		c: function create() {
+    			circle = svg_element("circle");
+    			attr_dev(circle, "class", "checkBlack svelte-47og0n");
+    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33]));
+    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].y);
+    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].x);
+    			attr_dev(circle, "r", /*$size*/ ctx[8]);
+    			attr_dev(circle, "stroke", "white");
+    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[5].getPiece(/*i*/ ctx[30], /*j*/ ctx[33]).stack * 2);
+    			attr_dev(circle, "fill", "black");
+    			add_location(circle, file, 252, 6, 5369);
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, circle, anchor);
+    			if (remount) dispose();
+    			dispose = listen_dev(circle, "click", click_handler, false, false, false);
+    		},
+    		p: function update(new_ctx, dirty) {
+    			ctx = new_ctx;
+
+    			if (dirty[0] & /*gameBoard*/ 32 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33]))) {
+    				attr_dev(circle, "id", circle_id_value);
+    			}
+
+    			if (dirty[0] & /*$cirPos, gameBoard*/ 160 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].y)) {
+    				attr_dev(circle, "cx", circle_cx_value);
+    			}
+
+    			if (dirty[0] & /*$cirPos, gameBoard*/ 160 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[7][/*gameBoard*/ ctx[5].getId(/*i*/ ctx[30], /*j*/ ctx[33])].x)) {
+    				attr_dev(circle, "cy", circle_cy_value);
+    			}
+
+    			if (dirty[0] & /*$size*/ 256) {
+    				attr_dev(circle, "r", /*$size*/ ctx[8]);
+    			}
+
+    			if (dirty[0] & /*gameBoard*/ 32 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[5].getPiece(/*i*/ ctx[30], /*j*/ ctx[33]).stack * 2)) {
     				attr_dev(circle, "stroke-width", circle_stroke_width_value);
     			}
     		},
@@ -1150,98 +1409,27 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(126:53) ",
+    		source: "(252:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (124:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}
-    function create_if_block_1(ctx) {
-    	let circle;
-    	let circle_id_value;
-    	let circle_cx_value;
-    	let circle_cy_value;
-    	let circle_stroke_width_value;
-    	let dispose;
-
-    	function click_handler(...args) {
-    		return /*click_handler*/ ctx[16](/*i*/ ctx[19], /*j*/ ctx[22], ...args);
-    	}
-
-    	const block = {
-    		c: function create() {
-    			circle = svg_element("circle");
-    			attr_dev(circle, "id", circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]));
-    			attr_dev(circle, "class", "checker svelte-ib9c5l");
-    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y);
-    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x);
-    			attr_dev(circle, "r", /*$size*/ ctx[4]);
-    			attr_dev(circle, "stroke", "white");
-    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2);
-    			attr_dev(circle, "fill", "black");
-    			add_location(circle, file, 124, 6, 2690);
-    		},
-    		m: function mount(target, anchor, remount) {
-    			insert_dev(target, circle, anchor);
-    			if (remount) dispose();
-    			dispose = listen_dev(circle, "click", click_handler, false, false, false);
-    		},
-    		p: function update(new_ctx, dirty) {
-    			ctx = new_ctx;
-
-    			if (dirty & /*gameBoard*/ 2 && circle_id_value !== (circle_id_value = /*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22]))) {
-    				attr_dev(circle, "id", circle_id_value);
-    			}
-
-    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].y)) {
-    				attr_dev(circle, "cx", circle_cx_value);
-    			}
-
-    			if (dirty & /*$cirPos, gameBoard*/ 10 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[3][/*gameBoard*/ ctx[1].getId(/*i*/ ctx[19], /*j*/ ctx[22])].x)) {
-    				attr_dev(circle, "cy", circle_cy_value);
-    			}
-
-    			if (dirty & /*$size*/ 16) {
-    				attr_dev(circle, "r", /*$size*/ ctx[4]);
-    			}
-
-    			if (dirty & /*gameBoard*/ 2 && circle_stroke_width_value !== (circle_stroke_width_value = /*gameBoard*/ ctx[1].getPiece(/*i*/ ctx[19], /*j*/ ctx[22]).stack * 2)) {
-    				attr_dev(circle, "stroke-width", circle_stroke_width_value);
-    			}
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(circle);
-    			dispose();
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_if_block_1.name,
-    		type: "if",
-    		source: "(124:5) {#if $cirPos[gameBoard.getId(i, j)].s == 0}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    // (121:3) {#each squares as j}
+    // (249:3) {#each squares as j}
     function create_each_block_1(ctx) {
     	let show_if;
     	let show_if_1;
     	let if_block_anchor;
 
-    	function select_block_type(ctx, dirty) {
-    		if (show_if == null || dirty & /*gameBoard*/ 2) show_if = !!!/*gameBoard*/ ctx[1].isEmpty(/*i*/ ctx[19], /*j*/ ctx[22]);
-    		if (show_if) return create_if_block;
-    		if (show_if_1 == null || dirty & /*gameBoard*/ 2) show_if_1 = !!/*gameBoard*/ ctx[1].isEmpty(/*i*/ ctx[19], /*j*/ ctx[22]);
-    		if (show_if_1) return create_if_block_3;
+    	function select_block_type_1(ctx, dirty) {
+    		if (show_if == null || dirty[0] & /*gameBoard*/ 32) show_if = !!!/*gameBoard*/ ctx[5].isEmpty(/*i*/ ctx[30], /*j*/ ctx[33]);
+    		if (show_if) return create_if_block_1;
+    		if (show_if_1 == null || dirty[0] & /*gameBoard*/ 32) show_if_1 = !!/*gameBoard*/ ctx[5].isEmpty(/*i*/ ctx[30], /*j*/ ctx[33]);
+    		if (show_if_1) return create_if_block_4;
     	}
 
-    	let current_block_type = select_block_type(ctx, -1);
+    	let current_block_type = select_block_type_1(ctx, [-1]);
     	let if_block = current_block_type && current_block_type(ctx);
 
     	const block = {
@@ -1254,7 +1442,7 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (current_block_type === (current_block_type = select_block_type(ctx, dirty)) && if_block) {
+    			if (current_block_type === (current_block_type = select_block_type_1(ctx, dirty)) && if_block) {
     				if_block.p(ctx, dirty);
     			} else {
     				if (if_block) if_block.d(1);
@@ -1279,17 +1467,17 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(121:3) {#each squares as j}",
+    		source: "(249:3) {#each squares as j}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (120:2) {#each squares as i}
+    // (248:2) {#each squares as i}
     function create_each_block(ctx) {
     	let each_1_anchor;
-    	let each_value_1 = /*squares*/ ctx[6];
+    	let each_value_1 = /*squares*/ ctx[11];
     	validate_each_argument(each_value_1);
     	let each_blocks = [];
 
@@ -1313,8 +1501,8 @@ var app = (function () {
     			insert_dev(target, each_1_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*gameBoard, squares, $cirPos, $size, setCurrPos, event, squareSize, setNextPos*/ 478) {
-    				each_value_1 = /*squares*/ ctx[6];
+    			if (dirty[0] & /*gameBoard, squares, $cirPos, $size, setCurrPos, squareSize, setNextPos*/ 14816) {
+    				each_value_1 = /*squares*/ ctx[11];
     				validate_each_argument(each_value_1);
     				let i;
 
@@ -1347,7 +1535,46 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(120:2) {#each squares as i}",
+    		source: "(248:2) {#each squares as i}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (270:0) {#if screenWidth <= 800}
+    function create_if_block(ctx) {
+    	let h1;
+    	let t0;
+    	let t1;
+
+    	const block = {
+    		c: function create() {
+    			h1 = element("h1");
+    			t0 = text("Timer: ");
+    			t1 = text(/*timer*/ ctx[1]);
+    			attr_dev(h1, "id", "time");
+    			attr_dev(h1, "class", "svelte-47og0n");
+    			add_location(h1, file, 270, 1, 6464);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, h1, anchor);
+    			append_dev(h1, t0);
+    			append_dev(h1, t1);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty[0] & /*timer*/ 2) set_data_dev(t1, /*timer*/ ctx[1]);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(h1);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(270:0) {#if screenWidth <= 800}",
     		ctx
     	});
 
@@ -1355,11 +1582,38 @@ var app = (function () {
     }
 
     function create_fragment(ctx) {
-    	let div;
+    	let h20;
+    	let t1;
+    	let t2;
+    	let h21;
+    	let t3;
+    	let t4;
+    	let t5;
+    	let t6;
+    	let div0;
     	let svg1;
     	let use;
     	let svg0;
-    	let each_value = /*squares*/ ctx[6];
+    	let t7;
+    	let t8;
+    	let div1;
+    	let label;
+    	let h22;
+    	let t9;
+    	let t10;
+    	let t11;
+    	let input;
+    	let dispose;
+
+    	function select_block_type(ctx, dirty) {
+    		if (/*currPlayer*/ ctx[0] == 0) return create_if_block_7;
+    		return create_else_block_1;
+    	}
+
+    	let current_block_type = select_block_type(ctx);
+    	let if_block0 = current_block_type(ctx);
+    	let if_block1 = /*screenWidth*/ ctx[9] > 800 && create_if_block_6(ctx);
+    	let each_value = /*squares*/ ctx[11];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -1367,9 +1621,22 @@ var app = (function () {
     		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
     	}
 
+    	let if_block2 = /*screenWidth*/ ctx[9] <= 800 && create_if_block(ctx);
+
     	const block = {
     		c: function create() {
-    			div = element("div");
+    			h20 = element("h2");
+    			h20.textContent = "Current Player:";
+    			t1 = space();
+    			if_block0.c();
+    			t2 = space();
+    			h21 = element("h2");
+    			t3 = text("Moves: ");
+    			t4 = text(/*numMoves*/ ctx[2]);
+    			t5 = space();
+    			if (if_block1) if_block1.c();
+    			t6 = space();
+    			div0 = element("div");
     			svg1 = svg_element("svg");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -1378,23 +1645,62 @@ var app = (function () {
 
     			use = svg_element("use");
     			svg0 = svg_element("svg");
+    			t7 = space();
+    			if (if_block2) if_block2.c();
+    			t8 = space();
+    			div1 = element("div");
+    			label = element("label");
+    			h22 = element("h2");
+    			t9 = text("Game State at Move: ");
+    			t10 = text(/*rangeMoves*/ ctx[3]);
+    			t11 = space();
+    			input = element("input");
+    			attr_dev(h20, "id", "player");
+    			attr_dev(h20, "class", "svelte-47og0n");
+    			add_location(h20, file, 231, 0, 4849);
+    			attr_dev(h21, "id", "moves");
+    			attr_dev(h21, "class", "svelte-47og0n");
+    			add_location(h21, file, 239, 0, 4992);
     			attr_dev(use, "id", "use");
     			xlink_attr(use, "xlink:href", "#24");
-    			add_location(use, file, 137, 2, 3706);
-    			attr_dev(svg0, "class", "svelte-ib9c5l");
-    			add_location(svg0, file, 138, 1, 3741);
-    			attr_dev(svg1, "class", "svelte-ib9c5l");
-    			add_location(svg1, file, 118, 1, 2447);
-    			attr_dev(div, "id", "board");
-    			attr_dev(div, "class", "svelte-ib9c5l");
-    			add_location(div, file, 117, 0, 2429);
+    			add_location(use, file, 265, 2, 6389);
+    			add_location(svg0, file, 266, 1, 6424);
+    			attr_dev(svg1, "id", "hover");
+    			attr_dev(svg1, "class", "svelte-47og0n");
+    			add_location(svg1, file, 246, 1, 5115);
+    			attr_dev(div0, "id", "board");
+    			attr_dev(div0, "class", "svelte-47og0n");
+    			add_location(div0, file, 245, 0, 5097);
+    			attr_dev(h22, "id", "rangeBar");
+    			attr_dev(h22, "class", "svelte-47og0n");
+    			add_location(h22, file, 275, 2, 6533);
+    			attr_dev(input, "class", "custom-range svelte-47og0n");
+    			attr_dev(input, "type", "range");
+    			attr_dev(input, "min", "0");
+    			attr_dev(input, "max", /*numMoves*/ ctx[2]);
+    			attr_dev(input, "step", "1");
+    			add_location(input, file, 276, 2, 6591);
+    			add_location(label, file, 274, 1, 6523);
+    			attr_dev(div1, "id", "state");
+    			attr_dev(div1, "class", "svelte-47og0n");
+    			add_location(div1, file, 273, 0, 6505);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, svg1);
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, h20, anchor);
+    			insert_dev(target, t1, anchor);
+    			if_block0.m(target, anchor);
+    			insert_dev(target, t2, anchor);
+    			insert_dev(target, h21, anchor);
+    			append_dev(h21, t3);
+    			append_dev(h21, t4);
+    			insert_dev(target, t5, anchor);
+    			if (if_block1) if_block1.m(target, anchor);
+    			insert_dev(target, t6, anchor);
+    			insert_dev(target, div0, anchor);
+    			append_dev(div0, svg1);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(svg1, null);
@@ -1402,10 +1708,41 @@ var app = (function () {
 
     			append_dev(svg1, use);
     			append_dev(svg1, svg0);
+    			insert_dev(target, t7, anchor);
+    			if (if_block2) if_block2.m(target, anchor);
+    			insert_dev(target, t8, anchor);
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, label);
+    			append_dev(label, h22);
+    			append_dev(h22, t9);
+    			append_dev(h22, t10);
+    			append_dev(label, t11);
+    			append_dev(label, input);
+    			set_input_value(input, /*rangeMoves*/ ctx[3]);
+    			if (remount) run_all(dispose);
+
+    			dispose = [
+    				listen_dev(input, "change", /*viewBoardHistory*/ ctx[14], false, false, false),
+    				listen_dev(input, "change", /*input_change_input_handler*/ ctx[29]),
+    				listen_dev(input, "input", /*input_change_input_handler*/ ctx[29])
+    			];
     		},
-    		p: function update(ctx, [dirty]) {
-    			if (dirty & /*squares, gameBoard, $cirPos, $size, setCurrPos, event, squareSize, setNextPos*/ 478) {
-    				each_value = /*squares*/ ctx[6];
+    		p: function update(ctx, dirty) {
+    			if (current_block_type !== (current_block_type = select_block_type(ctx))) {
+    				if_block0.d(1);
+    				if_block0 = current_block_type(ctx);
+
+    				if (if_block0) {
+    					if_block0.c();
+    					if_block0.m(t2.parentNode, t2);
+    				}
+    			}
+
+    			if (dirty[0] & /*numMoves*/ 4) set_data_dev(t4, /*numMoves*/ ctx[2]);
+    			if (/*screenWidth*/ ctx[9] > 800) if_block1.p(ctx, dirty);
+
+    			if (dirty[0] & /*squares, gameBoard, $cirPos, $size, setCurrPos, squareSize, setNextPos*/ 14816) {
+    				each_value = /*squares*/ ctx[11];
     				validate_each_argument(each_value);
     				let i;
 
@@ -1427,12 +1764,36 @@ var app = (function () {
 
     				each_blocks.length = each_value.length;
     			}
+
+    			if (/*screenWidth*/ ctx[9] <= 800) if_block2.p(ctx, dirty);
+    			if (dirty[0] & /*rangeMoves*/ 8) set_data_dev(t10, /*rangeMoves*/ ctx[3]);
+
+    			if (dirty[0] & /*numMoves*/ 4) {
+    				attr_dev(input, "max", /*numMoves*/ ctx[2]);
+    			}
+
+    			if (dirty[0] & /*rangeMoves*/ 8) {
+    				set_input_value(input, /*rangeMoves*/ ctx[3]);
+    			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
+    			if (detaching) detach_dev(h20);
+    			if (detaching) detach_dev(t1);
+    			if_block0.d(detaching);
+    			if (detaching) detach_dev(t2);
+    			if (detaching) detach_dev(h21);
+    			if (detaching) detach_dev(t5);
+    			if (if_block1) if_block1.d(detaching);
+    			if (detaching) detach_dev(t6);
+    			if (detaching) detach_dev(div0);
     			destroy_each(each_blocks, detaching);
+    			if (detaching) detach_dev(t7);
+    			if (if_block2) if_block2.d(detaching);
+    			if (detaching) detach_dev(t8);
+    			if (detaching) detach_dev(div1);
+    			run_all(dispose);
     		}
     	};
 
@@ -1452,19 +1813,23 @@ var app = (function () {
 
     	let $size,
     		$$unsubscribe_size = noop,
-    		$$subscribe_size = () => ($$unsubscribe_size(), $$unsubscribe_size = subscribe(size, $$value => $$invalidate(4, $size = $$value)), size);
+    		$$subscribe_size = () => ($$unsubscribe_size(), $$unsubscribe_size = subscribe(size, $$value => $$invalidate(8, $size = $$value)), size);
 
     	$$self.$$.on_destroy.push(() => $$unsubscribe_size());
-    	let currPlayer = 0;
+    	let currPlayer = Math.floor(Math.random() * 2);
+    	let currPos = null, nextPos = null;
+    	let timer = 10, lockedPiece = false;
+    	let screenWidth = screen.width;
+    	let numMoves = 0, rangeMoves = 0;
     	let size;
     	validate_store(size, "size");
     	$$subscribe_size();
     	let gameBoard = new Board();
+    	let gameHistory = [];
     	const cirPos = spring([]);
     	validate_store(cirPos, "cirPos");
-    	component_subscribe($$self, cirPos, value => $$invalidate(3, $cirPos = value));
+    	component_subscribe($$self, cirPos, value => $$invalidate(7, $cirPos = value));
     	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
-    	let currPos = null, nextPos = null;
     	let squareSize, boardHeight, factor;
 
     	if (screen.width <= 800) {
@@ -1474,13 +1839,32 @@ var app = (function () {
     		boardHeight = squareSize * 8;
     	} else {
     		factor = 1;
-    		$$subscribe_size(size = spring(40));
+    		$$subscribe_size(size = spring(30));
     		squareSize = 100;
     		boardHeight = squareSize * 8;
     	}
 
     	document.documentElement.style.setProperty("--board-height", boardHeight + "px");
+    	saveBoardState();
     	setCirclePositions();
+
+    	setInterval(
+    		function () {
+    			if (currPos != null) highlightCircle(currPos);
+    		},
+    		100
+    	);
+
+    	setInterval(
+    		function () {
+    			if (rangeMoves == numMoves) {
+    				$$invalidate(1, timer--, timer);
+    				if (timer == 0) switchPlayer();
+    				if (timer == -1) $$invalidate(1, timer = 10);
+    			}
+    		},
+    		1000
+    	);
 
     	function updateCirclePositions(nextPos) {
     		let i = nextPos.xPos, j = nextPos.yPos;
@@ -1513,8 +1897,20 @@ var app = (function () {
 
     	function setCurrPos(i, j, evt) {
     		//console.log(i + ", " + j);
-    		if ($cirPos[gameBoard.getId(i, j)].s == currPlayer) {
-    			console.log(gameBoard.getPiece(i, j).stack);
+    		if ($cirPos[gameBoard.getId(i, j)].s == currPlayer && lockedPiece == false && rangeMoves == numMoves) {
+    			let litCircle = document.getElementById(gameBoard.getId(i, j));
+    			let allCircles, index;
+
+    			if (gameBoard.getSide(i, j) == "U") {
+    				allCircles = document.getElementsByClassName("checkBlack");
+    				for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:black");
+    				litCircle.setAttribute("style", "fill:grey");
+    			} else {
+    				allCircles = document.getElementsByClassName("checkRed");
+    				for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:red");
+    				litCircle.setAttribute("style", "fill:pink");
+    			}
+
     			let newtarget = evt.target || event.target;
     			let topmost = document.getElementById("use");
     			topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + newtarget.id);
@@ -1524,25 +1920,69 @@ var app = (function () {
     	//console.log(pos.xPos + ", " + pos.yPos);
 
     	function setNextPos(i, j) {
-    		if (gameBoard.isEmpty(i, j) && currPos != null) {
+    		if (gameBoard.isEmpty(i, j) && currPos != null && rangeMoves == numMoves) {
     			nextPos = new Position(i, j, "E");
     			let move = gameBoard.doMove(currPos, nextPos);
-    			console.log(gameBoard);
-    			$$invalidate(1, gameBoard);
+    			$$invalidate(5, gameBoard);
 
+    			//console.log(gameBoard);
     			if (move) {
+    				lockedPiece = true;
     				updateCirclePositions(nextPos);
+    				saveBoardState();
+    				$$invalidate(2, numMoves++, numMoves);
+    				$$invalidate(3, rangeMoves++, rangeMoves);
+    				currPos = gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
     			}
-
-    			currPlayer = currPlayer == 0 ? 1 : 0;
-    			(currPos = null, nextPos = null);
     		}
+    	}
+
+    	function viewBoardHistory() {
+    		$$invalidate(5, gameBoard = new Board(gameHistory[rangeMoves]));
+    		setCirclePositions();
+    	}
+
+    	function highlightCircle(currPos) {
+    		let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
+    		let litCircle = document.getElementById(gameBoard.getId(i, j));
+    		if (gameBoard.getSide(i, j) == "U") litCircle.setAttribute("style", "fill:grey"); else litCircle.setAttribute("style", "fill:pink");
+    	}
+
+    	function switchPlayer() {
+    		let allCircles, index;
+
+    		if (currPlayer == 0) {
+    			allCircles = document.getElementsByClassName("checkBlack");
+    			for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:black");
+    		} else {
+    			allCircles = document.getElementsByClassName("checkRed");
+    			for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:red");
+    		}
+
+    		$$invalidate(0, currPlayer = currPlayer == 0 ? 1 : 0);
+    		(currPos = null, nextPos = null);
+    		lockedPiece = false;
+    	}
+
+    	function saveBoardState() {
+    		let state = [];
+    		let i, j;
+
+    		for (i = 0; i < 8; i++) {
+    			state[i] = [];
+
+    			for (j = 0; j < 8; j++) {
+    				if (!gameBoard.isEmpty(i, j)) state[i][j] = gameBoard.getPiece(i, j); else state[i][j] = null;
+    			}
+    		}
+
+    		gameHistory.push(state);
     	}
 
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -1551,18 +1991,29 @@ var app = (function () {
     	const click_handler_1 = (i, j) => setCurrPos(i, j, event);
     	const click_handler_2 = (i, j) => setNextPos(i, j);
 
+    	function input_change_input_handler() {
+    		rangeMoves = to_number(this.value);
+    		$$invalidate(3, rangeMoves);
+    	}
+
     	$$self.$capture_state = () => ({
     		Position,
     		Board,
     		spring,
     		writable,
     		currPlayer,
-    		size,
-    		gameBoard,
-    		cirPos,
-    		squares,
     		currPos,
     		nextPos,
+    		timer,
+    		lockedPiece,
+    		screenWidth,
+    		numMoves,
+    		rangeMoves,
+    		size,
+    		gameBoard,
+    		gameHistory,
+    		cirPos,
+    		squares,
     		squareSize,
     		boardHeight,
     		factor,
@@ -1570,18 +2021,28 @@ var app = (function () {
     		setCirclePositions,
     		setCurrPos,
     		setNextPos,
+    		viewBoardHistory,
+    		highlightCircle,
+    		switchPlayer,
+    		saveBoardState,
     		$cirPos,
     		$size
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("currPlayer" in $$props) currPlayer = $$props.currPlayer;
-    		if ("size" in $$props) $$subscribe_size($$invalidate(0, size = $$props.size));
-    		if ("gameBoard" in $$props) $$invalidate(1, gameBoard = $$props.gameBoard);
-    		if ("squares" in $$props) $$invalidate(6, squares = $$props.squares);
+    		if ("currPlayer" in $$props) $$invalidate(0, currPlayer = $$props.currPlayer);
     		if ("currPos" in $$props) currPos = $$props.currPos;
     		if ("nextPos" in $$props) nextPos = $$props.nextPos;
-    		if ("squareSize" in $$props) $$invalidate(2, squareSize = $$props.squareSize);
+    		if ("timer" in $$props) $$invalidate(1, timer = $$props.timer);
+    		if ("lockedPiece" in $$props) lockedPiece = $$props.lockedPiece;
+    		if ("screenWidth" in $$props) $$invalidate(9, screenWidth = $$props.screenWidth);
+    		if ("numMoves" in $$props) $$invalidate(2, numMoves = $$props.numMoves);
+    		if ("rangeMoves" in $$props) $$invalidate(3, rangeMoves = $$props.rangeMoves);
+    		if ("size" in $$props) $$subscribe_size($$invalidate(4, size = $$props.size));
+    		if ("gameBoard" in $$props) $$invalidate(5, gameBoard = $$props.gameBoard);
+    		if ("gameHistory" in $$props) gameHistory = $$props.gameHistory;
+    		if ("squares" in $$props) $$invalidate(11, squares = $$props.squares);
+    		if ("squareSize" in $$props) $$invalidate(6, squareSize = $$props.squareSize);
     		if ("boardHeight" in $$props) boardHeight = $$props.boardHeight;
     		if ("factor" in $$props) factor = $$props.factor;
     	};
@@ -1591,32 +2052,43 @@ var app = (function () {
     	}
 
     	return [
+    		currPlayer,
+    		timer,
+    		numMoves,
+    		rangeMoves,
     		size,
     		gameBoard,
     		squareSize,
     		$cirPos,
     		$size,
+    		screenWidth,
     		cirPos,
     		squares,
     		setCurrPos,
     		setNextPos,
-    		currPlayer,
+    		viewBoardHistory,
     		currPos,
     		nextPos,
+    		lockedPiece,
     		boardHeight,
     		factor,
+    		gameHistory,
     		updateCirclePositions,
     		setCirclePositions,
+    		highlightCircle,
+    		switchPlayer,
+    		saveBoardState,
     		click_handler,
     		click_handler_1,
-    		click_handler_2
+    		click_handler_2,
+    		input_change_input_handler
     	];
     }
 
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, {});
+    		init(this, options, instance, create_fragment, safe_not_equal, {}, [-1, -1]);
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
