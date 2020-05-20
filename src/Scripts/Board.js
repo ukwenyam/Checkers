@@ -1,5 +1,5 @@
-import { Piece } from './Piece.js';
-import { Position } from './Position.js';
+import { Piece } from '../Scripts/Piece.js';
+import { Position } from '../Scripts/Position.js';
 
 export class Board {
 
