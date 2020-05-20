@@ -1,3 +1,4 @@
+require('dotenv').config()
 import * as functions from 'firebase-functions';
 import * as respond from './response';
 
@@ -225,13 +226,13 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let games:any = [], gamesDb:any = db.collection("GAMES");
+    const games:any = [], gamesDb:any = db.collection("GAMES");
 
     gamesDb.where("priPlayer", "==", evt.name)
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {
-            let data = doc.data();
+            const data = doc.data();
             data.id = doc.id;
             games.push(data);
         });
@@ -244,7 +245,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {
-            let data = doc.data();
+            const data = doc.data();
             data.id = doc.id;
             games.push(data);
         });
