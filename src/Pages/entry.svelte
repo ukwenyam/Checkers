@@ -1,6 +1,7 @@
 <script>
     import { currUser, page } from '../Scripts/Init.js';
-    import { invokeFunction } from '../Scripts/Cloud.js'
+    import { invokeFunction } from '../Scripts/Cloud.js';
+    import { User } from '../Scripts/User.js';
 
     let Email, Name, Password, confirmPassword;
 
@@ -82,10 +83,7 @@
 
                 data.email = logEmail != null ? logEmail : Email;
 
-                currUser.update(state => {
-                    state.setProfile(data);
-                    return state;
-                });
+                currUser.set(new User(data));
 
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
@@ -99,7 +97,7 @@
 </script>
 
 <div id="entry" class="container">
-    <h3>Welcome To Checkers.io</h3>
+    <h3>Welcome To Checkas.io</h3>
     {#if logPage}
         <input id="logEmail" bind:value="{logEmail}" placeholder="Email"/>
         <input id="logPassword" bind:value="{logPassword}" placeholder="Password"/>

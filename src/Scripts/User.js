@@ -1,26 +1,6 @@
 export class User {
 
-    constructor() {
-        this.isAuth = false;
-
-        this.name = null;
-        this.email = null;
-        this.wins = 0;
-        this.draws = 0;
-        this.losses = 0;
-        this.gamesPlayed = 0;
-        this.leastMoves = 0;
-        this.mostMoves = 0;
-        this.totalMoves = 0;
-        this.avgMovesPerGame = 0;
-        this.leastTimePlayed = 0;
-        this.mostTimePlayed = 0;
-        this.totalTimePlayed = 0;
-        this.avgTimePlayPerGame = 0;
-        this.totalPoints = 0;
-    }
-
-    setProfile(data) {
+    constructor(data) {
         this.isAuth = true;
         
         this.name = data.name;

@@ -117,7 +117,9 @@ export const createGame = functions.https.onRequest((request, response) => {
 
     db.collection("GAMES").doc(gameID).set({
         priPlayer: evt.name,
+        priEmail: evt.email,
         secPlayer: null,
+        secEmail: null,
         gameHistory: evt.gameHistory,
         date: evt.date,
         minutesPlayed: 0,
@@ -138,7 +140,8 @@ export const joinGame = functions.https.onRequest((request, response) => {
     const docRef:any = db.collection("GAMES").doc(evt.gameID);
 
     docRef.update({
-        secPlayer: evt.name
+        secPlayer: evt.name,
+        secEmail: evt.email
     }).then(function() {
         res.send({msg: docRef.get().data()});
     }).catch(function(error:any) {
@@ -228,7 +231,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
 
     const games:any = [], gamesDb:any = db.collection("GAMES");
 
-    gamesDb.where("priPlayer", "==", evt.name)
+    gamesDb.where("priEmail", "==", evt.email)
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {
@@ -241,7 +244,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
         res.send({err:error});
     });
 
-    gamesDb.where("secPlayer", "==", evt.name)
+    gamesDb.where("secEmail", "==", evt.email)
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {

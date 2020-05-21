@@ -5,7 +5,7 @@
 	import { currUser, page } from './Scripts/Init.js';
 </script>
 
-{#if !$currUser.isAuth}
+{#if $currUser != null && $currUser.isAuth}
 	{#if $page == 0}
 		<Dash/>
 	{:else if $page == 1}
