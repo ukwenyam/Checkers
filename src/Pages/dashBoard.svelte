@@ -15,9 +15,7 @@
 
     let popUp = false;
 
-    let gamePrefView = false;
-
-    let gamePassView = false;
+    let gamePrefView = false, gamePassView = false;
 
     let screenWidth = screen.width;
 
@@ -28,6 +26,8 @@
         gamesView = false, settingsView = false;
 
         popUp = false;
+
+        gamePrefView = false, gamePassView = false;
     }
 
     function popGamePref() {
@@ -106,7 +106,9 @@
 
         {#if gamePrefView}
             <Prefs/>
-        {:else if gamePassView}
+        {/if}
+
+        {#if gamePassView}
             <Pass/>
         {/if}
     </div>
@@ -149,7 +151,9 @@
 
         {#if gamesView}
             <List/>
-        {:else if settingsView}
+        {/if}
+
+        {#if settingsView}
             <Settings/>
         {/if}
     </div>

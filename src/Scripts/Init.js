@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store';
-import { User } from './User.js';
 
 export const currUser = writable(null);
 
@@ -9,7 +8,11 @@ export const userGames = writable(null);
 
 export const leaderBoard = writable(null);
 
-export const gameSettings = writable({color: "RED", time: 15});
+export const gameBoard = writable(null);
+
+export const gameHistory = writable([]);
+
+export const gamePref = writable(null);
 
 window.onbeforeunload = async function() {
 

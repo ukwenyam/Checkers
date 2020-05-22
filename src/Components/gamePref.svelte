@@ -1,30 +1,70 @@
 <script>
-    import { gameSettings } from '../Scripts/Init.js';
+    import { currUser, gameBoard, gameHistory, gamePref, page } from '../Scripts/Init.js';
+    import { invokeFunction } from '../Scripts/Cloud.js';
+    import { Board } from '../Scripts/Board.js';
 
-    let time = $gameSettings.time;
-    let color = $gameSettings.color;
+    let Time = 15;
 
+    let request;
 
+    function createGame() {
+
+        gameBoard.update(state => {
+            state = new Board(null, false);
+            return state;
+        });
+
+        gameHistory.update(state => {
+            state.push($gameBoard.saveBoardState());
+            return state;
+        });
+
+        gamePref.update(state => {
+            state = {};
+            state.time = Time;
+            state.pri = $currUser.name;
+            return state;
+        });
+
+        request = {
+            func: "createGame",
+            email: $currUser.email,
+            name: $currUser.name,
+            time: Time,
+            date: new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() 
+        }
+
+        console.log(request);
+
+        invokeFunction(request).then((response) => {
+
+            console.log(response);
+            
+            if(response.msg != null) {
+                console.log(response.msg);
+
+                gamePref.update(state => {
+                    state.id = response.msg;
+                    return state;
+                });
+
+                page.set(1);
+            } else {
+                console.log(response.err);
+            }
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
 </script>
 
 <h5>Game Preferences</h5>
 
-<h6>Check Color:</h6>
+<h6>Time Per Turn: {Time} seconds</h6>
+<input class="custom-range" bind:value="{Time}" type="range" min="15" max="60" step="1">
 
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="RED">
-  <label class="form-check-label" for="inlineRadio1">RED</label>
-</div>
-
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="BLACK">
-  <label class="form-check-label" for="inlineRadio2">BLACK</label>
-</div>
-
-<h6>Time Per Turn: {time} seconds</h6>
-<input class="custom-range" bind:value="{time}" type="range" min="15" max="60" step="1">
-
-<button class="btn btn-primary">Create</button>
+<button class="btn btn-primary" on:click="{createGame}">Create</button>
 
 <style>
     h5 {

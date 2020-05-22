@@ -8,7 +8,9 @@
 {#if $currUser != null && $currUser.isAuth}
 	{#if $page == 0}
 		<Dash/>
-	{:else if $page == 1}
+	{/if}
+
+	{#if $page == 1}
 		<Board/>
 	{/if}
 {:else}

@@ -6,7 +6,6 @@ export function invokeFunction(load) {
 
         fetch(url, {
             method: 'post',
-            mode: 'cors',
             body: load,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             'Access-Control-Allow-Origin' : '*'
