@@ -1,6 +1,9 @@
 <script>
-    import { currUser, page } from '../Scripts/Init.js';
+    import { currSocket, currUser, page } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js'
+    import io from 'socket.io-client';
+    
+   
 
     let Email, Name, Password, confirmPassword;
 
@@ -9,6 +12,8 @@
     let request;
 
     let logPage = true;
+
+    let socket;
 
     function signUp() {
 
@@ -52,6 +57,8 @@
 
     function signIn() {
 
+        console.log("Signing in user");
+
         if(logEmail != null && logPassword != null) {
 
             request = {
@@ -59,7 +66,7 @@
                 email : logEmail,
                 password : logPassword
             }
-
+ 
             invokeFunction(request).then((response) => {
                 if(response.msg == "SUCCESS") {
                     request.func = "retrieveUser";
@@ -86,9 +93,22 @@
                     state.setProfile(data);
                     return state;
                 });
+               
+               let socket;
+                
+                currSocket.update(state => {
+                    // console.log(state);
+                    socket = state;
+                    return state;
+               });
 
+               socket.emit('set-username', data.name);
+               
+                // confirmPassword.log("user connected!");               
+                
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
+
             } else {
                 console.log(response.err);
             }
