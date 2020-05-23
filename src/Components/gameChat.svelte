@@ -1,30 +1,59 @@
 <script>
-    import { currUser, gamePref } from '../Scripts/Init.js';
+    import { currSocket, currUser, gamePref } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
+    import { beforeUpdate, afterUpdate } from 'svelte';
 
     let div, autoscroll;
     let message;
     let msgs = [];
+    let socket;
+    let room = $gamePref.id;
+    let currMsg = {};
+
+    autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
 
     function sendMsg() {
 
         if(message != null || message != '') {
+            currMsg.name = $currUser.name;
+            currMsg.msg = message;
+            currMsg.room = room;
+            $currSocket.emit('chat message', currMsg);
 
+            //msgs.push(currMsg);
+
+            if(autoscroll) div.scrollTo(0, div.scrollHeight);
+
+            message = '';
         }
     }
+
+    $currSocket.on('chat message', (data) => {
+       console.log('Received: '+data.msg);
+       msgs.push(data);
+       console.log(msgs);
+       msgs = msgs;
+    });
+
 </script>
 
 {#if $gamePref.pri == $currUser.name}
-    <h4 style="text-align:center">Other Player</h4>
+    <h4 style="text-align:center">{$gamePref.sec}</h4>
 {:else}
     <h4 style="text-align:center">{$gamePref.pri}</h4>
 {/if}
 
 <div class="scrollable" bind:this={div}>
-    {#each msgs as msg}
-        <article class={msg.author}>
-            <span>{msg.text}</span>
-        </article>
+    {#each msgs as mesage}
+        {#if mesage.name == $currUser.name}
+            <article class="myMsg">
+                <span class="txtMsg">{mesage.msg}</span>
+            </article>
+        {:else}
+            <article class="odaMsg">
+                <span class="txtMsg">{mesage.msg}</span>
+            </article>
+        {/if}
     {/each}
 </div>
 
@@ -48,4 +77,38 @@
         border:none;
         position: absolute;
 	}
+
+    .myMsg {
+        text-align: right;
+    }
+
+    .txtMsg {
+        padding: 0.5em 1em;
+        display: inline-block;
+        color: white;
+    }
+
+    .myMsg .txtMsg {
+        background: blue;
+        border-radius: 1em 1em 0 1em;
+    }
+
+    .odaMsg .txtMsg {
+        background: green;
+        border-radius: 1em 1em 1em 0;
+    }
+
+    .myMsg {
+        background: transparent;
+        color: white;
+    }
+
+    .odaMsg {
+        background: transparent;
+        color: white;
+    }
+
+    article {
+        margin: 0.5em 0;
+    }
 </style>

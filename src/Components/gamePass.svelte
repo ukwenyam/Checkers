@@ -1,6 +1,6 @@
 <script>
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { currUser, gameBoard, gameHistory, gamePref, page } from '../Scripts/Init.js';
+    import { currSocket, currUser, gameBoard, gameHistory, gamePref, page } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
 
     let gamePassword;
@@ -43,6 +43,8 @@
                         state.sec = game.secPlayer;
                         return state;
                     });
+
+                    $currSocket.emit('join-room', $gamePref.id);
 
                     page.set(1);
 
