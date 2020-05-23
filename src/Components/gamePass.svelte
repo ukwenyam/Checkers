@@ -24,30 +24,27 @@
 
                     let game = response.msg;
 
-                    gameBoard.update(state => {
-                        state = new Board(null, true);
-                        console.log(state);
-                        return state;
-                    });
+                    if(game.priEmail != $currUser.email) {
+                        gameBoard.set(new Board(null, true));
 
-                    gameHistory.update(state => {
-                        state.push($gameBoard.saveBoardState());
-                        return state;
-                    });
+                        $gameHistory.push($gameBoard.saveBoardState());
 
-                    gamePref.update(state => {
-                        state = {};
-                        state.time = game.time;
-                        state.id = gamePassword;
-                        state.pri = game.priPlayer;
-                        state.sec = game.secPlayer;
-                        return state;
-                    });
+                        gamePref.update(state => {
+                            state = {};
+                            state.time = game.time;
+                            state.id = gamePassword;
+                            state.pri = game.priPlayer;
+                            state.sec = game.secPlayer;
+                            return state;
+                        });
 
-                    $currSocket.emit('join-room', $gamePref.id);
+                        $currSocket.emit('join-room', $gamePref.id);
 
-                    page.set(1);
-
+                        page.set(1);
+                    } else {
+                        console.log("Same Player");
+                    }
+                    
                 } else {
                     console.log(response.err);
                 }

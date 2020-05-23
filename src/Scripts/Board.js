@@ -39,7 +39,23 @@ export class Board {
 
         } else if(state != null && inverted == null) {
 
-            this.board = state;
+            this.board = [];
+
+            let i, j;
+
+            for(i = 0; i < 8; i++) {
+
+                this.board[i] = [];
+
+                for(j = 0; j < 8; j++) {
+
+                    if(state[i][j] != null) {
+                        this.board[i][j] = new Piece(i, j, state[i][j].side, state[i][j].id, state[i][j].stack);
+                    } else {
+                        this.board[i][j] = null;
+                    }
+                }
+            }
 
         } else if(state == null && inverted) {
 
@@ -56,8 +72,12 @@ export class Board {
                     let even = (i % 2 == 0) && (j % 2 == 0);
                     let odd = (i % 2 != 0) && (j % 2 != 0);
             
-                    if((even || odd) && (i < 3 || i > 4)) {
+                    if(even || odd || i == 3 || i == 4) {
                     
+                        this.board[i][j] = null;
+
+                    } else  {
+
                         if(0 <= i && i <= 2)
                             this.board[i][j] = new Piece(i, j, "red", k, null);
                             
@@ -65,10 +85,6 @@ export class Board {
                             this.board[i][j] = new Piece(i, j, "black", k, null);
 
                         k--;
-
-                    } else  {
-
-                        this.board[i][j] = null;
                     }
                 }
             }

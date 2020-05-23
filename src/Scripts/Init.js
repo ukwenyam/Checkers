@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-
-import io from 'socket.io-client'
+import io from 'socket.io-client';
+import { Board } from './Board.js';
 
 export const currSocket = writable(io('http://localhost:4000'));
 
@@ -18,6 +18,8 @@ export const gameHistory = writable([]);
 
 export const gamePref = writable(null);
 
+export const gameChat = writable([]);
+
 window.onbeforeunload = async function() {
 
     const indexes = {};
@@ -27,15 +29,51 @@ window.onbeforeunload = async function() {
         return state;
     });
 
-    sessionStorage.setItem('idx', JSON.stringify(indexes));
+    await page.update(state => {
+        indexes.page = state;
+        return state;
+    });
+
+    await gameBoard.update(state => {
+        indexes.board = state;
+        return state;
+    });
+
+    await gameHistory.update(state => {
+        indexes.history = state;
+        return state;
+    });
+
+    await gamePref.update(state => {
+        indexes.pref = state;
+        return state;
+    });
+
+    await gameChat.update(state => {
+        indexes.chat = state;
+        return state;
+    });
+
+    await sessionStorage.setItem('idx', JSON.stringify(indexes));
 }
 
 window.onload = async function() {
+
     if (sessionStorage.getItem('idx') != null) {
 
         const indexes = await JSON.parse(sessionStorage.getItem('idx'));
         
         await currUser.set(indexes.user);
+
+        await gameBoard.set(new Board(indexes.board.board, null));
+
+        await gameHistory.set(indexes.history);
+
+        await gamePref.set(indexes.pref);
+
+        await gameChat.set(indexes.chat);
+
+        await page.set(indexes.page);
 
         sessionStorage.removeItem('idx');
     }

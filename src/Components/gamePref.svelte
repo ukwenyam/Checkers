@@ -9,20 +9,15 @@
 
     function createGame() {
 
-        gameBoard.update(state => {
-            state = new Board(null, false);
-            return state;
-        });
+        gameBoard.set(new Board(null, false));
 
-        gameHistory.update(state => {
-            state.push($gameBoard.saveBoardState());
-            return state;
-        });
+        $gameHistory.push($gameBoard.saveBoardState());
 
         gamePref.update(state => {
             state = {};
             state.time = Time;
             state.pri = $currUser.name;
+            state.sec = null;
             return state;
         });
 

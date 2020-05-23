@@ -30,21 +30,21 @@
 
 	let squareSize, boardHeight, factor;
 
-	 $currSocket.emit('set-username', $currUser.name);
+	$currSocket.emit('set-username', $currUser.name);
 
-	 $currSocket.emit('join-room', $gamePref.id, $currUser.name);
+	$currSocket.emit('join-room', $gamePref.id, $currUser.name);
 
-	 $currSocket.on('second-user', (data) => {
-		 console.log('Received other username');
-		 gamePref.update(state => {
-			 state.sec = data;
-			 return state;
-		 });
-	 });
+    $currSocket.on('second-user', (data) => {
+        console.log('Received other username');
+        gamePref.update(state => {
+            state.sec = data;
+            return state;
+        });
+    });
 
-	 $currSocket.on('piece-move', (data) => {
-		 
-	 });
+    $currSocket.on('piece-move', (data) => {
+        
+    });
 
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 
@@ -61,7 +61,7 @@
 		factor = 1;
 		size = spring(30);
 
-		if(screen.height >= 1000) {
+		if(screen.height >= 800) {
 			squareSize = 100;
 		} else {
 			squareSize = 10 * Math.floor(screen.height / 100);
@@ -184,7 +184,8 @@
 			//console.log($gameBoard);
 
 			if(move) {
-				lockedPiece = true; 
+                lockedPiece = true; 
+                
 				let pieceInfo = {
 					id : $gameBoard.getId(i, j),
 					currPos: currPos,
@@ -275,14 +276,8 @@
 					<rect width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
 					<circle id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
 				{:else if $gameBoard.isEmpty(i, j)}
-                    {#if $gamePref.pri == $currUser.name}
-                        {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-                            <rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-                        {/if}
-                    {:else}
-                        {#if (i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0)}
-                            <rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-                        {/if}
+                    {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+                        <rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
                     {/if}
 				{/if}
 			{/each}
@@ -313,7 +308,11 @@
 		right:5px;
 		position:fixed;
 		width:var(--chat-width);
-		border-radius:0.4rem;
+        border-radius:0.4rem;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        opacity: 0.9;
 	}
 
 	#board {
