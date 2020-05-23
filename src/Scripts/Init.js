@@ -1,5 +1,9 @@
 import { writable } from 'svelte/store';
 
+import io from 'socket.io-client'
+
+export const currSocket = writable(io('http://localhost:4000'));
+
 export const currUser = writable(null);
 
 export const page = writable(0);
