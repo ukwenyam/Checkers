@@ -4,7 +4,7 @@
 	import { spring } from 'svelte/motion';
 	import { writable } from 'svelte/store';
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { gameBoard, gameHistory, gamePref, currUser } from '../Scripts/Init.js';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser } from '../Scripts/Init.js';
     import Chat from '../Components/gameChat.svelte';
     
     let currPlayer;
@@ -30,6 +30,22 @@
 
 	let squareSize, boardHeight, factor;
 
+	 $currSocket.emit('set-username', $currUser.name);
+
+	 $currSocket.emit('join-room', $gamePref.id, $currUser.name);
+
+	 $currSocket.on('second-user', (data) => {
+		 console.log('Received other username');
+		 gamePref.update(state => {
+			 state.sec = data;
+			 return state;
+		 });
+	 });
+
+	 $currSocket.on('piece-move', (data) => {
+		 
+	 });
+
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 
 		squareSize = Math.floor((screen.width - 10) / 8);
@@ -44,7 +60,13 @@
 	} else {
 		factor = 1;
 		size = spring(30);
-		squareSize = 100;
+
+		if(screen.height >= 1000) {
+			squareSize = 100;
+		} else {
+			squareSize = 10 * Math.floor(screen.height / 100);
+		}
+		
 		boardHeight = squareSize * 8;
 		remWidth = 0.8 * (screen.width - 800);
 	}
@@ -162,7 +184,15 @@
 			//console.log($gameBoard);
 
 			if(move) {
-				lockedPiece = true;
+				lockedPiece = true; 
+				let pieceInfo = {
+					id : $gameBoard.getId(i, j),
+					currPos: currPos,
+					nextPos: nextPos,
+					room: $gamePref.id
+				}
+
+				$currSocket.emit('piece-move',  pieceInfo)
 
 				updateCirclePositions(nextPos);
                 
