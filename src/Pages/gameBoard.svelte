@@ -13,7 +13,7 @@
 
     if($gamePref.pri == $currUser.name)
 	    currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
-
+		
 	let currPos = null, nextPos = null;
 
 	let timer = $gamePref.time, lockedPiece = false;
@@ -30,21 +30,32 @@
 
 	let squareSize, boardHeight, factor;
 
+	
+
 	 $currSocket.emit('set-username', $currUser.name);
 
 	 $currSocket.emit('join-room', $gamePref.id, $currUser.name);
 
 	 $currSocket.on('second-user', (data) => {
-		 console.log('Received other username');
-		 gamePref.update(state => {
-			 state.sec = data;
-			 return state;
-		 });
+		console.log('Received other username');
+		gamePref.update(state => {
+			state.sec = data;
+			return state;
+		});
+		console.log("emitting starting player");
+		$currSocket.emit('starting-player', {player: currPlayer, room: $gamePref.id});
 	 });
 
-	 $currSocket.on('piece-move', (data) => {
-		 
-	 });
+	$currSocket.on('starting-player', (data) => {
+		console.log('Received starting player');
+		currPlayer = data;
+	});
+
+	console.log('currPlayer: '+currPlayer);
+
+	$currSocket.on('piece-move', (data) => {
+		
+	});
 
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 

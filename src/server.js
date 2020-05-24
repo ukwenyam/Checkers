@@ -71,4 +71,9 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('piece-move', data);
     });
 
+    socket.on('starting-player', (data) => {
+        console.log('sending currplayer'+ data.player);
+        socket.to(data.room).emit('starting-player', data.player);
+    });
+
 });    
