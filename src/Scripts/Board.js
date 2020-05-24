@@ -3,9 +3,9 @@ import { Position } from '../Scripts/Position.js';
 
 export class Board {
 
-    constructor(state) {
+    constructor(state, inverted) {
 
-        if(!arguments.length) {
+        if(state == null && !inverted) {
 
             this.board = [];
 
@@ -27,20 +27,71 @@ export class Board {
                     } else  {
 
                         if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, 'U', k, null);
+                            this.board[i][j] = new Piece(i, j, "black", k, null);
                             
                         else 
-                            this.board[i][j] = new Piece(i, j, 'D', k, null);
+                            this.board[i][j] = new Piece(i, j, "red", k, null);
 
                         k++;
                     }
                 }
             }
-        } else {
+
+        } else if(state != null && inverted == null) {
 
             this.board = state;
+
+        } else if(state == null && inverted) {
+
+            this.board = [];
+
+            let i, j, k = 23;
+
+            for(i = 0; i < 8; i++) {
+
+                this.board[i] = [];
+
+                for(j = 0; j < 8; j++) {
+
+                    let even = (i % 2 == 0) && (j % 2 == 0);
+                    let odd = (i % 2 != 0) && (j % 2 != 0);
+            
+                    if((even || odd) && (i < 3 || i > 4)) {
+                    
+                        if(0 <= i && i <= 2)
+                            this.board[i][j] = new Piece(i, j, "red", k, null);
+                            
+                        else 
+                            this.board[i][j] = new Piece(i, j, "black", k, null);
+
+                        k--;
+
+                    } else  {
+
+                        this.board[i][j] = null;
+                    }
+                }
+            }
         }
     }
+
+    saveBoardState() {
+
+		let state = [];
+		let i, j;
+
+		for(i = 0; i < 8; i++) {
+			state[i] = [];
+			for(j = 0; j < 8; j++) {
+                if(this.board[i][j] != null)
+					state[i][j] = this.board[i][j];
+				else
+					state[i][j] = null;
+			}
+		}
+
+		return state;
+	}
 
 
     takePiece(piece, currPos, yDiff, nextPos) {

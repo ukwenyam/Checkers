@@ -1,9 +1,7 @@
 <script>
-    import { currSocket, currUser, page } from '../Scripts/Init.js';
-    import { invokeFunction } from '../Scripts/Cloud.js'
-    import io from 'socket.io-client';
-    
-   
+    import { currUser, page } from '../Scripts/Init.js';
+    import { invokeFunction } from '../Scripts/Cloud.js';
+    import { User } from '../Scripts/User.js';
 
     let Email, Name, Password, confirmPassword;
 
@@ -12,8 +10,6 @@
     let request;
 
     let logPage = true;
-
-    let socket;
 
     function signUp() {
 
@@ -57,8 +53,6 @@
 
     function signIn() {
 
-        console.log("Signing in user");
-
         if(logEmail != null && logPassword != null) {
 
             request = {
@@ -66,7 +60,7 @@
                 email : logEmail,
                 password : logPassword
             }
- 
+
             invokeFunction(request).then((response) => {
                 if(response.msg == "SUCCESS") {
                     request.func = "retrieveUser";
@@ -89,26 +83,10 @@
 
                 data.email = logEmail != null ? logEmail : Email;
 
-                currUser.update(state => {
-                    state.setProfile(data);
-                    return state;
-                });
-               
-               let socket;
-                
-                currSocket.update(state => {
-                    // console.log(state);
-                    socket = state;
-                    return state;
-               });
+                currUser.set(new User(data));
 
-               socket.emit('set-username', data.name);
-               
-                // confirmPassword.log("user connected!");               
-                
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
-
             } else {
                 console.log(response.err);
             }
@@ -119,7 +97,7 @@
 </script>
 
 <div id="entry" class="container">
-    <h3>Welcome To Checkers.io</h3>
+    <h3>Welcome To Checkas.io</h3>
     {#if logPage}
         <input id="logEmail" bind:value="{logEmail}" placeholder="Email"/>
         <input id="logPassword" bind:value="{logPassword}" placeholder="Password"/>

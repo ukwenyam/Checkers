@@ -4,6 +4,7 @@ import * as respond from './response';
 
 const generator = require('generate-password');
 const firebase = require('firebase');
+//const storage = require('@google-cloud/storage')
 
 firebase.initializeApp({
     "apiKey" : "AIzaSyBSStZGTofCfLQDJeGFYnZgYs1sUIW0GhU",
@@ -18,6 +19,7 @@ firebase.initializeApp({
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+//const storeRef = firebase.storage().ref();
 
 export const signUp = functions.https.onRequest((request, response) => {
 
@@ -48,6 +50,7 @@ export const createUser = functions.https.onRequest((request, response) => {
 
     db.collection("USERS").doc(evt.email).set({
         name: evt.name,
+        picture: null,
         wins: 0,
         draws: 0,
         losses: 0,
@@ -94,31 +97,94 @@ export const retrieveUser = functions.https.onRequest((request, response) => {
     });
 });
 
+/* export const updateProfile = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    auth.signInWithEmailAndPassword(evt.email, evt.password).then(async () => {
+        
+        const user:any = auth.currentUser;
+
+        user.updateProfile({
+            displayName: evt.name
+        }).then(function() {
+
+            if(evt.picture !== null) {
+                const metadata = {
+                    contentType: 'image/jpeg'
+                };
+    
+                storeRef.child('profilePics/' + evt.email + '.jpg').put(evt.picture, metadata).then((snapshot:any) => {
+
+                    snapshot.ref.getDownloadURL().then(function(imgURL:string) {
+                        const docRef:any = db.collection("USERS").doc(evt.email);
+    
+                        docRef.update({
+                            name: evt.name,
+                            picture: imgURL
+                        }).then(function() {
+                            res.send({msg: "SUCCESS"});
+                        }).catch(function(error:any) {
+                            res.send({err: error});
+                        });
+                    }).catch(function(error:any) {
+                        res.send({err: error});
+                    });
+                    
+                }).catch(function(error:any) {
+                    res.send({err: error});
+                });
+            } else {
+                res.send({msg: "SUCCESS"});
+            }
+
+        }).catch(function(error:any) {
+            res.send({err: error});
+        });
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
+}); */
+
+export const resetPassword = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    auth.signInWithEmailAndPassword(evt.email, evt.password).then(async () => {
+
+        const user:any = auth.currentUser;
+
+        user.updatePassword(evt.newPass).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
+})
+
 export const createGame = functions.https.onRequest((request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let gameID:string = generator.generate({
+    const gameID:any = generator.generate({
         length: 10,
         numbers: true
     });
 
-    let doc:any = db.collection("GAMES").doc(gameID).get();
-
-    while(doc.exist) {
-        gameID = generator.generate({
-            length: 10,
-            numbers: true
-        });
-
-        doc = db.collection("GAMES").doc(gameID).get();
-    }
-
     db.collection("GAMES").doc(gameID).set({
         priPlayer: evt.name,
+        priEmail: evt.email,
         secPlayer: null,
-        gameHistory: evt.gameHistory,
+        secEmail: null,
+        priGameHistory: null,
+        secGameHistory: null,
+        time: Number(evt.time),
         date: evt.date,
         minutesPlayed: 0,
         finished: false,
@@ -135,12 +201,20 @@ export const joinGame = functions.https.onRequest((request, response) => {
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const docRef:any = db.collection("GAMES").doc(evt.gameID);
+    let docRef:any = db.collection("GAMES").doc(evt.gameID);
 
     docRef.update({
-        secPlayer: evt.name
+        secPlayer: evt.name,
+        secEmail: evt.email
     }).then(function() {
-        res.send({msg: docRef.get().data()});
+
+        docRef = db.collection("GAMES").doc(evt.gameID);
+
+        docRef.get().then(function(doc:any) {
+            res.send({msg: doc.data()});
+        }).catch(function(error:any) {
+            res.send({err: error});
+        });
     }).catch(function(error:any) {
         res.send({err: error});
     });
@@ -153,15 +227,31 @@ export const saveGame = functions.https.onRequest((request, response) => {
 
     const docRef:any = db.collection("GAMES").doc(evt.gameID);
 
-    docRef.update({
-        gameHistory: evt.gameHistory,
-        minutesPlayed: evt.minutes,
-        chatHistory: evt.chatHistory
-    }).then(function() {
-        res.send({msg: "SUCCESS"});
-    }).catch(function(error:any) {
-        res.send({err: error});
-    });
+    if(evt.pri) {
+
+        docRef.update({
+            priGameHistory: evt.gameHistory,
+            minutesPlayed: evt.minutes,
+            chatHistory: evt.chatHistory
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error});
+        });
+    }
+
+    if(evt.sec) {
+
+        docRef.update({
+            secGameHistory: evt.gameHistory,
+            minutesPlayed: evt.minutes,
+            chatHistory: evt.chatHistory
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error});
+        });
+    }
 });
 
 export const resumeGame = functions.https.onRequest((request, response) => {
@@ -228,7 +318,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
 
     const games:any = [], gamesDb:any = db.collection("GAMES");
 
-    gamesDb.where("priPlayer", "==", evt.name)
+    gamesDb.where("priEmail", "==", evt.email)
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {
@@ -241,7 +331,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
         res.send({err:error});
     });
 
-    gamesDb.where("secPlayer", "==", evt.name)
+    gamesDb.where("secEmail", "==", evt.email)
     .get()
     .then(function(querySnapshot:any) {
         querySnapshot.forEach(function(doc:any) {

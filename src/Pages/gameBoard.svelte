@@ -3,17 +3,20 @@
 	import { Board } from '../Scripts/Board.js';
 	import { spring } from 'svelte/motion';
 	import { writable } from 'svelte/store';
-	import { invokeFunction } from '../Scripts/Cloud.js';
+    import { invokeFunction } from '../Scripts/Cloud.js';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser } from '../Scripts/Init.js';
+    import Chat from '../Components/gameChat.svelte';
+    
+    let currPlayer;
 
-	let div, autoscroll;
+    let paused = true;
 
-	let msgs = [];
-
-	let currPlayer = Math.floor(Math.random() * 2);
+    if($gamePref.pri == $currUser.name)
+	    currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
 
 	let currPos = null, nextPos = null;
 
-	let timer = 10, lockedPiece = false;
+	let timer = $gamePref.time, lockedPiece = false;
 
 	let screenWidth = screen.width, remWidth;
 
@@ -21,15 +24,27 @@
 
 	let size;
 
-	let gameBoard = new Board();
-
-	let gameHistory = [];
-
 	const cirPos = spring([]);
 
 	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
 
 	let squareSize, boardHeight, factor;
+
+	 $currSocket.emit('set-username', $currUser.name);
+
+	 $currSocket.emit('join-room', $gamePref.id, $currUser.name);
+
+	 $currSocket.on('second-user', (data) => {
+		 console.log('Received other username');
+		 gamePref.update(state => {
+			 state.sec = data;
+			 return state;
+		 });
+	 });
+
+	 $currSocket.on('piece-move', (data) => {
+		 
+	 });
 
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 
@@ -43,33 +58,39 @@
 		boardHeight = squareSize * 8;
 		remWidth = screen.width;
 	} else {
-		factor = 1;
-		size = spring(30);
-		squareSize = 100;
+
+		if(screen.height >= 800) {
+			factor = 1;
+			size = spring(30);
+			squareSize = 100;
+		} else {
+			squareSize = 10 * Math.floor(screen.height / 100);
+			factor = 1000 / (squareSize * 10);
+			size = spring(25);
+		}
+		
 		boardHeight = squareSize * 8;
-		remWidth = 0.8 * (screen.width - 800);
+		remWidth = 0.8 * (screen.width - boardHeight);
 	}
 
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
 
 	document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
 
-	saveBoardState();
-
 	setCirclePositions();
 
-	setInterval(function() {
+	/* setInterval(function() {
 		if(currPos != null)
 			highlightCircle(currPos);
-	}, 100);
+	}, 100); */
 
 	setInterval(function() {
-		if(rangeMoves == numMoves) {
+		if(rangeMoves == numMoves && !paused) {
 			timer--;
 
 			if(timer == -1) {
 				switchPlayer();
-				timer = 10;
+				timer = $gamePref.time;
 			}
 		}
 	}, 1000);
@@ -79,7 +100,7 @@
 
 		let i = nextPos.xPos, j = nextPos.yPos;
 
-		let id = gameBoard.getId(i, j);
+		let id = $gameBoard.getId(i, j);
 
 		cirPos.update(state => {
 			state[id].x = (i + i + 1) * (50 / factor);  
@@ -94,18 +115,22 @@
 			
 			for(let j = 0; j < 8; j++) {
 
-				if(!gameBoard.isEmpty(i, j)) {
+				if(!$gameBoard.isEmpty(i, j)) {
 
-					let id = gameBoard.getId(i, j);
+					let id = $gameBoard.getId(i, j);
 
 					cirPos.update(state => {
 						state[id] = {};
 						state[id].x = (i + i + 1) * (50 / factor);  
-						state[id].y = (j + j + 1) * (50 / factor); 
-						state[id].s = gameBoard.getSide(i, j) == "U" ? 0 : 1;
+                        state[id].y = (j + j + 1) * (50 / factor); 
+                        
+                        /* if($gamePref.pri == $currUser.name)
+                            state[id].s = $gameBoard.getSide(i, j) == "black" ? 0 : 1;
+                        else 
+                            state[id].s = $gameBoard.getSide(i, j) == "red" ? 0 : 1; */
+
 						return state; 
 					});
-
 				} 
 			}
 		}
@@ -114,13 +139,13 @@
 	function setCurrPos(i, j, evt) {
 		//console.log(i + ", " + j);
 
-		if($cirPos[gameBoard.getId(i, j)].s == currPlayer && lockedPiece == false && rangeMoves == numMoves) {
+		if($gameBoard.getSide(i, j) == currPlayer && lockedPiece == false && rangeMoves == numMoves) {
 
-			let litCircle = document.getElementById(gameBoard.getId(i,j));
+			/* let litCircle = document.getElementById($gameBoard.getId(i,j));
 
 			let allCircles, index;
 
-			if(gameBoard.getSide(i,j) == "U") {
+			if($gameBoard.getSide(i,j) == "U") {
 				allCircles = document.getElementsByClassName("checkBlack");
 
 				for (index = 0; index < allCircles.length; ++index) 
@@ -135,12 +160,12 @@
 					allCircles[index].setAttribute("style", "fill:red");
 
 				litCircle.setAttribute("style", "fill:pink");
-			}
+			} */
 
 			let newtarget = evt.target || event.target;
 			let topmost = document.getElementById("use");
 			topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href","#" + newtarget.id);
-			currPos = gameBoard.getPiece(i, j);
+			currPos = $gameBoard.getPiece(i, j);
 		}
 			
 		//let pos = currPos.getPosition();
@@ -150,33 +175,44 @@
 
 	function setNextPos(i, j) {
 		
-		if(gameBoard.isEmpty(i, j) && currPos != null && rangeMoves == numMoves) {
+		if($gameBoard.isEmpty(i, j) && currPos != null && rangeMoves == numMoves) {
 
 			nextPos = new Position(i, j, 'E');
 
-			let move = gameBoard.doMove(currPos, nextPos);
+            let move = $gameBoard.doMove(currPos, nextPos);
 
-			gameBoard = gameBoard;
+			gameBoard.set($gameBoard);
 
-			//console.log(gameBoard);
+			//console.log($gameBoard);
 
 			if(move) {
-				lockedPiece = true;
+				lockedPiece = true; 
+				let pieceInfo = {
+					id : $gameBoard.getId(i, j),
+					currPos: currPos,
+					nextPos: nextPos,
+					room: $gamePref.id
+				}
+
+				$currSocket.emit('piece-move',  pieceInfo)
 
 				updateCirclePositions(nextPos);
-
-				saveBoardState();
+                
+                gameHistory.update(state => {
+                    state.push($gameBoard.saveBoardState());
+                    return state;
+                });
 
 				numMoves++; rangeMoves++;
 
-				currPos = gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
+				currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
 			}
 		}
 	}
 
 	function viewBoardHistory() {
 
-		gameBoard = new Board(gameHistory[rangeMoves]);
+		gameBoard.set(new Board($gameHistory[rangeMoves], null));
 
 		setCirclePositions();
 	}
@@ -185,9 +221,9 @@
 
 		let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
 
-		let litCircle = document.getElementById(gameBoard.getId(i, j));
+		let litCircle = document.getElementById($gameBoard.getId(i, j));
 
-		if(gameBoard.getSide(i,j) == "U") 
+		if($gameBoard.getSide(i,j) == "U") 
 			litCircle.setAttribute("style", "fill:grey");
 		else 
 			litCircle.setAttribute("style", "fill:pink");
@@ -213,27 +249,9 @@
 
 		}
 
-		currPlayer = currPlayer == 0 ? 1 : 0;
+		currPlayer = currPlayer == "red" ? "black" : "red";
 		currPos = null, nextPos = null;
 		lockedPiece = false;
-	}
-
-	function saveBoardState() {
-
-		let state = [];
-		let i, j;
-
-		for(i = 0; i < 8; i++) {
-			state[i] = [];
-			for(j = 0; j < 8; j++) {
-				if(!gameBoard.isEmpty(i, j))
-					state[i][j] = gameBoard.getPiece(i, j);
-				else
-					state[i][j] = null;
-			}
-		}
-
-		gameHistory.push(state);
 	}
 </script>
 
@@ -255,19 +273,19 @@
 	<svg id="hover">
 		{#each squares as i}
 			{#each squares as j}
-				{#if !gameBoard.isEmpty(i, j)}
-					<rect width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-					{#if $cirPos[gameBoard.getId(i, j)].s == 0}
-						<circle class="checkBlack" id="{gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[gameBoard.getId(i, j)].y}" cy="{$cirPos[gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{gameBoard.getPiece(i,j).stack * 2}" fill="black" />
-					{:else if $cirPos[gameBoard.getId(i, j)].s == 1}
-						<circle class="checkRed" id="{gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[gameBoard.getId(i, j)].y}" cy="{$cirPos[gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{gameBoard.getPiece(i,j).stack * 2}" fill="red" />					
-					{/if}
-				{:else if gameBoard.isEmpty(i, j)}
-					{#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-						<rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-					{:else}
-						<rect width="100" height="100" style="fill:wheat;" x="{j * squareSize}" y="{i * squareSize}"/>
-					{/if}
+				{#if !$gameBoard.isEmpty(i, j)}
+					<rect width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+					<circle id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
+				{:else if $gameBoard.isEmpty(i, j)}
+                    {#if $gamePref.pri == $currUser.name}
+                        {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+                            <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+                        {/if}
+                    {:else}
+                        {#if (i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0)}
+                            <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+                        {/if}
+                    {/if}
 				{/if}
 			{/each}
 		{/each}
@@ -280,44 +298,15 @@
 {/if}
 
 <div id="state">
-	<label>
-		<h2 id="rangeBar">Game State at Move: {rangeMoves}</h2>
-		<input class="custom-range" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{numMoves}" step="1">
-	</label>
+    <h2 id="rangeBar">Game State at Move: {rangeMoves}</h2>
+    <input class="custom-range" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{numMoves}" step="1">
 </div>
 
 <div id="chat" class="container-fluid">
-	<h4 style="text-align:center">Other Player</h4>
-
-	<div class="scrollable" bind:this={div}>
-		{#each msgs as msg}
-			<article class={msg.author}>
-				<span>{msg.text}</span>
-			</article>
-		{/each}
-	</div>
-
-	<input id="user-msg" />
+    <Chat/>
 </div>
 
 <style>
-	.scrollable {
-		flex: 1 1 auto;
-		border-top: 1px solid #eee;
-		margin: 0 0 0.5em 0;
-		overflow-y: auto;
-	}
-
-	#user-msg {
-		bottom:10px;
-        left:10px;
-        width:96%;
-        border-radius:0.4rem;
-        box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        outline:none;
-        border:none;
-        position: absolute;
-	}
 
 	#chat {
 		height:var(--board-height);
@@ -327,6 +316,10 @@
 		position:fixed;
 		width:var(--chat-width);
 		border-radius:0.4rem;
+		display: flex;
+		flex-direction: column;
+		background-color: white;
+		opacity: 0.9;
 	}
 
 	#board {
@@ -340,7 +333,7 @@
 	#hover { 
 		width: 100%; 
 		height: 100%; 
-		background-color: blue;
+		background-color: wheat;
 	}
 
 	circle {
@@ -391,6 +384,17 @@
 
 	.custom-range {
 		width:100%;
+	}
+
+	@media screen and (max-height: 800px) {
+
+		#board {
+			width:var(--board-height);;
+			height:var(--board-height);
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			bottom:5px;
+			position:fixed;
+		}
 	}
 
 	@media screen and (max-width: 800px) {
