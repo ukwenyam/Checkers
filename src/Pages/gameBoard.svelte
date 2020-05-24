@@ -58,17 +58,19 @@
 		boardHeight = squareSize * 8;
 		remWidth = screen.width;
 	} else {
-		factor = 1;
-		size = spring(30);
 
-		if(screen.height >= 1000) {
+		if(screen.height >= 800) {
+			factor = 1;
+			size = spring(30);
 			squareSize = 100;
 		} else {
 			squareSize = 10 * Math.floor(screen.height / 100);
+			factor = 1000 / (squareSize * 10);
+			size = spring(25);
 		}
 		
 		boardHeight = squareSize * 8;
-		remWidth = 0.8 * (screen.width - 800);
+		remWidth = 0.8 * (screen.width - boardHeight);
 	}
 
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
@@ -272,16 +274,16 @@
 		{#each squares as i}
 			{#each squares as j}
 				{#if !$gameBoard.isEmpty(i, j)}
-					<rect width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+					<rect width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
 					<circle id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
 				{:else if $gameBoard.isEmpty(i, j)}
                     {#if $gamePref.pri == $currUser.name}
                         {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-                            <rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+                            <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
                         {/if}
                     {:else}
                         {#if (i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0)}
-                            <rect on:click="{() => setNextPos(i, j)}" width="100" height="100" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
+                            <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
                         {/if}
                     {/if}
 				{/if}
@@ -314,6 +316,10 @@
 		position:fixed;
 		width:var(--chat-width);
 		border-radius:0.4rem;
+		display: flex;
+		flex-direction: column;
+		background-color: white;
+		opacity: 0.9;
 	}
 
 	#board {
@@ -378,6 +384,17 @@
 
 	.custom-range {
 		width:100%;
+	}
+
+	@media screen and (max-height: 800px) {
+
+		#board {
+			width:var(--board-height);;
+			height:var(--board-height);
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			bottom:5px;
+			position:fixed;
+		}
 	}
 
 	@media screen and (max-width: 800px) {

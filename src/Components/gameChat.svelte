@@ -6,26 +6,65 @@
     let div, autoscroll;
     let message;
     let msgs = [];
-    let socket;
+    msgs.push({name: "System", msg: "Please share the Game Password '" + $gamePref.id + "' with other player" });
     let room = $gamePref.id;
     let currMsg = {};
 
-    autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
+    function blinker() {
+        window.$('.blinking').fadeOut(500);
+        window.$('.blinking').fadeIn(500);
+    }
 
-    function sendMsg() {
+    setInterval(blinker, 1000);
 
-        if(message != null || message != '') {
+   beforeUpdate(() => {
+		autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
+    });
+    
+    afterUpdate(() => {
+		if (autoscroll) div.scrollTo(0, div.scrollHeight);
+    });
+    
+    window.$(document).ready( function (){
+        document.getElementById('user-msg').addEventListener('input', function() {
+            inputStatus();
+        });
+        
+
+        $currSocket.on('typing', (room) => {
+            let typing = document.getElementById('isTypingSpan');
+            typing.style.visibility = 'visible';
+            // typing.style.setProperty('color', 'white');
+        });
+
+        $currSocket.on('no-typing', (room) => {
+            let typing = document.getElementById('isTypingSpan');
+            typing.style.visibility = 'hidden';
+        });
+    });
+
+      function inputStatus() {
+             console.log("change happened");
+             if(window.$('#user-msg').val() == ''){
+                 console.log('stopped typing...');
+                 $currSocket.emit('no-typing', room);
+             }
+             else{
+                 console.log('typing...');
+                 $currSocket.emit('typing', room);
+             }
+         }
+
+    function sendMsg() {    
+        console.log("Log for send message");
+        if(message != null && message != '') {
             currMsg.name = $currUser.name;
             currMsg.msg = message;
             currMsg.room = room;
             $currSocket.emit('chat message', currMsg);
-
-            //msgs.push(currMsg);
-
-            if(autoscroll) div.scrollTo(0, div.scrollHeight);
-
             message = '';
         }
+       $currSocket.emit('no-typing', room);
     }
 
     $currSocket.on('chat message', (data) => {
@@ -34,11 +73,12 @@
        console.log(msgs);
        msgs = msgs;
     });
-
 </script>
 
-{#if $gamePref.pri == $currUser.name}
+{#if $gamePref.pri == $currUser.name && $gamePref.sec != null}
     <h4 style="text-align:center">{$gamePref.sec}</h4>
+{:else if $gamePref.sec == null}
+    <h4 class="blinking" style="text-align:center">Waiting for other player</h4>
 {:else}
     <h4 style="text-align:center">{$gamePref.pri}</h4>
 {/if}
@@ -55,9 +95,12 @@
             </article>
         {/if}
     {/each}
+    <article class='odaMsg' id="isTyping">
+        <span class='txtMsg' id="isTypingSpan" style="visibility: hidden">typing...</span>
+    </article>
 </div>
-
-<input id="user-msg" placeholder="Type Here" bind:value="{message}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
+ 
+<input id="user-msg" placeholder="Type Here"  bind:value="{message}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
 
 <style>
     .scrollable {
@@ -66,7 +109,13 @@
 		margin: 0 0 0.5em 0;
 		overflow-y: auto;
     }
-    
+
+    #isTypingSpan {
+        color: white;
+        background:  rgb(120, 236, 10);;
+        opacity: 65;
+    }
+
     #user-msg {
 		bottom:10px;
         left:10px;
@@ -75,7 +124,6 @@
         box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         outline:none;
         border:none;
-        position: absolute;
 	}
 
     .myMsg {
@@ -110,5 +158,24 @@
 
     article {
         margin: 0.5em 0;
+    }
+
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888; 
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555; 
     }
 </style>

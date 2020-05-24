@@ -23,6 +23,7 @@
             state = {};
             state.time = Time;
             state.pri = $currUser.name;
+            state.sec = null;
             return state;
         });
 

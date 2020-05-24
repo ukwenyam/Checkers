@@ -51,6 +51,16 @@ io.on('connection', (socket) => {
         socket.join(room);
     });
 
+    socket.on('typing', (room) => {
+        console.log(socket.username + 'is typing');
+        socket.to(room).emit('typing', room);
+    });
+
+    socket.on('no-typing', (room) => {
+        console.log(socket.username + 'is no longer typing');
+        socket.to(room).emit('no-typing', room);
+    });
+
     socket.on('chat message', (data) => {
         console.log('Somebody sent chat: ' + data.msg);
         io.to(data.room).emit('chat message', data);
