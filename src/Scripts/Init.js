@@ -2,11 +2,37 @@ import { writable } from 'svelte/store';
 import io from 'socket.io-client';
 import { Board } from './Board.js';
 
+window.onload = async function() {
+
+    if (sessionStorage.getItem('idx') != null) {
+
+        const indexes = await JSON.parse(sessionStorage.getItem('idx'));
+        
+        await currUser.set(indexes.user);
+
+        await gameBoard.set(new Board(indexes.board.board, null));
+
+        await gameHistory.set(indexes.history);
+
+        await gamePref.set(indexes.pref);
+
+        await gameChat.set(indexes.chat);
+
+        await gameTab.set(indexes.tab);
+
+        await page.set(indexes.page);
+
+        sessionStorage.removeItem('idx');
+    }
+}
+
 export const currSocket = writable(io('http://localhost:4000'));
 
 export const currUser = writable(null);
 
 export const page = writable(0);
+
+export const gameTab = writable(0);
 
 export const userGames = writable(null);
 
@@ -34,6 +60,11 @@ window.onbeforeunload = async function() {
         return state;
     });
 
+    await gameTab.update(state => {
+        indexes.tab = state;
+        return state;
+    });
+
     await gameBoard.update(state => {
         indexes.board = state;
         return state;
@@ -57,24 +88,3 @@ window.onbeforeunload = async function() {
     await sessionStorage.setItem('idx', JSON.stringify(indexes));
 }
 
-window.onload = async function() {
-
-    if (sessionStorage.getItem('idx') != null) {
-
-        const indexes = await JSON.parse(sessionStorage.getItem('idx'));
-        
-        await currUser.set(indexes.user);
-
-        await gameBoard.set(new Board(indexes.board.board, null));
-
-        await gameHistory.set(indexes.history);
-
-        await gamePref.set(indexes.pref);
-
-        await gameChat.set(indexes.chat);
-
-        await page.set(indexes.page);
-
-        sessionStorage.removeItem('idx');
-    }
-}

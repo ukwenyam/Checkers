@@ -1,5 +1,6 @@
-import { Piece } from '../Scripts/Piece.js';
-import { Position } from '../Scripts/Position.js';
+import { Piece } from './Piece.js';
+//import { Position } from '../Scripts/Position.js';
+import { currUser, gamePref } from './Init.js';
 
 export class Board {
 
@@ -202,11 +203,24 @@ export class Board {
 
     isMoveLegal(piece, nextPos) {
 
+        let name, priPlayer, secPlayer;
+
+        currUser.update(state => {
+            name = state.name;
+            return state;
+        });
+        
+        gamePref.update(state => {
+            priPlayer = state.pri;
+            secPlayer = state.sec;
+            return state
+        });
+
         let legal = false;
 
         let currPos = piece.getPosition();
 
-        if(piece.side == 'U' && nextPos.isEmpty) {
+        /* if(piece.side == "black" && nextPos.isEmpty) {
 
             let xDiff = nextPos.xPos - currPos.xPos;
 
@@ -238,11 +252,16 @@ export class Board {
                     legal = true;
                 }
             }
-        }
+        } */
 
-        if(piece.side == 'D' && nextPos.isEmpty) {
+        console.log(nextPos.isEmpty);
 
-            //console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
+        console.log("red: " + piece.side == "red");
+        console.log("black: " + piece.side == "black");
+
+        if(piece.side == "red" && nextPos.isEmpty && name == priPlayer) {
+
+            console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
             let xDiff = currPos.xPos - nextPos.xPos;
 
@@ -280,25 +299,87 @@ export class Board {
             }
         }
 
+        if(piece.side == "black" && nextPos.isEmpty && name == secPlayer) {
+
+            //console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
+
+            let xDiff = currPos.xPos - nextPos.xPos;
+
+            let yDiff = currPos.yPos - nextPos.yPos;
+
+            if(piece.stack == 1) {
+
+                //console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
+
+                let oneSq = (yDiff == 1 || yDiff == -1) && xDiff == 1;
+
+                //console.log(oneSq);
+
+                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
+
+                if(oneSq) {
+                    //console.log(nextPos.xPos + ", " + nextPos.yPos);
+                    legal = true;
+                }
+
+                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) {
+                    //console.log(nextPos.xPos + ", " + nextPos.yPos);
+                    legal = true;
+                }
+                    
+
+            } else {
+
+                let oneSq = (xDiff == 1 || xDiff == -1) && (yDiff == 1 || yDiff == -1);
+
+                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
+
+                if(oneSq)
+                    legal = true;
+
+                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) 
+                    legal = true;
+            }
+        }
+
         return legal;
     }
 
 
     doMove(piece, nextPos) {
 
-        let moved = false;
+        let name, priPlayer, secPlayer;
+
+        currUser.update(state => {
+            name = state.name;
+            return state;
+        });
+        
+        gamePref.update(state => {
+            priPlayer = state.pri;
+            secPlayer = state.sec;
+            return state
+        });
+
+        let moved = false, remove = null;
 
         if(this.isMoveLegal(piece, nextPos)) {
 
-            this.scanBoard(piece, nextPos);
+            remove = this.scanBoard(piece, nextPos);
 
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            if(nextPos.xPos == 0 && newPiece.side == "D" && newPiece.stack == 1) 
-                newPiece.incrementStack();
+            if(name == priPlayer) {
 
-            if(nextPos.xPos == 7 && newPiece.side == "U" && newPiece.stack == 1) 
-                newPiece.incrementStack();
+                if(nextPos.xPos == 0 && newPiece.side == "red" && newPiece.stack == 1) 
+                    newPiece.incrementStack();
+            } 
+            
+            if(name == secPlayer) {
+
+                if(nextPos.xPos == 0 && newPiece.side == "black" && newPiece.stack == 1) 
+                    newPiece.incrementStack();
+            }
 
             this.board[nextPos.xPos][nextPos.yPos] = newPiece;
             
@@ -309,22 +390,27 @@ export class Board {
             moved = true;
         }
 
-        return moved;
+        return { move: moved, id: remove };
     } 
 
     scanBoard(piece, nextPos) {
 
         let i, j;
 
+        let remove = null;
+
         for(i = 0; i < 8; i++) {
             for(j = 0; j < 8; j++) {
                 if(this.board[i][j] != null && this.board[i][j].id != piece.id && this.board[i][j].side == piece.side) {
                     if(this.checkPiece(this.board[i][j], piece, nextPos)) {
+                        remove = piece.id;
                         break;
                     }
                 }
             }
         }
+
+        return remove;
     }
 
 
@@ -380,6 +466,66 @@ export class Board {
     }
 
 
+    removePiece(piece) {
+        let xPos = piece.getPosition().xPos;
+        let yPos = piece.getPosition().yPos;
+
+        this.board[xPos][yPos] = null;
+    }
+
+
+    otherPlayerMove(piece, xDiff, yDiff) {
+
+        let name, priPlayer, secPlayer;
+
+        currUser.update(state => {
+            name = state.name;
+            return state;
+        });
+        
+        gamePref.update(state => {
+            priPlayer = state.pri;
+            secPlayer = state.sec;
+            return state
+        });
+
+        let xPos = piece.getPosition().xPos;
+        let yPos = piece.getPosition().yPos;
+
+        let nextPosX = xPos + xDiff;
+        let nextPosY = yPos + yDiff;
+
+        //console.log(xPos + ", " + yPos + " --> " + nextPosX+ ", " + nextPosY);
+        //console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
+
+        let newPiece = new Piece(nextPosX, nextPosY, piece.side, piece.id, piece.stack);
+
+        if(name == priPlayer) {
+
+            if(nextPosX == 0 && newPiece.side == "red" && newPiece.stack == 1) 
+                newPiece.incrementStack();
+        } 
+        
+        if(name == secPlayer) {
+
+            if(nextPosX == 0 && newPiece.side == "black" && newPiece.stack == 1) 
+                newPiece.incrementStack();
+        }
+
+        this.board[nextPosX][nextPosY] = newPiece;
+
+        if(xDiff == 2 && yDiff == 2) {
+
+            nextPosX = xPos + (xDiff / 2);
+            nextPosY = yPos + (yDiff / 2);
+
+            this.board[nextPosX][nextPosY] = null;
+        }
+
+        this.board[xPos][yPos] = null;
+    }
+
+
     isEmpty(xpos, ypos) {
 
         if(this.board[xpos][ypos] != null)
@@ -402,6 +548,26 @@ export class Board {
         if(this.board[i][j] != null)
             return this.board[i][j];
 
+    }
+
+    getPieceFromId(id) {
+
+        let i, j;
+
+        let piece;
+
+        for(i = 0; i < 8; i++) {
+            for(j = 0; j < 8; j++) {
+                if(this.board[i][j] != null) {
+                    if(this.board[i][j].id == id) {
+                        piece = this.board[i][j];
+                        break;
+                    }
+                }
+            }
+        }
+
+        return piece;
     }
 
     getBoard() {

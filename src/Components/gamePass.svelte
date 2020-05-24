@@ -25,6 +25,7 @@
                     let game = response.msg;
 
                     if(game.priEmail != $currUser.email) {
+
                         gameBoard.set(new Board(null, true));
 
                         $gameHistory.push($gameBoard.saveBoardState());
@@ -35,6 +36,9 @@
                             state.id = gamePassword;
                             state.pri = game.priPlayer;
                             state.sec = game.secPlayer;
+                            state.currPlayer = null;
+                            state.numMoves = 0;
+                            state.rangeMoves = 0;
                             return state;
                         });
 
@@ -44,7 +48,7 @@
                     } else {
                         console.log("Same Player");
                     }
-                    
+
                 } else {
                     console.log(response.err);
                 }

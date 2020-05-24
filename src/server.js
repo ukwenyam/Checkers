@@ -61,4 +61,19 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('piece-move', data);
     });
 
+    socket.on('typing', (room) => {
+        console.log(socket.username + 'is typing');
+        socket.to(room).emit('typing', room);
+    });
+
+    socket.on('no-typing', (room) => {
+        console.log(socket.username + 'is no longer typing');
+        socket.to(room).emit('no-typing', room);
+    });
+
+    socket.on('starting-player', (data) => {
+        console.log('sending currplayer'+ data.player);
+        socket.to(data.room).emit('starting-player', data.player);
+    });
+
 });    

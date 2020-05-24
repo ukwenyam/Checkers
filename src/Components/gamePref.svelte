@@ -1,5 +1,5 @@
 <script>
-    import { currUser, gameBoard, gameHistory, gamePref, page } from '../Scripts/Init.js';
+    import { currUser, gameBoard, gameHistory, gamePref, page, gameTab } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { Board } from '../Scripts/Board.js';
 
@@ -18,6 +18,9 @@
             state.time = Time;
             state.pri = $currUser.name;
             state.sec = null;
+            state.currPlayer = null;
+            state.numMoves = 0;
+            state.rangeMoves = 0;
             return state;
         });
 
@@ -43,7 +46,7 @@
                     return state;
                 });
 
-                page.set(1);
+                page.set(1); gameTab.set(1);
             } else {
                 console.log(response.err);
             }
