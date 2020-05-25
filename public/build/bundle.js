@@ -40,6 +40,9 @@ var app = (function () {
     function component_subscribe(component, store, callback) {
         component.$$.on_destroy.push(subscribe(store, callback));
     }
+    function null_to_empty(value) {
+        return value == null ? '' : value;
+    }
 
     const is_client = typeof window !== 'undefined';
     let now = is_client
@@ -592,6 +595,10 @@ var app = (function () {
             dispatch_dev("SvelteDOMRemoveAttribute", { node, attribute });
         else
             dispatch_dev("SvelteDOMSetAttribute", { node, attribute, value });
+    }
+    function prop_dev(node, property, value) {
+        node[property] = value;
+        dispatch_dev("SvelteDOMSetProperty", { node, property, value });
     }
     function set_data_dev(text, data) {
         data = '' + data;
@@ -9563,17 +9570,17 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "Create";
     			attr_dev(h5, "class", "svelte-ygik97");
-    			add_location(h5, file$2, 59, 0, 1531);
+    			add_location(h5, file$2, 61, 0, 1596);
     			attr_dev(h6, "class", "svelte-ygik97");
-    			add_location(h6, file$2, 61, 0, 1558);
+    			add_location(h6, file$2, 63, 0, 1623);
     			attr_dev(input, "class", "custom-range");
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "15");
     			attr_dev(input, "max", "60");
     			attr_dev(input, "step", "1");
-    			add_location(input, file$2, 62, 0, 1597);
+    			add_location(input, file$2, 64, 0, 1662);
     			attr_dev(button, "class", "btn btn-primary svelte-ygik97");
-    			add_location(button, file$2, 64, 0, 1687);
+    			add_location(button, file$2, 66, 0, 1752);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -9655,6 +9662,8 @@ var app = (function () {
     			state.currPlayer = null;
     			state.numMoves = 0;
     			state.rangeMoves = 0;
+    			state.paused = true;
+    			state.side = "red";
     			return state;
     		});
 
@@ -9786,16 +9795,16 @@ var app = (function () {
     			button1 = element("button");
     			button1.textContent = "Find A Random Game";
     			attr_dev(h5, "class", "svelte-65pr5e");
-    			add_location(h5, file$3, 61, 0, 1907);
+    			add_location(h5, file$3, 63, 0, 2008);
     			attr_dev(input, "placeholder", "Game Password");
     			attr_dev(input, "class", "svelte-65pr5e");
-    			add_location(input, file$3, 63, 0, 1933);
+    			add_location(input, file$3, 65, 0, 2034);
     			attr_dev(button0, "class", "btn btn-primary svelte-65pr5e");
     			set_style(button0, "margin-bottom", "30px");
-    			add_location(button0, file$3, 65, 0, 2001);
-    			add_location(hr, file$3, 67, 0, 2100);
+    			add_location(button0, file$3, 67, 0, 2102);
+    			add_location(hr, file$3, 69, 0, 2201);
     			attr_dev(button1, "class", "btn btn-primary svelte-65pr5e");
-    			add_location(button1, file$3, 69, 0, 2109);
+    			add_location(button1, file$3, 71, 0, 2210);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -9896,6 +9905,8 @@ var app = (function () {
     							state.currPlayer = null;
     							state.numMoves = 0;
     							state.rangeMoves = 0;
+    							state.paused = true;
+    							state.side = "black";
     							return state;
     						});
 
@@ -11699,15 +11710,15 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (322:0) {:else}
-    function create_else_block$2(ctx) {
+    // (328:0) {:else}
+    function create_else_block_1$1(ctx) {
     	let div;
 
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "class", "checker red svelte-mitn8q");
-    			add_location(div, file$7, 322, 1, 8023);
+    			attr_dev(div, "class", "checker reda svelte-1atxtnt");
+    			add_location(div, file$7, 328, 1, 8546);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -11719,24 +11730,24 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_else_block$2.name,
+    		id: create_else_block_1$1.name,
     		type: "else",
-    		source: "(322:0) {:else}",
+    		source: "(328:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (320:0) {#if $gamePref.currPlayer == "black"}
-    function create_if_block_5$1(ctx) {
+    // (326:0) {#if $gamePref.currPlayer == "black"}
+    function create_if_block_6$1(ctx) {
     	let div;
 
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "class", "checker black svelte-mitn8q");
-    			add_location(div, file$7, 320, 1, 7980);
+    			attr_dev(div, "class", "checker blacka svelte-1atxtnt");
+    			add_location(div, file$7, 326, 1, 8502);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -11748,17 +11759,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_5$1.name,
+    		id: create_if_block_6$1.name,
     		type: "if",
-    		source: "(320:0) {#if $gamePref.currPlayer == \\\"black\\\"}",
+    		source: "(326:0) {#if $gamePref.currPlayer == \\\"black\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (328:0) {#if screenWidth > 800}
-    function create_if_block_4$1(ctx) {
+    // (334:0) {#if screenWidth > 800}
+    function create_if_block_5$1(ctx) {
     	let h2;
     	let t0;
     	let t1_value = /*$gamePref*/ ctx[2].time + "";
@@ -11770,8 +11781,8 @@ var app = (function () {
     			t0 = text("Timer: ");
     			t1 = text(t1_value);
     			attr_dev(h2, "id", "time");
-    			attr_dev(h2, "class", "svelte-mitn8q");
-    			add_location(h2, file$7, 328, 1, 8136);
+    			attr_dev(h2, "class", "svelte-1atxtnt");
+    			add_location(h2, file$7, 334, 1, 8660);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h2, anchor);
@@ -11788,19 +11799,19 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_4$1.name,
+    		id: create_if_block_5$1.name,
     		type: "if",
-    		source: "(328:0) {#if screenWidth > 800}",
+    		source: "(334:0) {#if screenWidth > 800}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (339:39) 
-    function create_if_block_2$3(ctx) {
+    // (345:39) 
+    function create_if_block_3$2(ctx) {
     	let if_block_anchor;
-    	let if_block = (/*i*/ ctx[30] % 2 != 0 && /*j*/ ctx[33] % 2 == 0 || /*i*/ ctx[30] % 2 == 0 && /*j*/ ctx[33] % 2 != 0) && create_if_block_3$2(ctx);
+    	let if_block = (/*i*/ ctx[30] % 2 != 0 && /*j*/ ctx[33] % 2 == 0 || /*i*/ ctx[30] % 2 == 0 && /*j*/ ctx[33] % 2 != 0) && create_if_block_4$1(ctx);
 
     	const block = {
     		c: function create() {
@@ -11822,21 +11833,22 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_2$3.name,
+    		id: create_if_block_3$2.name,
     		type: "if",
-    		source: "(339:39) ",
+    		source: "(345:39) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (336:4) {#if !$gameBoard.isEmpty(i, j)}
-    function create_if_block_1$3(ctx) {
+    // (342:4) {#if !$gameBoard.isEmpty(i, j)}
+    function create_if_block_2$3(ctx) {
     	let rect;
     	let rect_x_value;
     	let rect_y_value;
     	let circle;
+    	let circle_class_value;
     	let circle_id_value;
     	let circle_cx_value;
     	let circle_cy_value;
@@ -11857,7 +11869,8 @@ var app = (function () {
     			set_style(rect, "fill", "brown");
     			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[1]);
     			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[1]);
-    			add_location(rect, file$7, 336, 5, 8309);
+    			add_location(rect, file$7, 342, 5, 8833);
+    			attr_dev(circle, "class", circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[3].getSide(/*i*/ ctx[30], /*j*/ ctx[33])) + " svelte-1atxtnt"));
     			attr_dev(circle, "id", circle_id_value = /*$gameBoard*/ ctx[3].getId(/*i*/ ctx[30], /*j*/ ctx[33]));
     			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[4][/*$gameBoard*/ ctx[3].getId(/*i*/ ctx[30], /*j*/ ctx[33])].y);
     			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[4][/*$gameBoard*/ ctx[3].getId(/*i*/ ctx[30], /*j*/ ctx[33])].x);
@@ -11865,8 +11878,7 @@ var app = (function () {
     			attr_dev(circle, "stroke", "white");
     			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*$gameBoard*/ ctx[3].getPiece(/*i*/ ctx[30], /*j*/ ctx[33]).stack * 2);
     			attr_dev(circle, "fill", circle_fill_value = /*$gameBoard*/ ctx[3].getSide(/*i*/ ctx[30], /*j*/ ctx[33]));
-    			attr_dev(circle, "class", "svelte-mitn8q");
-    			add_location(circle, file$7, 337, 5, 8427);
+    			add_location(circle, file$7, 343, 5, 8951);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -11891,6 +11903,10 @@ var app = (function () {
 
     			if (dirty[0] & /*squareSize*/ 2 && rect_y_value !== (rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[1])) {
     				attr_dev(rect, "y", rect_y_value);
+    			}
+
+    			if (dirty[0] & /*$gameBoard*/ 8 && circle_class_value !== (circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[3].getSide(/*i*/ ctx[30], /*j*/ ctx[33])) + " svelte-1atxtnt"))) {
+    				attr_dev(circle, "class", circle_class_value);
     			}
 
     			if (dirty[0] & /*$gameBoard*/ 8 && circle_id_value !== (circle_id_value = /*$gameBoard*/ ctx[3].getId(/*i*/ ctx[30], /*j*/ ctx[33]))) {
@@ -11926,17 +11942,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_1$3.name,
+    		id: create_if_block_2$3.name,
     		type: "if",
-    		source: "(336:4) {#if !$gameBoard.isEmpty(i, j)}",
+    		source: "(342:4) {#if !$gameBoard.isEmpty(i, j)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (340:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-    function create_if_block_3$2(ctx) {
+    // (346:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+    function create_if_block_4$1(ctx) {
     	let rect;
     	let rect_x_value;
     	let rect_y_value;
@@ -11954,7 +11970,7 @@ var app = (function () {
     			set_style(rect, "fill", "brown");
     			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[33] * /*squareSize*/ ctx[1]);
     			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[30] * /*squareSize*/ ctx[1]);
-    			add_location(rect, file$7, 340, 24, 8853);
+    			add_location(rect, file$7, 346, 24, 9412);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -11988,16 +12004,16 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_3$2.name,
+    		id: create_if_block_4$1.name,
     		type: "if",
-    		source: "(340:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
+    		source: "(346:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (335:3) {#each squares as j}
+    // (341:3) {#each squares as j}
     function create_each_block_1$1(ctx) {
     	let show_if;
     	let show_if_1;
@@ -12005,9 +12021,9 @@ var app = (function () {
 
     	function select_block_type_1(ctx, dirty) {
     		if (show_if == null || dirty[0] & /*$gameBoard*/ 8) show_if = !!!/*$gameBoard*/ ctx[3].isEmpty(/*i*/ ctx[30], /*j*/ ctx[33]);
-    		if (show_if) return create_if_block_1$3;
+    		if (show_if) return create_if_block_2$3;
     		if (show_if_1 == null || dirty[0] & /*$gameBoard*/ 8) show_if_1 = !!/*$gameBoard*/ ctx[3].isEmpty(/*i*/ ctx[30], /*j*/ ctx[33]);
-    		if (show_if_1) return create_if_block_2$3;
+    		if (show_if_1) return create_if_block_3$2;
     	}
 
     	let current_block_type = select_block_type_1(ctx, [-1]);
@@ -12048,14 +12064,14 @@ var app = (function () {
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(335:3) {#each squares as j}",
+    		source: "(341:3) {#each squares as j}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (334:2) {#each squares as i}
+    // (340:2) {#each squares as i}
     function create_each_block$2(ctx) {
     	let each_1_anchor;
     	let each_value_1 = /*squares*/ ctx[8];
@@ -12116,15 +12132,15 @@ var app = (function () {
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(334:2) {#each squares as i}",
+    		source: "(340:2) {#each squares as i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (350:0) {#if screenWidth <= 800}
-    function create_if_block$3(ctx) {
+    // (356:0) {#if screenWidth <= 800}
+    function create_if_block_1$3(ctx) {
     	let h1;
     	let t0;
     	let t1_value = /*$gamePref*/ ctx[2].time + "";
@@ -12136,8 +12152,8 @@ var app = (function () {
     			t0 = text("Timer: ");
     			t1 = text(t1_value);
     			attr_dev(h1, "id", "time");
-    			attr_dev(h1, "class", "svelte-mitn8q");
-    			add_location(h1, file$7, 350, 1, 9136);
+    			attr_dev(h1, "class", "svelte-1atxtnt");
+    			add_location(h1, file$7, 356, 1, 9695);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h1, anchor);
@@ -12154,9 +12170,79 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
+    		id: create_if_block_1$3.name,
+    		type: "if",
+    		source: "(356:0) {#if screenWidth <= 800}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (367:0) {:else}
+    function create_else_block$2(ctx) {
+    	let button;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			button = element("button");
+    			button.textContent = "Pause Game";
+    			attr_dev(button, "class", "btn btn-info pause svelte-1atxtnt");
+    			add_location(button, file$7, 367, 4, 10147);
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, button, anchor);
+    			if (remount) dispose();
+    			dispose = listen_dev(button, "click", /*pauseGame*/ ctx[13], false, false, false);
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(button);
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block$2.name,
+    		type: "else",
+    		source: "(367:0) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (365:0) {#if $gamePref.paused}
+    function create_if_block$3(ctx) {
+    	let button;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			button = element("button");
+    			button.textContent = "Start Game";
+    			attr_dev(button, "class", "btn btn-success pause svelte-1atxtnt");
+    			add_location(button, file$7, 365, 4, 10054);
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, button, anchor);
+    			if (remount) dispose();
+    			dispose = listen_dev(button, "click", /*pauseGame*/ ctx[13], false, false, false);
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(button);
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
     		id: create_if_block$3.name,
     		type: "if",
-    		source: "(350:0) {#if screenWidth <= 800}",
+    		source: "(365:0) {#if $gamePref.paused}",
     		ctx
     	});
 
@@ -12186,17 +12272,23 @@ var app = (function () {
     	let t10;
     	let t11;
     	let input;
+    	let input_disabled_value;
     	let input_max_value;
+    	let t12;
+    	let t13;
+    	let button0;
+    	let t15;
+    	let button1;
     	let dispose;
 
     	function select_block_type(ctx, dirty) {
-    		if (/*$gamePref*/ ctx[2].currPlayer == "black") return create_if_block_5$1;
-    		return create_else_block$2;
+    		if (/*$gamePref*/ ctx[2].currPlayer == "black") return create_if_block_6$1;
+    		return create_else_block_1$1;
     	}
 
     	let current_block_type = select_block_type(ctx);
     	let if_block0 = current_block_type(ctx);
-    	let if_block1 = /*screenWidth*/ ctx[6] > 800 && create_if_block_4$1(ctx);
+    	let if_block1 = /*screenWidth*/ ctx[6] > 800 && create_if_block_5$1(ctx);
     	let each_value = /*squares*/ ctx[8];
     	validate_each_argument(each_value);
     	let each_blocks = [];
@@ -12205,7 +12297,15 @@ var app = (function () {
     		each_blocks[i] = create_each_block$2(get_each_context$2(ctx, each_value, i));
     	}
 
-    	let if_block2 = /*screenWidth*/ ctx[6] <= 800 && create_if_block$3(ctx);
+    	let if_block2 = /*screenWidth*/ ctx[6] <= 800 && create_if_block_1$3(ctx);
+
+    	function select_block_type_2(ctx, dirty) {
+    		if (/*$gamePref*/ ctx[2].paused) return create_if_block$3;
+    		return create_else_block$2;
+    	}
+
+    	let current_block_type_1 = select_block_type_2(ctx);
+    	let if_block3 = current_block_type_1(ctx);
 
     	const block = {
     		c: function create() {
@@ -12238,34 +12338,47 @@ var app = (function () {
     			t10 = text(t10_value);
     			t11 = space();
     			input = element("input");
+    			t12 = space();
+    			if_block3.c();
+    			t13 = space();
+    			button0 = element("button");
+    			button0.textContent = "Switch Turn";
+    			t15 = space();
+    			button1 = element("button");
+    			button1.textContent = "Save Game";
     			attr_dev(h20, "id", "player");
-    			attr_dev(h20, "class", "svelte-mitn8q");
-    			add_location(h20, file$7, 317, 0, 7903);
+    			attr_dev(h20, "class", "svelte-1atxtnt");
+    			add_location(h20, file$7, 323, 0, 8425);
     			attr_dev(h21, "id", "moves");
-    			attr_dev(h21, "class", "svelte-mitn8q");
-    			add_location(h21, file$7, 325, 0, 8062);
+    			attr_dev(h21, "class", "svelte-1atxtnt");
+    			add_location(h21, file$7, 331, 0, 8586);
     			attr_dev(use, "id", "use");
     			xlink_attr(use, "xlink:href", "#24");
-    			add_location(use, file$7, 345, 2, 9061);
-    			add_location(svg0, file$7, 346, 1, 9096);
+    			add_location(use, file$7, 351, 2, 9620);
+    			add_location(svg0, file$7, 352, 1, 9655);
     			attr_dev(svg1, "id", "hover");
-    			attr_dev(svg1, "class", "svelte-mitn8q");
-    			add_location(svg1, file$7, 332, 1, 8204);
+    			attr_dev(svg1, "class", "svelte-1atxtnt");
+    			add_location(svg1, file$7, 338, 1, 8728);
     			attr_dev(div0, "id", "board");
-    			attr_dev(div0, "class", "svelte-mitn8q");
-    			add_location(div0, file$7, 331, 0, 8186);
+    			attr_dev(div0, "class", "svelte-1atxtnt");
+    			add_location(div0, file$7, 337, 0, 8710);
     			attr_dev(h22, "id", "rangeBar");
-    			attr_dev(h22, "class", "svelte-mitn8q");
-    			add_location(h22, file$7, 354, 4, 9207);
-    			attr_dev(input, "class", "custom-range svelte-mitn8q");
+    			attr_dev(h22, "class", "svelte-1atxtnt");
+    			add_location(h22, file$7, 360, 4, 9766);
+    			attr_dev(input, "class", "custom-range svelte-1atxtnt");
+    			input.disabled = input_disabled_value = !/*$gamePref*/ ctx[2].paused;
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "0");
     			attr_dev(input, "max", input_max_value = /*$gamePref*/ ctx[2].numMoves);
     			attr_dev(input, "step", "1");
-    			add_location(input, file$7, 355, 4, 9277);
+    			add_location(input, file$7, 361, 4, 9836);
     			attr_dev(div1, "id", "state");
-    			attr_dev(div1, "class", "svelte-mitn8q");
-    			add_location(div1, file$7, 353, 0, 9186);
+    			attr_dev(div1, "class", "svelte-1atxtnt");
+    			add_location(div1, file$7, 359, 0, 9745);
+    			attr_dev(button0, "class", "btn btn-info switch svelte-1atxtnt");
+    			add_location(button0, file$7, 370, 0, 10232);
+    			attr_dev(button1, "class", "btn btn-primary save svelte-1atxtnt");
+    			add_location(button1, file$7, 372, 0, 10316);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -12300,12 +12413,19 @@ var app = (function () {
     			append_dev(div1, t11);
     			append_dev(div1, input);
     			set_input_value(input, /*$gamePref*/ ctx[2].rangeMoves);
+    			insert_dev(target, t12, anchor);
+    			if_block3.m(target, anchor);
+    			insert_dev(target, t13, anchor);
+    			insert_dev(target, button0, anchor);
+    			insert_dev(target, t15, anchor);
+    			insert_dev(target, button1, anchor);
     			if (remount) run_all(dispose);
 
     			dispose = [
     				listen_dev(input, "change", /*viewBoardHistory*/ ctx[11], false, false, false),
     				listen_dev(input, "change", /*input_change_input_handler*/ ctx[29]),
-    				listen_dev(input, "input", /*input_change_input_handler*/ ctx[29])
+    				listen_dev(input, "input", /*input_change_input_handler*/ ctx[29]),
+    				listen_dev(button0, "click", /*switchPlayer*/ ctx[12], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -12349,12 +12469,28 @@ var app = (function () {
     			if (/*screenWidth*/ ctx[6] <= 800) if_block2.p(ctx, dirty);
     			if (dirty[0] & /*$gamePref*/ 4 && t10_value !== (t10_value = /*$gamePref*/ ctx[2].rangeMoves + "")) set_data_dev(t10, t10_value);
 
+    			if (dirty[0] & /*$gamePref*/ 4 && input_disabled_value !== (input_disabled_value = !/*$gamePref*/ ctx[2].paused)) {
+    				prop_dev(input, "disabled", input_disabled_value);
+    			}
+
     			if (dirty[0] & /*$gamePref*/ 4 && input_max_value !== (input_max_value = /*$gamePref*/ ctx[2].numMoves)) {
     				attr_dev(input, "max", input_max_value);
     			}
 
     			if (dirty[0] & /*$gamePref*/ 4) {
     				set_input_value(input, /*$gamePref*/ ctx[2].rangeMoves);
+    			}
+
+    			if (current_block_type_1 === (current_block_type_1 = select_block_type_2(ctx)) && if_block3) {
+    				if_block3.p(ctx, dirty);
+    			} else {
+    				if_block3.d(1);
+    				if_block3 = current_block_type_1(ctx);
+
+    				if (if_block3) {
+    					if_block3.c();
+    					if_block3.m(t13.parentNode, t13);
+    				}
     			}
     		},
     		i: noop,
@@ -12374,6 +12510,12 @@ var app = (function () {
     			if (if_block2) if_block2.d(detaching);
     			if (detaching) detach_dev(t8);
     			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(t12);
+    			if_block3.d(detaching);
+    			if (detaching) detach_dev(t13);
+    			if (detaching) detach_dev(button0);
+    			if (detaching) detach_dev(t15);
+    			if (detaching) detach_dev(button1);
     			run_all(dispose);
     		}
     	};
@@ -12404,15 +12546,14 @@ var app = (function () {
     	validate_store(gamePref, "gamePref");
     	component_subscribe($$self, gamePref, $$value => $$invalidate(2, $gamePref = $$value));
     	validate_store(currUser, "currUser");
-    	component_subscribe($$self, currUser, $$value => $$invalidate(18, $currUser = $$value));
+    	component_subscribe($$self, currUser, $$value => $$invalidate(20, $currUser = $$value));
     	validate_store(currSocket, "currSocket");
-    	component_subscribe($$self, currSocket, $$value => $$invalidate(19, $currSocket = $$value));
+    	component_subscribe($$self, currSocket, $$value => $$invalidate(21, $currSocket = $$value));
     	validate_store(gameBoard, "gameBoard");
     	component_subscribe($$self, gameBoard, $$value => $$invalidate(3, $gameBoard = $$value));
     	validate_store(gameHistory, "gameHistory");
-    	component_subscribe($$self, gameHistory, $$value => $$invalidate(20, $gameHistory = $$value));
+    	component_subscribe($$self, gameHistory, $$value => $$invalidate(22, $gameHistory = $$value));
     	$$self.$$.on_destroy.push(() => $$unsubscribe_size());
-    	let paused = true;
 
     	if ($gamePref.pri == $currUser.name) {
     		gamePref.update(state => {
@@ -12443,7 +12584,7 @@ var app = (function () {
     			});
     		}
 
-    		$currSocket.emit("starting-player", {
+    		$currSocket.emit("current-player", {
     			player: $gamePref.currPlayer,
     			room: $gamePref.id
     		});
@@ -12452,8 +12593,8 @@ var app = (function () {
     		gameChat.set([]);
     	});
 
-    	$currSocket.on("starting-player", data => {
-    		console.log("Received starting player");
+    	$currSocket.on("current-player", data => {
+    		console.log("Received current player");
 
     		gamePref.update(state => {
     			state.currPlayer = data;
@@ -12489,13 +12630,14 @@ var app = (function () {
     		boardHeight = squareSize * 8;
     		remWidth = screen.width;
     	} else {
-    		factor = 1;
-    		$$subscribe_size(size = spring(30));
-
     		if (screen.height >= 800) {
+    			factor = 1;
+    			$$subscribe_size(size = spring(30));
     			squareSize = 100;
     		} else {
     			squareSize = 10 * Math.floor(screen.height / 100);
+    			factor = 1000 / (squareSize * 10);
+    			$$subscribe_size(size = spring(25));
     		}
 
     		boardHeight = squareSize * 8;
@@ -12506,26 +12648,22 @@ var app = (function () {
     	document.documentElement.style.setProperty("--board-height", boardHeight + "px");
     	setCirclePositions();
 
-    	/* setInterval(function() {
-    	if(currPos != null)
-    		highlightCircle(currPos);
-    }, 100); */
     	setInterval(
     		function () {
-    			if ($gamePref.rangeMoves == $gamePref.numMoves && !paused) {
-    				gamepref.update(state => {
+    			if (currPos != null) highlightCircle(currPos);
+    		},
+    		100
+    	);
+
+    	setInterval(
+    		function () {
+    			if ($gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
+    				gamePref.update(state => {
     					state.time -= 1;
     					return state;
     				});
 
-    				if ($gamePref.time == -1) {
-    					switchPlayer();
-
-    					gamepref.update(state => {
-    						state.time = timer;
-    						return state;
-    					});
-    				}
+    				if ($gamePref.time == -1) switchPlayer();
     			}
     		},
     		1000
@@ -12567,29 +12705,23 @@ var app = (function () {
     	function setCurrPos(i, j, evt) {
     		console.log(i + ", " + j);
 
-    		if (lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves) {
-    			/* let litCircle = document.getElementById($gameBoard.getId(i,j));
+    		if ($gamePref.currPlayer == $gamePref.side && lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused && $gamePref.sec != null) {
+    			let litCircle = document.getElementById($gameBoard.getId(i, j));
+    			let allCircles, index;
 
-    let allCircles, index;
+    			if ($gameBoard.getSide(i, j) == "black" && $currUser.name == $gamePref.sec) {
+    				allCircles = document.getElementsByClassName("black");
+    				for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:black");
+    				litCircle.setAttribute("style", "fill:grey");
+    			}
 
-    if($gameBoard.getSide(i,j) == "U") {
-    	allCircles = document.getElementsByClassName("checkBlack");
+    			if ($gameBoard.getSide(i, j) == "red" && $currUser.name == $gamePref.pri) {
+    				allCircles = document.getElementsByClassName("red");
+    				for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:red");
+    				litCircle.setAttribute("style", "fill:pink");
+    			}
 
-    	for (index = 0; index < allCircles.length; ++index) 
-    		allCircles[index].setAttribute("style", "fill:black");
-    	
-    	litCircle.setAttribute("style", "fill:grey");
-    }
-    else {
-    	allCircles = document.getElementsByClassName("checkRed");
-
-    	for (index = 0; index < allCircles.length; ++index) 
-    		allCircles[index].setAttribute("style", "fill:red");
-
-    	litCircle.setAttribute("style", "fill:pink");
-    } */
     			let newtarget = evt.target || event.target;
-
     			let topmost = document.getElementById("use");
     			topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + newtarget.id);
     			currPos = $gameBoard.getPiece(i, j);
@@ -12642,27 +12774,43 @@ var app = (function () {
     	function highlightCircle(currPos) {
     		let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
     		let litCircle = document.getElementById($gameBoard.getId(i, j));
-    		if ($gameBoard.getSide(i, j) == "U") litCircle.setAttribute("style", "fill:grey"); else litCircle.setAttribute("style", "fill:pink");
+    		if ($gameBoard.getSide(i, j) == "black") litCircle.setAttribute("style", "fill:grey");
+    		if ($gameBoard.getSide(i, j) == "red") litCircle.setAttribute("style", "fill:pink");
     	}
 
     	function switchPlayer() {
     		let allCircles, index;
 
     		if ($gamePref.currPlayer == "black") {
-    			allCircles = document.getElementsByClassName("checkBlack");
+    			allCircles = document.getElementsByClassName("black");
     			for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:black");
-    		} else {
-    			allCircles = document.getElementsByClassName("checkRed");
+    		}
+
+    		if ($gamePref.currPlayer == "red") {
+    			allCircles = document.getElementsByClassName("red");
     			for (index = 0; index < allCircles.length; ++index) allCircles[index].setAttribute("style", "fill:red");
     		}
 
     		gamePref.update(state => {
+    			state.time = timer;
     			state.currPlayer = state.currPlayer == "red" ? "black" : "red";
     			return state;
     		});
 
+    		$currSocket.emit("current-player", {
+    			player: $gamePref.currPlayer,
+    			room: $gamePref.id
+    		});
+
     		(currPos = null, nextPos = null);
     		lockedPiece = false;
+    	}
+
+    	function pauseGame() {
+    		gameBoard.update(state => {
+    			state.paused = !state.paused;
+    			return state;
+    		});
     	}
 
     	const writable_props = [];
@@ -12693,7 +12841,6 @@ var app = (function () {
     		currSocket,
     		currUser,
     		gameChat,
-    		paused,
     		currPos,
     		nextPos,
     		timer,
@@ -12713,6 +12860,7 @@ var app = (function () {
     		viewBoardHistory,
     		highlightCircle,
     		switchPlayer,
+    		pauseGame,
     		$gamePref,
     		$currUser,
     		$currSocket,
@@ -12723,7 +12871,6 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("paused" in $$props) paused = $$props.paused;
     		if ("currPos" in $$props) currPos = $$props.currPos;
     		if ("nextPos" in $$props) nextPos = $$props.nextPos;
     		if ("timer" in $$props) timer = $$props.timer;
@@ -12754,6 +12901,8 @@ var app = (function () {
     		setCurrPos,
     		setNextPos,
     		viewBoardHistory,
+    		switchPlayer,
+    		pauseGame,
     		currPos,
     		nextPos,
     		lockedPiece,
@@ -12763,12 +12912,10 @@ var app = (function () {
     		$currUser,
     		$currSocket,
     		$gameHistory,
-    		paused,
     		timer,
     		updateCirclePositions,
     		setCirclePositions,
     		highlightCircle,
-    		switchPlayer,
     		click_handler,
     		click_handler_1,
     		input_change_input_handler
@@ -12789,10 +12936,143 @@ var app = (function () {
     	}
     }
 
-    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.2 */
-    const file$8 = "src/Pages/gamePlay.svelte";
+    /* src/Components/navBar.svelte generated by Svelte v3.22.2 */
+    const file$8 = "src/Components/navBar.svelte";
 
-    // (18:0) {#if screenWidth > 800}
+    function create_fragment$8(ctx) {
+    	let div;
+    	let table;
+    	let tr;
+    	let td0;
+    	let i0;
+    	let t0;
+    	let span0;
+    	let t2;
+    	let td1;
+    	let i1;
+    	let t3;
+    	let span1;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			table = element("table");
+    			tr = element("tr");
+    			td0 = element("td");
+    			i0 = element("i");
+    			t0 = space();
+    			span0 = element("span");
+    			span0.textContent = "Game";
+    			t2 = space();
+    			td1 = element("td");
+    			i1 = element("i");
+    			t3 = space();
+    			span1 = element("span");
+    			span1.textContent = "Chat";
+    			attr_dev(i0, "class", "fa fa-qrcode svelte-nu81iu");
+    			add_location(i0, file$8, 13, 16, 334);
+    			attr_dev(span0, "class", "svelte-nu81iu");
+    			add_location(span0, file$8, 14, 16, 379);
+    			attr_dev(td0, "class", "tabIndex");
+    			attr_dev(td0, "align", "center");
+    			add_location(td0, file$8, 12, 12, 248);
+    			attr_dev(i1, "class", "fa fa-comments svelte-nu81iu");
+    			add_location(i1, file$8, 17, 16, 513);
+    			attr_dev(span1, "class", "svelte-nu81iu");
+    			add_location(span1, file$8, 18, 16, 560);
+    			attr_dev(td1, "class", "tabIndex");
+    			attr_dev(td1, "align", "center");
+    			add_location(td1, file$8, 16, 12, 427);
+    			attr_dev(tr, "height", "50");
+    			add_location(tr, file$8, 11, 8, 219);
+    			attr_dev(table, "id", "sidebar-inner-mob");
+    			attr_dev(table, "cellpadding", "10");
+    			attr_dev(table, "class", "svelte-nu81iu");
+    			add_location(table, file$8, 10, 4, 163);
+    			attr_dev(div, "id", "sidebar-outer-mob");
+    			attr_dev(div, "class", "svelte-nu81iu");
+    			add_location(div, file$8, 9, 0, 130);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, table);
+    			append_dev(table, tr);
+    			append_dev(tr, td0);
+    			append_dev(td0, i0);
+    			append_dev(td0, t0);
+    			append_dev(td0, span0);
+    			append_dev(tr, t2);
+    			append_dev(tr, td1);
+    			append_dev(td1, i1);
+    			append_dev(td1, t3);
+    			append_dev(td1, span1);
+    			if (remount) run_all(dispose);
+
+    			dispose = [
+    				listen_dev(td0, "click", /*click_handler*/ ctx[1], false, false, false),
+    				listen_dev(td1, "click", /*click_handler_1*/ ctx[2], false, false, false)
+    			];
+    		},
+    		p: noop,
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    			run_all(dispose);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment$8.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function instance$8($$self, $$props, $$invalidate) {
+    	function switchTabs(tab) {
+    		gameTab.set(tab);
+    	}
+
+    	const writable_props = [];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<NavBar> was created with unknown prop '${key}'`);
+    	});
+
+    	let { $$slots = {}, $$scope } = $$props;
+    	validate_slots("NavBar", $$slots, []);
+    	const click_handler = () => switchTabs(0);
+    	const click_handler_1 = () => switchTabs(1);
+    	$$self.$capture_state = () => ({ gameTab, switchTabs });
+    	return [switchTabs, click_handler, click_handler_1];
+    }
+
+    class NavBar extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance$8, create_fragment$8, safe_not_equal, {});
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "NavBar",
+    			options,
+    			id: create_fragment$8.name
+    		});
+    	}
+    }
+
+    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.2 */
+
+    // (15:0) {#if screenWidth > 800}
     function create_if_block_3$3(ctx) {
     	let t;
     	let current;
@@ -12833,32 +13113,19 @@ var app = (function () {
     		block,
     		id: create_if_block_3$3.name,
     		type: "if",
-    		source: "(18:0) {#if screenWidth > 800}",
+    		source: "(15:0) {#if screenWidth > 800}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (23:0) {#if screenWidth <= 800}
+    // (20:0) {#if screenWidth <= 800}
     function create_if_block$4(ctx) {
     	let current_block_type_index;
     	let if_block;
-    	let t0;
-    	let div;
-    	let table;
-    	let tr;
-    	let td0;
-    	let i0;
-    	let t1;
-    	let span0;
-    	let t3;
-    	let td1;
-    	let i1;
-    	let t4;
-    	let span1;
+    	let t;
     	let current;
-    	let dispose;
     	const if_block_creators = [create_if_block_1$4, create_if_block_2$4];
     	const if_blocks = [];
 
@@ -12872,73 +13139,22 @@ var app = (function () {
     		if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
     	}
 
+    	const nav = new NavBar({ $$inline: true });
+
     	const block = {
     		c: function create() {
     			if (if_block) if_block.c();
-    			t0 = space();
-    			div = element("div");
-    			table = element("table");
-    			tr = element("tr");
-    			td0 = element("td");
-    			i0 = element("i");
-    			t1 = space();
-    			span0 = element("span");
-    			span0.textContent = "Game";
-    			t3 = space();
-    			td1 = element("td");
-    			i1 = element("i");
-    			t4 = space();
-    			span1 = element("span");
-    			span1.textContent = "Chat";
-    			attr_dev(i0, "class", "fa fa-qrcode svelte-2hwn7");
-    			add_location(i0, file$8, 34, 5, 931);
-    			attr_dev(span0, "class", "svelte-2hwn7");
-    			add_location(span0, file$8, 35, 5, 966);
-    			attr_dev(td0, "class", "tabIndex");
-    			attr_dev(td0, "align", "center");
-    			add_location(td0, file$8, 33, 4, 855);
-    			attr_dev(i1, "class", "fa fa-comments svelte-2hwn7");
-    			add_location(i1, file$8, 38, 5, 1076);
-    			attr_dev(span1, "class", "svelte-2hwn7");
-    			add_location(span1, file$8, 39, 5, 1113);
-    			attr_dev(td1, "class", "tabIndex");
-    			attr_dev(td1, "align", "center");
-    			add_location(td1, file$8, 37, 4, 1000);
-    			attr_dev(tr, "height", "50");
-    			add_location(tr, file$8, 32, 3, 833);
-    			attr_dev(table, "id", "sidebar-inner-mob");
-    			attr_dev(table, "cellpadding", "10");
-    			attr_dev(table, "class", "svelte-2hwn7");
-    			add_location(table, file$8, 31, 2, 781);
-    			attr_dev(div, "id", "sidebar-outer-mob");
-    			attr_dev(div, "class", "svelte-2hwn7");
-    			add_location(div, file$8, 30, 1, 749);
+    			t = space();
+    			create_component(nav.$$.fragment);
     		},
-    		m: function mount(target, anchor, remount) {
+    		m: function mount(target, anchor) {
     			if (~current_block_type_index) {
     				if_blocks[current_block_type_index].m(target, anchor);
     			}
 
-    			insert_dev(target, t0, anchor);
-    			insert_dev(target, div, anchor);
-    			append_dev(div, table);
-    			append_dev(table, tr);
-    			append_dev(tr, td0);
-    			append_dev(td0, i0);
-    			append_dev(td0, t1);
-    			append_dev(td0, span0);
-    			append_dev(tr, t3);
-    			append_dev(tr, td1);
-    			append_dev(td1, i1);
-    			append_dev(td1, t4);
-    			append_dev(td1, span1);
+    			insert_dev(target, t, anchor);
+    			mount_component(nav, target, anchor);
     			current = true;
-    			if (remount) run_all(dispose);
-
-    			dispose = [
-    				listen_dev(td0, "click", /*click_handler*/ ctx[3], false, false, false),
-    				listen_dev(td1, "click", /*click_handler_1*/ ctx[4], false, false, false)
-    			];
     		},
     		p: function update(ctx, dirty) {
     			let previous_block_index = current_block_type_index;
@@ -12964,7 +13180,7 @@ var app = (function () {
     					}
 
     					transition_in(if_block, 1);
-    					if_block.m(t0.parentNode, t0);
+    					if_block.m(t.parentNode, t);
     				} else {
     					if_block = null;
     				}
@@ -12973,10 +13189,12 @@ var app = (function () {
     		i: function intro(local) {
     			if (current) return;
     			transition_in(if_block);
+    			transition_in(nav.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(if_block);
+    			transition_out(nav.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
@@ -12984,9 +13202,8 @@ var app = (function () {
     				if_blocks[current_block_type_index].d(detaching);
     			}
 
-    			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(div);
-    			run_all(dispose);
+    			if (detaching) detach_dev(t);
+    			destroy_component(nav, detaching);
     		}
     	};
 
@@ -12994,14 +13211,14 @@ var app = (function () {
     		block,
     		id: create_if_block$4.name,
     		type: "if",
-    		source: "(23:0) {#if screenWidth <= 800}",
+    		source: "(20:0) {#if screenWidth <= 800}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (27:25) 
+    // (24:25) 
     function create_if_block_2$4(ctx) {
     	let current;
     	const chat = new GameChat({ $$inline: true });
@@ -13032,14 +13249,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2$4.name,
     		type: "if",
-    		source: "(27:25) ",
+    		source: "(24:25) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (25:1) {#if $gameTab == 0}
+    // (22:1) {#if $gameTab == 0}
     function create_if_block_1$4(ctx) {
     	let current;
     	const game = new GameBoard({ $$inline: true });
@@ -13070,14 +13287,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1$4.name,
     		type: "if",
-    		source: "(25:1) {#if $gameTab == 0}",
+    		source: "(22:1) {#if $gameTab == 0}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$8(ctx) {
+    function create_fragment$9(ctx) {
     	let t;
     	let if_block1_anchor;
     	let current;
@@ -13125,7 +13342,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$8.name,
+    		id: create_fragment$9.name,
     		type: "component",
     		source: "",
     		ctx
@@ -13134,16 +13351,11 @@ var app = (function () {
     	return block;
     }
 
-    function instance$8($$self, $$props, $$invalidate) {
+    function instance$9($$self, $$props, $$invalidate) {
     	let $gameTab;
     	validate_store(gameTab, "gameTab");
     	component_subscribe($$self, gameTab, $$value => $$invalidate(0, $gameTab = $$value));
     	let screenWidth = screen.width;
-
-    	function switchTabs(tab) {
-    		gameTab.set(tab);
-    	}
-
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
@@ -13152,8 +13364,6 @@ var app = (function () {
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("GamePlay", $$slots, []);
-    	const click_handler = () => switchTabs(0);
-    	const click_handler_1 = () => switchTabs(1);
 
     	$$self.$capture_state = () => ({
     		Position,
@@ -13170,8 +13380,8 @@ var app = (function () {
     		gameTab,
     		Chat: GameChat,
     		Game: GameBoard,
+    		Nav: NavBar,
     		screenWidth,
-    		switchTabs,
     		$gameTab
     	});
 
@@ -13183,19 +13393,19 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [$gameTab, screenWidth, switchTabs, click_handler, click_handler_1];
+    	return [$gameTab, screenWidth];
     }
 
     class GamePlay extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$8, create_fragment$8, safe_not_equal, {});
+    		init(this, options, instance$9, create_fragment$9, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "GamePlay",
     			options,
-    			id: create_fragment$8.name
+    			id: create_fragment$9.name
     		});
     	}
     }
@@ -13461,7 +13671,7 @@ var app = (function () {
     	return block;
     }
 
-    function create_fragment$9(ctx) {
+    function create_fragment$a(ctx) {
     	let div;
     	let h3;
     	let t1;
@@ -13533,7 +13743,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$9.name,
+    		id: create_fragment$a.name,
     		type: "component",
     		source: "",
     		ctx
@@ -13542,7 +13752,7 @@ var app = (function () {
     	return block;
     }
 
-    function instance$9($$self, $$props, $$invalidate) {
+    function instance$a($$self, $$props, $$invalidate) {
     	let Email, Name, Password, confirmPassword;
     	let logEmail, logPassword;
     	let request;
@@ -13729,13 +13939,13 @@ var app = (function () {
     class Entry extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$9, create_fragment$9, safe_not_equal, {});
+    		init(this, options, instance$a, create_fragment$a, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "Entry",
     			options,
-    			id: create_fragment$9.name
+    			id: create_fragment$a.name
     		});
     	}
     }
@@ -13952,7 +14162,7 @@ var app = (function () {
     	return block;
     }
 
-    function create_fragment$a(ctx) {
+    function create_fragment$b(ctx) {
     	let current_block_type_index;
     	let if_block;
     	let if_block_anchor;
@@ -14023,7 +14233,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$a.name,
+    		id: create_fragment$b.name,
     		type: "component",
     		source: "",
     		ctx
@@ -14032,7 +14242,7 @@ var app = (function () {
     	return block;
     }
 
-    function instance$a($$self, $$props, $$invalidate) {
+    function instance$b($$self, $$props, $$invalidate) {
     	let $currUser;
     	let $page;
     	validate_store(currUser, "currUser");
@@ -14064,13 +14274,13 @@ var app = (function () {
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$a, create_fragment$a, safe_not_equal, {});
+    		init(this, options, instance$b, create_fragment$b, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "App",
     			options,
-    			id: create_fragment$a.name
+    			id: create_fragment$b.name
     		});
     	}
     }

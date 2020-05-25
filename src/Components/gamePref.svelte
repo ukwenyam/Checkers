@@ -21,6 +21,9 @@
             state.currPlayer = null;
             state.numMoves = 0;
             state.rangeMoves = 0;
+            state.paused = true;
+            state.side = "red";
+            state.secondsPlayed = 0;
             return state;
         });
 

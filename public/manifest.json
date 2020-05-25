@@ -1,0 +1,26 @@
+{
+  "name": "Checkas",
+  "short_name": "Checkas",
+  "description": "Checkers Game",
+  "background_color": "#303030",
+  "theme_color": "#303030",
+  "icons": [
+    {
+      "src": "/images/checkers.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/checkers.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/checkers.png",
+      "sizes": "200x200",
+      "type": "image/png"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "."
+}

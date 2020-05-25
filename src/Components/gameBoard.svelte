@@ -4,11 +4,9 @@
 	import { spring } from 'svelte/motion';
 	import { writable } from 'svelte/store';
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat } from '../Scripts/Init.js';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat, page } from '../Scripts/Init.js';
 
-    let paused = true;
-
-    if($gamePref.pri == $currUser.name) {
+    if($gamePref.pri == $currUser.name && $gamePref.currPlayer == null) {
         gamePref.update(state => {
             state.currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
             return state;
@@ -27,7 +25,7 @@
 
 	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
 
-	let squareSize, boardHeight, factor;
+	let squareSize, boardHeight, factor, btnWidth;
 
 	$currSocket.emit('set-username', $currUser.name);
 
@@ -42,19 +40,23 @@
             });
         }
 
-        $currSocket.emit('starting-player', {player: $gamePref.currPlayer, room: $gamePref.id});
+        $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
 
         console.log('Received other username');
 
         gameChat.set([]);
     });
 
-    $currSocket.on('starting-player', (data) => {
-		console.log('Received starting player');
+    $currSocket.on('current-player', (data) => {
+        console.log('Received current player');
+        
         gamePref.update(state => {
             state.currPlayer = data;
+            state.time = timer;
             return state;
         });
+
+        console.log($gamePref.currPlayer);
 	});
 
     $currSocket.on('piece-move', async (data) => {
@@ -85,6 +87,14 @@
         });
     });
 
+    $currSocket.on('paused', (data) => {
+
+        gamePref.update(state => {
+            state.paused = data;
+            return state;
+        });
+    });
+
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 
 		squareSize = Math.floor((screen.width - 10) / 8);
@@ -97,47 +107,45 @@
 		boardHeight = squareSize * 8;
 		remWidth = screen.width;
 	} else {
-		factor = 1;
-		size = spring(30);
-
 		if(screen.height >= 800) {
+			factor = 1;
+			size = spring(30);
 			squareSize = 100;
 		} else {
 			squareSize = 10 * Math.floor(screen.height / 100);
-		}
+			factor = 1000 / (squareSize * 10);
+			size = spring(25);
+        }
 		
 		boardHeight = squareSize * 8;
-		remWidth = 0.8 * (screen.width - 800);
+        remWidth = 0.8 * (screen.width - 800);
+        btnWidth = (0.2 * (screen.width - 800)) - 40;
 	}
 
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
 
-	document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
+    document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
+    
+    document.documentElement.style.setProperty('--btn-width', btnWidth + 'px');
 
 	setCirclePositions();
 
-	/* setInterval(function() {
+	setInterval(function() {
 		if(currPos != null)
 			highlightCircle(currPos);
-	}, 100); */
+	}, 100);
 
 	setInterval(function() {
-		if($gamePref.rangeMoves == $gamePref.numMoves && !paused) {
+		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
 
-            gamepref.update(state => {
+            gamePref.update(state => {
                 state.time -= 1;
+                state.secondsPlayed += 1;
                 return state;
             });
 
-			if($gamePref.time == -1) {
-
+			if($gamePref.time == -1 && $gamePref.currPlayer == $gamePref.side) 
                 switchPlayer();
-                
-				gamepref.update(state => {
-                    state.time = timer;
-                    return state;
-                });
-			}
 		}
 	}, 1000);
 	
@@ -186,28 +194,29 @@
 
 		console.log(i + ", " + j);
 
-		if(lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves) {
+		if($gamePref.currPlayer == $gamePref.side && lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false && $gamePref.sec != null) {
 
-			/* let litCircle = document.getElementById($gameBoard.getId(i,j));
+			let litCircle = document.getElementById($gameBoard.getId(i,j));
 
 			let allCircles, index;
 
-			if($gameBoard.getSide(i,j) == "U") {
-				allCircles = document.getElementsByClassName("checkBlack");
+			if($gameBoard.getSide(i,j) == "black" && $currUser.name == $gamePref.sec) {
+				allCircles = document.getElementsByClassName("black");
 
 				for (index = 0; index < allCircles.length; ++index) 
 					allCircles[index].setAttribute("style", "fill:black");
 				
 				litCircle.setAttribute("style", "fill:grey");
-			}
-			else {
-				allCircles = document.getElementsByClassName("checkRed");
+            }
+            
+			if($gameBoard.getSide(i,j) == "red" && $currUser.name == $gamePref.pri) {
+				allCircles = document.getElementsByClassName("red");
 
 				for (index = 0; index < allCircles.length; ++index) 
 					allCircles[index].setAttribute("style", "fill:red");
 
 				litCircle.setAttribute("style", "fill:pink");
-			} */
+			}
 
 			let newtarget = evt.target || event.target;
 			let topmost = document.getElementById("use");
@@ -276,51 +285,106 @@
 
 	function highlightCircle(currPos) {
 
-		let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
+        let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
 
-		let litCircle = document.getElementById($gameBoard.getId(i, j));
+        let litCircle = document.getElementById($gameBoard.getId(i, j));
 
-		if($gameBoard.getSide(i,j) == "U") 
-			litCircle.setAttribute("style", "fill:grey");
-		else 
-			litCircle.setAttribute("style", "fill:pink");
+        if($gameBoard.getSide(i,j) == "black") 
+            litCircle.setAttribute("style", "fill:grey");
+            
+        if($gameBoard.getSide(i,j) == "red")
+            litCircle.setAttribute("style", "fill:pink");
 	}
 
 	function switchPlayer() {
 
-		let allCircles, index;
+        if($gamePref.side == $gamePref.currPlayer) {
 
-		if($gamePref.currPlayer == "black") {
+            let allCircles, index;
 
-			allCircles = document.getElementsByClassName("checkBlack");
+            if($gamePref.currPlayer == "black") {
 
-			for (index = 0; index < allCircles.length; ++index) 
-				allCircles[index].setAttribute("style", "fill:black");
+                allCircles = document.getElementsByClassName("black");
 
-		} else {
+                for (index = 0; index < allCircles.length; ++index) 
+                    allCircles[index].setAttribute("style", "fill:black");
+            } 
+            
+            if($gamePref.currPlayer == "red") {
 
-			allCircles = document.getElementsByClassName("checkRed");
+                allCircles = document.getElementsByClassName("red");
 
-			for (index = 0; index < allCircles.length; ++index) 
-				allCircles[index].setAttribute("style", "fill:red");
+                for (index = 0; index < allCircles.length; ++index) 
+                    allCircles[index].setAttribute("style", "fill:red");
+            }
+            
+            gamePref.update(state => {
+                state.time = timer;
+                state.currPlayer = state.currPlayer == "red" ? "black" : "red";
+                return state;
+            });
+
+            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
+
+            currPos = null, nextPos = null;
+            lockedPiece = false;
         }
-        
-        gamePref.update(state => {
-            state.currPlayer = state.currPlayer == "red" ? "black" : "red";
-            return state;
-        });
+    }
+    
+    function pauseGame() {
 
-		currPos = null, nextPos = null;
-		lockedPiece = false;
-	}
+        if($gamePref.side == $gamePref.currPlayer) {
+
+            gamePref.update(state => {
+                state.paused = !state.paused;
+                return state;
+            });
+
+            $currSocket.emit('paused', {paused: $gamePref.paused, room: $gamePref.id});
+        }
+    }
+
+    setInterval(function(){
+        saveGame(true);
+    }, 300000);
+
+    function saveGame(auto) {
+
+        if($gamePref.side == $gamePref.currPlayer) {
+
+            let request = {
+                func: "saveGame",
+                gameID: $gameBoard.id,
+                gameHistory: $gameHistory,
+                chatHistory: $gameChat,
+                pri: $gamePref.pri == $currUser.name ? true : false,
+                sec: $gamePref.sec == $currUser.name ? true : false,
+                minutes: Math.floor($gamePref.secondsPlayed / 60)
+            }
+            
+            invokeFunction(request).then((response) => {
+                console.log(response);
+
+                if(response.msg != null || response.msg == "SUCCESS") {
+                    if(auto == false)
+                        page.set(0);
+                } else {
+                    console.log(response.err);
+                }
+
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
+    }
 </script>
 
 <h2 id="player">Current Player:</h2>
 
 {#if $gamePref.currPlayer == "black"}
-	<div class="checker black"></div>
+	<div class="checker blacka"></div>
 {:else}
-	<div class="checker red"></div>
+	<div class="checker reda"></div>
 {/if}
 
 <h2 id="moves">Moves: {$gamePref.numMoves}</h2>
@@ -335,7 +399,7 @@
 			{#each squares as j}
 				{#if !$gameBoard.isEmpty(i, j)}
 					<rect width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-					<circle id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
+					<circle class="{$gameBoard.getSide(i, j)}" id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
 				{:else if $gameBoard.isEmpty(i, j)}
                     {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
                         <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
@@ -353,10 +417,43 @@
 
 <div id="state">
     <h2 id="rangeBar">Game State at Move: {$gamePref.rangeMoves}</h2>
-    <input class="custom-range" on:change="{viewBoardHistory}" bind:value={$gamePref.rangeMoves} type="range" min="0" max="{$gamePref.numMoves}" step="1">
+    <input class="custom-range" disabled="{!$gamePref.paused}" on:change="{viewBoardHistory}" bind:value={$gamePref.rangeMoves} type="range" min="0" max="{$gamePref.numMoves}" step="1">
 </div>
 
+{#if $gamePref.paused} 
+    <button class="btn btn-success pause" on:click="{pauseGame}">Start Game</button>
+{:else}
+    <button class="btn btn-warning pause" on:click="{pauseGame}">Pause Game</button>
+{/if}
+
+<button class="btn btn-info switch" on:click="{switchPlayer}">Switch Turn</button>
+
+<button class="btn btn-primary save" on:click="{() => saveGame(false)}">Save Game</button>
+
 <style>
+    .pause {
+        width:var(--btn-width);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        left: 820px;
+        bottom: 450px;
+        position:fixed;
+    }
+
+    .switch {
+        width:var(--btn-width);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        left: 820px;
+        bottom: 350px;
+        position:fixed;
+    }
+
+    .save {
+        width:var(--btn-width);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        left: 820px;
+        bottom: 250px;
+        position:fixed;
+    }
 
 	#board {
 		width:800px;
@@ -385,11 +482,11 @@
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
-	.black {
+	.blacka {
 		background-color: black;
 	}
 
-	.red {
+	.reda {
 		background-color: red;
 	}
 	
@@ -423,6 +520,27 @@
 	}
 
 	@media screen and (max-width: 800px) {
+
+        .pause {
+            width:50%;
+            margin-top:40px;
+            margin-left: 25%;
+            position:unset;
+        }
+
+        .switch {
+            width:50%;
+            margin-top:30px;
+            margin-left: 25%;
+            position:unset;
+        }
+
+        .save {
+            width:50%;
+            margin-top:30px;
+            margin-left: 25%;
+            position:unset;
+        }
 
 		#state {
 			float:unset;

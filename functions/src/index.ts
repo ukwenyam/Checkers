@@ -231,7 +231,7 @@ export const saveGame = functions.https.onRequest((request, response) => {
 
         docRef.update({
             priGameHistory: evt.gameHistory,
-            minutesPlayed: evt.minutes,
+            minutesPlayed: Number(evt.minutes),
             chatHistory: evt.chatHistory
         }).then(function() {
             res.send({msg: "SUCCESS"});
@@ -244,7 +244,7 @@ export const saveGame = functions.https.onRequest((request, response) => {
 
         docRef.update({
             secGameHistory: evt.gameHistory,
-            minutesPlayed: evt.minutes,
+            minutesPlayed: Number(evt.minutes),
             chatHistory: evt.chatHistory
         }).then(function() {
             res.send({msg: "SUCCESS"});
