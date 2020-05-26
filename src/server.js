@@ -1,11 +1,11 @@
 const express = require('express');
 const socketio = require('socket.io');
-//const http = require('http');
 
 const PORT = process.env.PORT || 4000;
+const HOST = '0.0.0.0';
 const INDEX = '../public/index.html';
 
-const server = express().use((req, res) => res.sendFile(INDEX, { root: __dirname})).listen(PORT, () => {
+const server = express().use((req, res) => res.sendFile(INDEX, { root: __dirname})).listen(PORT, HOST, () => {
     console.log(`Server has started on port ${PORT}`)
 });
 
