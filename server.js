@@ -1,15 +1,9 @@
 const express = require('express');
-const path = require('path');
-const socketio = require('socket.io');
-const PORT = process.env.PORT || 4000;
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
 
-const server = express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('view engine', 'html')
-  .get('/', (req, res) => res.render('public/index.html'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-
-const io = socketio(server);
+server.listen(process.env.PORT || 3000);
 
 const MAX_ROOM_USER = 2;
 
