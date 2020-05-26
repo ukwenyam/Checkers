@@ -1,6 +1,9 @@
 {
-  "name": "svelte-app",
+  "name": "Checkers-Master",
   "version": "1.0.0",
+  "engines": {
+    "node": "13.x"
+  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -20,5 +23,14 @@
     "sirv-cli": "^0.4.4",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ukwenyam/Checkers"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ]
 }

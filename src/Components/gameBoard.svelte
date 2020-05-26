@@ -345,7 +345,8 @@
     }
 
     setInterval(function(){
-        saveGame(true);
+        if($gamePref.secondsPlayed > timer)
+            saveGame(true);
     }, 300000);
 
     function saveGame(auto) {
