@@ -1,24 +1,19 @@
 const express = require('express');
 const socketio = require('socket.io');
-const http = require('http');
+//const http = require('http');
 
 const PORT = process.env.PORT || 4000;
+const INDEX = '../public/index.html';
 
-const router = require('./router');
+const server = express().use((req, res) => res.sendFile(INDEX, { root: __dirname})).listen(PORT, () => {
+    console.log(`Server has started on port ${PORT}`)
+});
 
-const app = express();
-const server = http.createServer(app);
 const io = socketio(server);
 
 const MAX_ROOM_USER = 2;
 
 var rooms = new Map();
-
-app.use(router);
-
-server.listen(PORT, () => {
-    console.log(`Server has started on port ${PORT}`)
-});
 
 var userCount = 0;
 
