@@ -2,10 +2,13 @@
 	import Dash from './Pages/dashBoard.svelte';
 	import Play from './Pages/gamePlay.svelte';
 	import Entry from './Pages/entry.svelte';
+	import Socket from './Components/socketRecv.svelte';
 	import { currUser, page } from './Scripts/Init.js';
 </script>
 
 {#if $currUser != null && $currUser.isAuth}
+	<Socket/>
+
 	{#if $page == 0}
 		<Dash/>
 	{/if}

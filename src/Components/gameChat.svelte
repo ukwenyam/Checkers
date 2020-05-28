@@ -53,16 +53,6 @@
             $currSocket.emit('typing', room);
         }
     }
-
-    $currSocket.on('chat message', (data) => {
-       console.log('Received: '+data.msg);
-       //$gameChat.push(data);
-       gameChat.update(state => {
-           state.push(data);
-           return state;
-       });
-    });
-
 </script>
 
 <div id="chat" class="container-fluid">
