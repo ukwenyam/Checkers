@@ -8,9 +8,12 @@
     import Chat from '../Components/gameChat.svelte';
 	import Game from '../Components/gameBoard.svelte';
 	import Nav from '../Components/navBar.svelte';
+	import Socket from '../Components/socketRecv.svelte';
 	
 	let screenWidth = screen.width;
 </script>
+
+<Socket/>
 
 {#if screenWidth > 800}
 	<Game/>

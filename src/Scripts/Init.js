@@ -26,7 +26,7 @@ window.onload = async function() {
     }
 }
 
-export const currSocket = writable(io());
+export const currSocket = writable(io("https://checkerio-server.herokuapp.com/"));
 
 export const currUser = writable(null);
 

@@ -8,7 +8,7 @@
     let message;
     let isTyping = false;
 
-    if($gamePref.pri == $currUser.name && $gameChat.length == 0 && $gamePref.sec == null)
+    if($gamePref.pri == $currUser.name && $gameChat.length == 0 && $gamePref.sec == null && screen.width >= 800)
         $gameChat.push({name: "System", msg: "Please share Game Password '" + $gamePref.id + "' with other player"});
     
     let socket;

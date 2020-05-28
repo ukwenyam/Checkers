@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('join-room', (room, username) => {
-        if(rooms.has(room)){
+        if(rooms.has(room)) {
             rooms.set(room, 2);
             console.log('other player arrived!');
             socket.to(room).emit('second-user', username);

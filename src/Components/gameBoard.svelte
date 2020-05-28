@@ -3,7 +3,8 @@
 	import { Board } from '../Scripts/Board.js';
 	import { spring } from 'svelte/motion';
 	import { writable } from 'svelte/store';
-    import { invokeFunction } from '../Scripts/Cloud.js';
+	import { invokeFunction } from '../Scripts/Cloud.js';
+	import { fly } from 'svelte/transition';
     import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat, page } from '../Scripts/Init.js';
 
     if($gamePref.pri == $currUser.name && $gamePref.currPlayer == null) {
@@ -15,7 +16,7 @@
 	    
 	let currPos = null, nextPos = null;
 
-	let timer = $gamePref.time, lockedPiece = false;
+	let clockTime = $gamePref.time, lockedPiece = false;
 
     let screenWidth = screen.width, remWidth;
 
@@ -58,6 +59,34 @@
         btnWidth = (0.2 * (screen.width - 800)) - 40;
 	}
 
+	$currSocket.on('piece-move', async (data) => {
+
+        console.log(data);
+
+        if(data.remove != null) {
+
+            let piece = await $gameBoard.getPieceFromId(data.id);
+
+            await $gameBoard.removePiece(piece);
+        }
+        
+        let piece = await $gameBoard.getPieceFromId(data.id);
+
+        await $gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
+
+        await gameBoard.set($gameBoard);
+
+        $gameHistory.push($gameBoard.saveBoardState());
+
+        await setCirclePositions();
+
+        await gamePref.update(state => {
+            state.numMoves = data.num;
+            state.rangeMoves = data.range;
+            return state;
+        });
+    });
+
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
 
     document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
@@ -66,26 +95,42 @@
 
 	setCirclePositions();
 
-	setInterval(function() {
+	let timeInterval = setInterval(countDown, 1000);
+
+	function countDown() {
+
 		if(currPos != null)
 			highlightCircle(currPos);
-	}, 100);
 
-	setInterval(function() {
 		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
 
-            gamePref.update(state => {
-                state.time -= 1;
-                state.secondsPlayed += 1;
-                return state;
-            });
+			//console.log($gamePref.timer);
 
-			if($gamePref.time == -1 && $gamePref.currPlayer == $gamePref.side) 
-                switchPlayer();
+			if($gamePref.timer > 0) {
+
+				gamePref.update(state => {
+					state.timer -= 1;
+					state.secondsPlayed += 1;
+					return state;
+				});
+			} else {
+				clearInterval(timeInterval);
+
+				gamePref.update(state => {
+					state.currPlayer = state.currPlayer == "red" ? "black" : "red";
+					state.timer = state.time;
+					state.secondsPlayed += 1;
+					return state;
+				});
+
+				currPos = null, nextPos = null;
+				lockedPiece = false;
+
+				timeInterval = setInterval(countDown, 1000);
+			}
 		}
-	}, 1000);
+	}
 	
-		
 	function updateCirclePositions(nextPos) {
 
 		let i = nextPos.xPos, j = nextPos.yPos;
@@ -236,6 +281,8 @@
 
         if($gamePref.side == $gamePref.currPlayer) {
 
+			clearInterval(timeInterval);
+
             let allCircles, index;
 
             if($gamePref.currPlayer == "black") {
@@ -252,18 +299,20 @@
 
                 for (index = 0; index < allCircles.length; ++index) 
                     allCircles[index].setAttribute("style", "fill:red");
-            }
-            
-            gamePref.update(state => {
-                state.time = timer;
-                state.currPlayer = state.currPlayer == "red" ? "black" : "red";
+			}
+			
+			gamePref.update(state => {
+				state.currPlayer = state.currPlayer == "red" ? "black" : "red";
+				state.timer = clockTime;
                 return state;
             });
 
             $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
 
             currPos = null, nextPos = null;
-            lockedPiece = false;
+			lockedPiece = false;
+			
+			timeInterval = setInterval(countDown, 1000);
         }
     }
     
@@ -281,7 +330,7 @@
     }
 
     setInterval(function(){
-        if($gamePref.secondsPlayed > timer)
+        if($gamePref.secondsPlayed > $gamePref.timer)
             saveGame(true);
     }, 300000);
 
@@ -316,18 +365,24 @@
     }
 </script>
 
+{#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800}
+	<div id="popUp" class="container-fluid" transition:fly={{ y:-200, duration:1000 }}>
+		<h5 style="text-align:center;margin-top:50%;">Please share Game Password '{$gamePref.id}' with other player</h5>
+    </div>
+{/if}
+
 <h2 id="player">Current Player:</h2>
 
 {#if $gamePref.currPlayer == "black"}
 	<div class="checker blacka"></div>
-{:else}
+{:else if $gamePref.currPlayer == "red"}
 	<div class="checker reda"></div>
 {/if}
 
 <h2 id="moves">Moves: {$gamePref.numMoves}</h2>
 
 {#if screenWidth > 800}
-	<h2 id="time">Timer: {$gamePref.time}</h2>
+	<h2 id="time">Timer: {$gamePref.timer}</h2>
 {/if}
 
 <div id="board">
@@ -349,7 +404,7 @@
 </div>
 
 {#if screenWidth <= 800}
-	<h1 id="time">Timer: {$gamePref.time}</h1>
+	<h1 id="time">Timer: {$gamePref.timer}</h1>
 {/if}
 
 <div id="state">
@@ -457,6 +512,17 @@
 	}
 
 	@media screen and (max-width: 800px) {
+
+		#popUp {
+			width:100%;
+			height:100%;
+			background-color: pink;
+			z-index:99; 
+			border-radius:0.4rem;
+			top:0;
+			left:0;
+			position:fixed;
+		}
 
         .pause {
             width:50%;

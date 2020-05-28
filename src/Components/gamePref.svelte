@@ -16,6 +16,7 @@
         gamePref.update(state => {
             state = {};
             state.time = Time;
+            state.timer = Time;
             state.pri = $currUser.name;
             state.sec = null;
             state.currPlayer = null;
@@ -49,7 +50,7 @@
                     return state;
                 });
 
-                page.set(1); gameTab.set(1);
+                page.set(1); gameTab.set(0);
             } else {
                 console.log(response.err);
             }
