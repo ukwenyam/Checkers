@@ -1,9 +1,6 @@
 {
   "name": "Checkers-Master",
   "version": "1.0.0",
-  "engines": {
-    "node": "13.x"
-  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
