@@ -562,7 +562,7 @@ var app = (function () {
     }
 
     function dispatch_dev(type, detail) {
-        document.dispatchEvent(custom_event(type, Object.assign({ version: '3.22.3' }, detail)));
+        document.dispatchEvent(custom_event(type, Object.assign({ version: '3.22.2' }, detail)));
     }
     function append_dev(target, node) {
         dispatch_dev("SvelteDOMInsert", { target, node });
@@ -4545,6 +4545,709 @@ var app = (function () {
     var yeast_1 = yeast;
 
     /**
+     * Helpers.
+     */
+
+    var s$2 = 1000;
+    var m$2 = s$2 * 60;
+    var h$2 = m$2 * 60;
+    var d$2 = h$2 * 24;
+    var w$1 = d$2 * 7;
+    var y$2 = d$2 * 365.25;
+
+    /**
+     * Parse or format the given `val`.
+     *
+     * Options:
+     *
+     *  - `long` verbose formatting [false]
+     *
+     * @param {String|Number} val
+     * @param {Object} [options]
+     * @throws {Error} throw an error if val is not a non-empty string or a number
+     * @return {String|Number}
+     * @api public
+     */
+
+    var ms$2 = function(val, options) {
+      options = options || {};
+      var type = typeof val;
+      if (type === 'string' && val.length > 0) {
+        return parse$2(val);
+      } else if (type === 'number' && isFinite(val)) {
+        return options.long ? fmtLong$2(val) : fmtShort$2(val);
+      }
+      throw new Error(
+        'val is not a non-empty string or a valid number. val=' +
+          JSON.stringify(val)
+      );
+    };
+
+    /**
+     * Parse the given `str` and return milliseconds.
+     *
+     * @param {String} str
+     * @return {Number}
+     * @api private
+     */
+
+    function parse$2(str) {
+      str = String(str);
+      if (str.length > 100) {
+        return;
+      }
+      var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+        str
+      );
+      if (!match) {
+        return;
+      }
+      var n = parseFloat(match[1]);
+      var type = (match[2] || 'ms').toLowerCase();
+      switch (type) {
+        case 'years':
+        case 'year':
+        case 'yrs':
+        case 'yr':
+        case 'y':
+          return n * y$2;
+        case 'weeks':
+        case 'week':
+        case 'w':
+          return n * w$1;
+        case 'days':
+        case 'day':
+        case 'd':
+          return n * d$2;
+        case 'hours':
+        case 'hour':
+        case 'hrs':
+        case 'hr':
+        case 'h':
+          return n * h$2;
+        case 'minutes':
+        case 'minute':
+        case 'mins':
+        case 'min':
+        case 'm':
+          return n * m$2;
+        case 'seconds':
+        case 'second':
+        case 'secs':
+        case 'sec':
+        case 's':
+          return n * s$2;
+        case 'milliseconds':
+        case 'millisecond':
+        case 'msecs':
+        case 'msec':
+        case 'ms':
+          return n;
+        default:
+          return undefined;
+      }
+    }
+
+    /**
+     * Short format for `ms`.
+     *
+     * @param {Number} ms
+     * @return {String}
+     * @api private
+     */
+
+    function fmtShort$2(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d$2) {
+        return Math.round(ms / d$2) + 'd';
+      }
+      if (msAbs >= h$2) {
+        return Math.round(ms / h$2) + 'h';
+      }
+      if (msAbs >= m$2) {
+        return Math.round(ms / m$2) + 'm';
+      }
+      if (msAbs >= s$2) {
+        return Math.round(ms / s$2) + 's';
+      }
+      return ms + 'ms';
+    }
+
+    /**
+     * Long format for `ms`.
+     *
+     * @param {Number} ms
+     * @return {String}
+     * @api private
+     */
+
+    function fmtLong$2(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d$2) {
+        return plural$2(ms, msAbs, d$2, 'day');
+      }
+      if (msAbs >= h$2) {
+        return plural$2(ms, msAbs, h$2, 'hour');
+      }
+      if (msAbs >= m$2) {
+        return plural$2(ms, msAbs, m$2, 'minute');
+      }
+      if (msAbs >= s$2) {
+        return plural$2(ms, msAbs, s$2, 'second');
+      }
+      return ms + ' ms';
+    }
+
+    /**
+     * Pluralization helper.
+     */
+
+    function plural$2(ms, msAbs, n, name) {
+      var isPlural = msAbs >= n * 1.5;
+      return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
+    }
+
+    /**
+     * This is the common logic for both the Node.js and web browser
+     * implementations of `debug()`.
+     */
+
+    function setup$1(env) {
+    	createDebug.debug = createDebug;
+    	createDebug.default = createDebug;
+    	createDebug.coerce = coerce;
+    	createDebug.disable = disable;
+    	createDebug.enable = enable;
+    	createDebug.enabled = enabled;
+    	createDebug.humanize = ms$2;
+
+    	Object.keys(env).forEach(key => {
+    		createDebug[key] = env[key];
+    	});
+
+    	/**
+    	* Active `debug` instances.
+    	*/
+    	createDebug.instances = [];
+
+    	/**
+    	* The currently active debug mode names, and names to skip.
+    	*/
+
+    	createDebug.names = [];
+    	createDebug.skips = [];
+
+    	/**
+    	* Map of special "%n" handling functions, for the debug "format" argument.
+    	*
+    	* Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
+    	*/
+    	createDebug.formatters = {};
+
+    	/**
+    	* Selects a color for a debug namespace
+    	* @param {String} namespace The namespace string for the for the debug instance to be colored
+    	* @return {Number|String} An ANSI color code for the given namespace
+    	* @api private
+    	*/
+    	function selectColor(namespace) {
+    		let hash = 0;
+
+    		for (let i = 0; i < namespace.length; i++) {
+    			hash = ((hash << 5) - hash) + namespace.charCodeAt(i);
+    			hash |= 0; // Convert to 32bit integer
+    		}
+
+    		return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+    	}
+    	createDebug.selectColor = selectColor;
+
+    	/**
+    	* Create a debugger with the given `namespace`.
+    	*
+    	* @param {String} namespace
+    	* @return {Function}
+    	* @api public
+    	*/
+    	function createDebug(namespace) {
+    		let prevTime;
+
+    		function debug(...args) {
+    			// Disabled?
+    			if (!debug.enabled) {
+    				return;
+    			}
+
+    			const self = debug;
+
+    			// Set `diff` timestamp
+    			const curr = Number(new Date());
+    			const ms = curr - (prevTime || curr);
+    			self.diff = ms;
+    			self.prev = prevTime;
+    			self.curr = curr;
+    			prevTime = curr;
+
+    			args[0] = createDebug.coerce(args[0]);
+
+    			if (typeof args[0] !== 'string') {
+    				// Anything else let's inspect with %O
+    				args.unshift('%O');
+    			}
+
+    			// Apply any `formatters` transformations
+    			let index = 0;
+    			args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+    				// If we encounter an escaped % then don't increase the array index
+    				if (match === '%%') {
+    					return match;
+    				}
+    				index++;
+    				const formatter = createDebug.formatters[format];
+    				if (typeof formatter === 'function') {
+    					const val = args[index];
+    					match = formatter.call(self, val);
+
+    					// Now we need to remove `args[index]` since it's inlined in the `format`
+    					args.splice(index, 1);
+    					index--;
+    				}
+    				return match;
+    			});
+
+    			// Apply env-specific formatting (colors, etc.)
+    			createDebug.formatArgs.call(self, args);
+
+    			const logFn = self.log || createDebug.log;
+    			logFn.apply(self, args);
+    		}
+
+    		debug.namespace = namespace;
+    		debug.enabled = createDebug.enabled(namespace);
+    		debug.useColors = createDebug.useColors();
+    		debug.color = selectColor(namespace);
+    		debug.destroy = destroy;
+    		debug.extend = extend;
+    		// Debug.formatArgs = formatArgs;
+    		// debug.rawLog = rawLog;
+
+    		// env-specific initialization logic for debug instances
+    		if (typeof createDebug.init === 'function') {
+    			createDebug.init(debug);
+    		}
+
+    		createDebug.instances.push(debug);
+
+    		return debug;
+    	}
+
+    	function destroy() {
+    		const index = createDebug.instances.indexOf(this);
+    		if (index !== -1) {
+    			createDebug.instances.splice(index, 1);
+    			return true;
+    		}
+    		return false;
+    	}
+
+    	function extend(namespace, delimiter) {
+    		const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+    		newDebug.log = this.log;
+    		return newDebug;
+    	}
+
+    	/**
+    	* Enables a debug mode by namespaces. This can include modes
+    	* separated by a colon and wildcards.
+    	*
+    	* @param {String} namespaces
+    	* @api public
+    	*/
+    	function enable(namespaces) {
+    		createDebug.save(namespaces);
+
+    		createDebug.names = [];
+    		createDebug.skips = [];
+
+    		let i;
+    		const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
+    		const len = split.length;
+
+    		for (i = 0; i < len; i++) {
+    			if (!split[i]) {
+    				// ignore empty strings
+    				continue;
+    			}
+
+    			namespaces = split[i].replace(/\*/g, '.*?');
+
+    			if (namespaces[0] === '-') {
+    				createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+    			} else {
+    				createDebug.names.push(new RegExp('^' + namespaces + '$'));
+    			}
+    		}
+
+    		for (i = 0; i < createDebug.instances.length; i++) {
+    			const instance = createDebug.instances[i];
+    			instance.enabled = createDebug.enabled(instance.namespace);
+    		}
+    	}
+
+    	/**
+    	* Disable debug output.
+    	*
+    	* @return {String} namespaces
+    	* @api public
+    	*/
+    	function disable() {
+    		const namespaces = [
+    			...createDebug.names.map(toNamespace),
+    			...createDebug.skips.map(toNamespace).map(namespace => '-' + namespace)
+    		].join(',');
+    		createDebug.enable('');
+    		return namespaces;
+    	}
+
+    	/**
+    	* Returns true if the given mode name is enabled, false otherwise.
+    	*
+    	* @param {String} name
+    	* @return {Boolean}
+    	* @api public
+    	*/
+    	function enabled(name) {
+    		if (name[name.length - 1] === '*') {
+    			return true;
+    		}
+
+    		let i;
+    		let len;
+
+    		for (i = 0, len = createDebug.skips.length; i < len; i++) {
+    			if (createDebug.skips[i].test(name)) {
+    				return false;
+    			}
+    		}
+
+    		for (i = 0, len = createDebug.names.length; i < len; i++) {
+    			if (createDebug.names[i].test(name)) {
+    				return true;
+    			}
+    		}
+
+    		return false;
+    	}
+
+    	/**
+    	* Convert regexp to namespace
+    	*
+    	* @param {RegExp} regxep
+    	* @return {String} namespace
+    	* @api private
+    	*/
+    	function toNamespace(regexp) {
+    		return regexp.toString()
+    			.substring(2, regexp.toString().length - 2)
+    			.replace(/\.\*\?$/, '*');
+    	}
+
+    	/**
+    	* Coerce `val`.
+    	*
+    	* @param {Mixed} val
+    	* @return {Mixed}
+    	* @api private
+    	*/
+    	function coerce(val) {
+    		if (val instanceof Error) {
+    			return val.stack || val.message;
+    		}
+    		return val;
+    	}
+
+    	createDebug.enable(createDebug.load());
+
+    	return createDebug;
+    }
+
+    var common$1 = setup$1;
+
+    var browser$3 = createCommonjsModule(function (module, exports) {
+    /* eslint-env browser */
+
+    /**
+     * This is the web browser implementation of `debug()`.
+     */
+
+    exports.log = log;
+    exports.formatArgs = formatArgs;
+    exports.save = save;
+    exports.load = load;
+    exports.useColors = useColors;
+    exports.storage = localstorage();
+
+    /**
+     * Colors.
+     */
+
+    exports.colors = [
+    	'#0000CC',
+    	'#0000FF',
+    	'#0033CC',
+    	'#0033FF',
+    	'#0066CC',
+    	'#0066FF',
+    	'#0099CC',
+    	'#0099FF',
+    	'#00CC00',
+    	'#00CC33',
+    	'#00CC66',
+    	'#00CC99',
+    	'#00CCCC',
+    	'#00CCFF',
+    	'#3300CC',
+    	'#3300FF',
+    	'#3333CC',
+    	'#3333FF',
+    	'#3366CC',
+    	'#3366FF',
+    	'#3399CC',
+    	'#3399FF',
+    	'#33CC00',
+    	'#33CC33',
+    	'#33CC66',
+    	'#33CC99',
+    	'#33CCCC',
+    	'#33CCFF',
+    	'#6600CC',
+    	'#6600FF',
+    	'#6633CC',
+    	'#6633FF',
+    	'#66CC00',
+    	'#66CC33',
+    	'#9900CC',
+    	'#9900FF',
+    	'#9933CC',
+    	'#9933FF',
+    	'#99CC00',
+    	'#99CC33',
+    	'#CC0000',
+    	'#CC0033',
+    	'#CC0066',
+    	'#CC0099',
+    	'#CC00CC',
+    	'#CC00FF',
+    	'#CC3300',
+    	'#CC3333',
+    	'#CC3366',
+    	'#CC3399',
+    	'#CC33CC',
+    	'#CC33FF',
+    	'#CC6600',
+    	'#CC6633',
+    	'#CC9900',
+    	'#CC9933',
+    	'#CCCC00',
+    	'#CCCC33',
+    	'#FF0000',
+    	'#FF0033',
+    	'#FF0066',
+    	'#FF0099',
+    	'#FF00CC',
+    	'#FF00FF',
+    	'#FF3300',
+    	'#FF3333',
+    	'#FF3366',
+    	'#FF3399',
+    	'#FF33CC',
+    	'#FF33FF',
+    	'#FF6600',
+    	'#FF6633',
+    	'#FF9900',
+    	'#FF9933',
+    	'#FFCC00',
+    	'#FFCC33'
+    ];
+
+    /**
+     * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+     * and the Firebug extension (any Firefox version) are known
+     * to support "%c" CSS customizations.
+     *
+     * TODO: add a `localStorage` variable to explicitly enable/disable colors
+     */
+
+    // eslint-disable-next-line complexity
+    function useColors() {
+    	// NB: In an Electron preload script, document will be defined but not fully
+    	// initialized. Since we know we're in Chrome, we'll just detect this case
+    	// explicitly
+    	if (typeof window !== 'undefined' && window.process && (window.process.type === 'renderer' || window.process.__nwjs)) {
+    		return true;
+    	}
+
+    	// Internet Explorer and Edge do not support colors.
+    	if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+    		return false;
+    	}
+
+    	// Is webkit? http://stackoverflow.com/a/16459606/376773
+    	// document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
+    	return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
+    		// Is firebug? http://stackoverflow.com/a/398120/376773
+    		(typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
+    		// Is firefox >= v31?
+    		// https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+    		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31) ||
+    		// Double check webkit in userAgent just in case we are in a worker
+    		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
+    }
+
+    /**
+     * Colorize log arguments if enabled.
+     *
+     * @api public
+     */
+
+    function formatArgs(args) {
+    	args[0] = (this.useColors ? '%c' : '') +
+    		this.namespace +
+    		(this.useColors ? ' %c' : ' ') +
+    		args[0] +
+    		(this.useColors ? '%c ' : ' ') +
+    		'+' + module.exports.humanize(this.diff);
+
+    	if (!this.useColors) {
+    		return;
+    	}
+
+    	const c = 'color: ' + this.color;
+    	args.splice(1, 0, c, 'color: inherit');
+
+    	// The final "%c" is somewhat tricky, because there could be other
+    	// arguments passed either before or after the %c, so we need to
+    	// figure out the correct index to insert the CSS into
+    	let index = 0;
+    	let lastC = 0;
+    	args[0].replace(/%[a-zA-Z%]/g, match => {
+    		if (match === '%%') {
+    			return;
+    		}
+    		index++;
+    		if (match === '%c') {
+    			// We only are interested in the *last* %c
+    			// (the user may have provided their own)
+    			lastC = index;
+    		}
+    	});
+
+    	args.splice(lastC, 0, c);
+    }
+
+    /**
+     * Invokes `console.log()` when available.
+     * No-op when `console.log` is not a "function".
+     *
+     * @api public
+     */
+    function log(...args) {
+    	// This hackery is required for IE8/9, where
+    	// the `console.log` function doesn't have 'apply'
+    	return typeof console === 'object' &&
+    		console.log &&
+    		console.log(...args);
+    }
+
+    /**
+     * Save `namespaces`.
+     *
+     * @param {String} namespaces
+     * @api private
+     */
+    function save(namespaces) {
+    	try {
+    		if (namespaces) {
+    			exports.storage.setItem('debug', namespaces);
+    		} else {
+    			exports.storage.removeItem('debug');
+    		}
+    	} catch (error) {
+    		// Swallow
+    		// XXX (@Qix-) should we be logging these?
+    	}
+    }
+
+    /**
+     * Load `namespaces`.
+     *
+     * @return {String} returns the previously persisted debug modes
+     * @api private
+     */
+    function load() {
+    	let r;
+    	try {
+    		r = exports.storage.getItem('debug');
+    	} catch (error) {
+    		// Swallow
+    		// XXX (@Qix-) should we be logging these?
+    	}
+
+    	// If debug isn't set in LS, and we're in Electron, try to load $DEBUG
+    	if (!r && typeof process !== 'undefined' && 'env' in process) {
+    		r = process.env.DEBUG;
+    	}
+
+    	return r;
+    }
+
+    /**
+     * Localstorage attempts to return the localstorage.
+     *
+     * This is necessary because safari throws
+     * when a user disables cookies/localstorage
+     * and you attempt to access it.
+     *
+     * @return {LocalStorage}
+     * @api private
+     */
+
+    function localstorage() {
+    	try {
+    		// TVMLKit (Apple TV JS Runtime) does not have a window object, just localStorage in the global context
+    		// The Browser also has localStorage in the global context.
+    		return localStorage;
+    	} catch (error) {
+    		// Swallow
+    		// XXX (@Qix-) should we be logging these?
+    	}
+    }
+
+    module.exports = common$1(exports);
+
+    const {formatters} = module.exports;
+
+    /**
+     * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+     */
+
+    formatters.j = function (v) {
+    	try {
+    		return JSON.stringify(v);
+    	} catch (error) {
+    		return '[UnexpectedJSONParseError]: ' + error.message;
+    	}
+    };
+    });
+    var browser_1$3 = browser$3.log;
+    var browser_2$3 = browser$3.formatArgs;
+    var browser_3$3 = browser$3.save;
+    var browser_4$3 = browser$3.load;
+    var browser_5$3 = browser$3.useColors;
+    var browser_6$3 = browser$3.storage;
+    var browser_7$3 = browser$3.colors;
+
+    /**
      * Module dependencies.
      */
 
@@ -4553,7 +5256,7 @@ var app = (function () {
 
 
 
-    var debug$2 = browser('engine.io-client:polling');
+    var debug$2 = browser$3('engine.io-client:polling');
 
     /**
      * Module exports.
@@ -4800,7 +5503,7 @@ var app = (function () {
 
 
 
-    var debug$3 = browser('engine.io-client:polling-xhr');
+    var debug$3 = browser$3('engine.io-client:polling-xhr');
 
 
     /**
@@ -5459,7 +6162,7 @@ var app = (function () {
 
 
 
-    var debug$4 = browser('engine.io-client:websocket');
+    var debug$4 = browser$3('engine.io-client:websocket');
 
     var BrowserWebSocket, NodeWebSocket;
 
@@ -5821,7 +6524,7 @@ var app = (function () {
 
 
 
-    var debug$5 = browser('engine.io-client:socket');
+    var debug$5 = browser$3('engine.io-client:socket');
 
 
 
@@ -8589,7 +9292,7 @@ var app = (function () {
         };
     }
 
-    /* src/Components/gameList.svelte generated by Svelte v3.22.3 */
+    /* src/Components/gameList.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1 } = globals;
     const file = "src/Components/gameList.svelte";
@@ -9212,7 +9915,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/settings.svelte generated by Svelte v3.22.3 */
+    /* src/Components/settings.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$1 } = globals;
     const file$1 = "src/Components/settings.svelte";
@@ -9696,7 +10399,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gamePref.svelte generated by Svelte v3.22.3 */
+    /* src/Components/gamePref.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$2 } = globals;
     const file$2 = "src/Components/gamePref.svelte";
@@ -9925,7 +10628,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gamePass.svelte generated by Svelte v3.22.3 */
+    /* src/Components/gamePass.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$3 } = globals;
     const file$3 = "src/Components/gamePass.svelte";
@@ -10149,7 +10852,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Pages/dashBoard.svelte generated by Svelte v3.22.3 */
+    /* src/Pages/dashBoard.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$4 } = globals;
     const file$4 = "src/Pages/dashBoard.svelte";
@@ -11099,7 +11802,7 @@ var app = (function () {
         return spring;
     }
 
-    /* src/Components/typeIndicator.svelte generated by Svelte v3.22.3 */
+    /* src/Components/typeIndicator.svelte generated by Svelte v3.22.2 */
 
     const file$5 = "src/Components/typeIndicator.svelte";
 
@@ -11196,7 +11899,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gameChat.svelte generated by Svelte v3.22.3 */
+    /* src/Components/gameChat.svelte generated by Svelte v3.22.2 */
     const file$6 = "src/Components/gameChat.svelte";
 
     function get_each_context$1(ctx, list, i) {
@@ -11824,7 +12527,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gameBoard.svelte generated by Svelte v3.22.3 */
+    /* src/Components/gameBoard.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$5 } = globals;
 
@@ -13289,7 +13992,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/navBar.svelte generated by Svelte v3.22.3 */
+    /* src/Components/navBar.svelte generated by Svelte v3.22.2 */
     const file$8 = "src/Components/navBar.svelte";
 
     function create_fragment$8(ctx) {
@@ -13423,7 +14126,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/socketRecv.svelte generated by Svelte v3.22.3 */
+    /* src/Components/socketRecv.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$6 } = globals;
 
@@ -13543,7 +14246,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.3 */
+    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.2 */
 
     // (18:0) {#if screenWidth > 800}
     function create_if_block_3$3(ctx) {
@@ -13917,95 +14620,152 @@ var app = (function () {
         }
     }
 
-    /* src/Pages/entry.svelte generated by Svelte v3.22.3 */
+    /* src/Pages/entry.svelte generated by Svelte v3.22.2 */
 
     const { console: console_1$7 } = globals;
     const file$9 = "src/Pages/entry.svelte";
 
-    // (109:4) {:else}
+    // (190:4) {:else}
     function create_else_block$2(ctx) {
-    	let input0;
+    	let div2;
+    	let div1;
+    	let div0;
+    	let div1_onload_value;
     	let t0;
-    	let input1;
+    	let input0;
     	let t1;
-    	let input2;
+    	let input1;
     	let t2;
-    	let input3;
+    	let input2;
     	let t3;
-    	let button;
-    	let t5;
-    	let h5;
+    	let input3;
+    	let t4;
+    	let br0;
+    	let button0;
     	let t6;
-    	let span;
+    	let hr;
+    	let t7;
+    	let div3;
+    	let h5;
+    	let t8;
+    	let br1;
+    	let button1;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			input0 = element("input");
+    			div2 = element("div");
+    			div1 = element("div");
+    			div0 = element("div");
     			t0 = space();
-    			input1 = element("input");
+    			input0 = element("input");
     			t1 = space();
-    			input2 = element("input");
+    			input1 = element("input");
     			t2 = space();
-    			input3 = element("input");
+    			input2 = element("input");
     			t3 = space();
-    			button = element("button");
-    			button.textContent = "Sign Up";
-    			t5 = space();
+    			input3 = element("input");
+    			t4 = space();
+    			br0 = element("br");
+    			button0 = element("button");
+    			button0.textContent = "Sign Up";
+    			t6 = space();
+    			hr = element("hr");
+    			t7 = space();
+    			div3 = element("div");
     			h5 = element("h5");
-    			t6 = text("Already have an Account? ");
-    			span = element("span");
-    			span.textContent = "Sign In";
+    			t8 = text("Already have an Account? ");
+    			br1 = element("br");
+    			button1 = element("button");
+    			button1.textContent = "Sign In";
+    			attr_dev(div0, "class", "loader svelte-isfeg9");
+    			add_location(div0, file$9, 192, 16, 5622);
+    			attr_dev(div1, "id", "signup-loader");
+    			attr_dev(div1, "onload", div1_onload_value = stopLoading());
+    			attr_dev(div1, "class", "loader-container svelte-isfeg9");
+    			add_location(div1, file$9, 191, 12, 5531);
+    			attr_dev(input0, "name", "Name");
     			attr_dev(input0, "id", "Name");
+    			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Display Name");
-    			attr_dev(input0, "class", "svelte-1ky7wjy");
-    			add_location(input0, file$9, 109, 8, 3163);
+    			input0.required = true;
+    			attr_dev(input0, "class", "svelte-isfeg9");
+    			add_location(input0, file$9, 195, 16, 5748);
+    			attr_dev(input1, "name", "Email");
     			attr_dev(input1, "id", "Email");
+    			attr_dev(input1, "type", "text");
     			attr_dev(input1, "placeholder", "Email");
-    			attr_dev(input1, "class", "svelte-1ky7wjy");
-    			add_location(input1, file$9, 110, 8, 3237);
+    			input1.required = true;
+    			attr_dev(input1, "class", "svelte-isfeg9");
+    			add_location(input1, file$9, 196, 16, 5863);
+    			attr_dev(input2, "name", "Password");
     			attr_dev(input2, "id", "Password");
+    			attr_dev(input2, "type", "password");
     			attr_dev(input2, "placeholder", "Password");
-    			attr_dev(input2, "class", "svelte-1ky7wjy");
-    			add_location(input2, file$9, 111, 8, 3306);
+    			input2.required = true;
+    			attr_dev(input2, "class", "svelte-isfeg9");
+    			add_location(input2, file$9, 197, 16, 5974);
+    			attr_dev(input3, "name", "confirmPassword");
     			attr_dev(input3, "id", "confirmPassword");
+    			attr_dev(input3, "type", "password");
     			attr_dev(input3, "placeholder", "Confirm Password");
-    			attr_dev(input3, "class", "svelte-1ky7wjy");
-    			add_location(input3, file$9, 112, 8, 3384);
-    			attr_dev(button, "class", "btn btn-success svelte-1ky7wjy");
-    			add_location(button, file$9, 113, 8, 3484);
-    			attr_dev(span, "class", "svelte-1ky7wjy");
-    			add_location(span, file$9, 115, 37, 3591);
-    			attr_dev(h5, "class", "svelte-1ky7wjy");
-    			add_location(h5, file$9, 115, 8, 3562);
+    			input3.required = true;
+    			attr_dev(input3, "class", "svelte-isfeg9");
+    			add_location(input3, file$9, 198, 16, 6101);
+    			add_location(br0, file$9, 199, 16, 6287);
+    			attr_dev(button0, "id", "signup-btn");
+    			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
+    			attr_dev(button0, "type", "submit");
+    			add_location(button0, file$9, 199, 21, 6292);
+    			attr_dev(div2, "id", "signup-div");
+    			add_location(div2, file$9, 190, 8, 5497);
+    			set_style(hr, "border", "1px solid green");
+    			add_location(hr, file$9, 202, 8, 6444);
+    			add_location(br1, file$9, 204, 41, 6565);
+    			attr_dev(button1, "class", "login-signup svelte-isfeg9");
+    			add_location(button1, file$9, 204, 46, 6570);
+    			attr_dev(h5, "class", "svelte-isfeg9");
+    			add_location(h5, file$9, 204, 12, 6536);
+    			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
+    			add_location(div3, file$9, 203, 8, 6490);
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, input0, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div1);
+    			append_dev(div1, div0);
+    			append_dev(div2, t0);
+    			append_dev(div2, input0);
     			set_input_value(input0, /*Name*/ ctx[1]);
-    			insert_dev(target, t0, anchor);
-    			insert_dev(target, input1, anchor);
+    			append_dev(div2, t1);
+    			append_dev(div2, input1);
     			set_input_value(input1, /*Email*/ ctx[0]);
-    			insert_dev(target, t1, anchor);
-    			insert_dev(target, input2, anchor);
+    			append_dev(div2, t2);
+    			append_dev(div2, input2);
     			set_input_value(input2, /*Password*/ ctx[2]);
-    			insert_dev(target, t2, anchor);
-    			insert_dev(target, input3, anchor);
+    			append_dev(div2, t3);
+    			append_dev(div2, input3);
     			set_input_value(input3, /*confirmPassword*/ ctx[3]);
-    			insert_dev(target, t3, anchor);
-    			insert_dev(target, button, anchor);
-    			insert_dev(target, t5, anchor);
-    			insert_dev(target, h5, anchor);
-    			append_dev(h5, t6);
-    			append_dev(h5, span);
+    			append_dev(div2, t4);
+    			append_dev(div2, br0);
+    			append_dev(div2, button0);
+    			insert_dev(target, t6, anchor);
+    			insert_dev(target, hr, anchor);
+    			insert_dev(target, t7, anchor);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, h5);
+    			append_dev(h5, t8);
+    			append_dev(h5, br1);
+    			append_dev(h5, button1);
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler_1*/ ctx[15]),
-    				listen_dev(input1, "input", /*input1_input_handler_1*/ ctx[16]),
-    				listen_dev(input2, "input", /*input2_input_handler*/ ctx[17]),
-    				listen_dev(input3, "input", /*input3_input_handler*/ ctx[18]),
-    				listen_dev(button, "click", /*signUp*/ ctx[7], false, false, false),
-    				listen_dev(span, "click", /*click_handler_1*/ ctx[19], false, false, false)
+    				listen_dev(input0, "input", /*input0_input_handler_1*/ ctx[16]),
+    				listen_dev(input1, "input", /*input1_input_handler_1*/ ctx[17]),
+    				listen_dev(input2, "input", /*input2_input_handler*/ ctx[18]),
+    				listen_dev(input3, "input", /*input3_input_handler*/ ctx[19]),
+    				listen_dev(input3, "change", /*matchesPassword*/ ctx[9], false, false, false),
+    				listen_dev(button0, "click", /*signUp*/ ctx[7], false, false, false),
+    				listen_dev(button1, "click", /*click_handler_1*/ ctx[20], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -14026,17 +14786,11 @@ var app = (function () {
     			}
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(input0);
-    			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(input1);
-    			if (detaching) detach_dev(t1);
-    			if (detaching) detach_dev(input2);
-    			if (detaching) detach_dev(t2);
-    			if (detaching) detach_dev(input3);
-    			if (detaching) detach_dev(t3);
-    			if (detaching) detach_dev(button);
-    			if (detaching) detach_dev(t5);
-    			if (detaching) detach_dev(h5);
+    			if (detaching) detach_dev(div2);
+    			if (detaching) detach_dev(t6);
+    			if (detaching) detach_dev(hr);
+    			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(div3);
     			run_all(dispose);
     		}
     	};
@@ -14045,80 +14799,154 @@ var app = (function () {
     		block,
     		id: create_else_block$2.name,
     		type: "else",
-    		source: "(109:4) {:else}",
+    		source: "(190:4) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (102:4) {#if logPage}
+    // (174:4) {#if logPage}
     function create_if_block$5(ctx) {
-    	let input0;
+    	let div2;
+    	let div1;
+    	let div0;
     	let t0;
-    	let input1;
+    	let form;
+    	let input0;
+    	let br0;
     	let t1;
-    	let button;
-    	let t3;
-    	let h5;
+    	let input1;
+    	let br1;
+    	let t2;
+    	let br2;
+    	let a;
     	let t4;
-    	let span;
+    	let h50;
+    	let button0;
     	let t6;
     	let hr;
+    	let t7;
+    	let div3;
+    	let h51;
+    	let t8;
+    	let br3;
+    	let button1;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			input0 = element("input");
+    			div2 = element("div");
+    			div1 = element("div");
+    			div0 = element("div");
     			t0 = space();
-    			input1 = element("input");
+    			form = element("form");
+    			input0 = element("input");
+    			br0 = element("br");
     			t1 = space();
-    			button = element("button");
-    			button.textContent = "Log In";
-    			t3 = space();
-    			h5 = element("h5");
-    			t4 = text("Don't have an Account? ");
-    			span = element("span");
-    			span.textContent = "Sign Up";
+    			input1 = element("input");
+    			br1 = element("br");
+    			t2 = space();
+    			br2 = element("br");
+    			a = element("a");
+    			a.textContent = "Forgot Password?";
+    			t4 = space();
+    			h50 = element("h5");
+    			button0 = element("button");
+    			button0.textContent = "Log In";
     			t6 = space();
     			hr = element("hr");
+    			t7 = space();
+    			div3 = element("div");
+    			h51 = element("h5");
+    			t8 = text("Don't have an Account? ");
+    			br3 = element("br");
+    			button1 = element("button");
+    			button1.textContent = "Sign Up";
+    			attr_dev(div0, "class", "loader svelte-isfeg9");
+    			add_location(div0, file$9, 176, 16, 4626);
+    			attr_dev(div1, "id", "signin-loader");
+    			attr_dev(div1, "class", "loader-container svelte-isfeg9");
+    			add_location(div1, file$9, 175, 8, 4559);
+    			attr_dev(input0, "name", "logEmail");
     			attr_dev(input0, "id", "logEmail");
+    			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Email");
-    			attr_dev(input0, "class", "svelte-1ky7wjy");
-    			add_location(input0, file$9, 102, 8, 2800);
+    			input0.required = true;
+    			attr_dev(input0, "class", "svelte-isfeg9");
+    			add_location(input0, file$9, 179, 16, 4741);
+    			add_location(br0, file$9, 179, 119, 4844);
+    			attr_dev(input1, "name", "logPassword");
     			attr_dev(input1, "id", "logPassword");
+    			attr_dev(input1, "type", "password");
     			attr_dev(input1, "placeholder", "Password");
-    			attr_dev(input1, "class", "svelte-1ky7wjy");
-    			add_location(input1, file$9, 103, 8, 2875);
-    			attr_dev(button, "class", "btn btn-success svelte-1ky7wjy");
-    			add_location(button, file$9, 104, 8, 2959);
-    			attr_dev(span, "class", "svelte-1ky7wjy");
-    			add_location(span, file$9, 106, 35, 3063);
-    			attr_dev(h5, "class", "svelte-1ky7wjy");
-    			add_location(h5, file$9, 106, 8, 3036);
-    			add_location(hr, file$9, 107, 8, 3137);
+    			input1.required = true;
+    			attr_dev(input1, "class", "svelte-isfeg9");
+    			add_location(input1, file$9, 180, 16, 4866);
+    			add_location(br1, file$9, 180, 135, 4985);
+    			add_location(br2, file$9, 181, 16, 5007);
+    			attr_dev(a, "id", "forgotPassword");
+    			attr_dev(a, "href", "");
+    			attr_dev(a, "class", "svelte-isfeg9");
+    			add_location(a, file$9, 181, 21, 5012);
+    			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
+    			attr_dev(button0, "type", "submit");
+    			add_location(button0, file$9, 182, 20, 5085);
+    			attr_dev(h50, "class", "svelte-isfeg9");
+    			add_location(h50, file$9, 182, 16, 5081);
+    			attr_dev(form, "name", "login-form");
+    			attr_dev(form, "id", "login-form");
+    			attr_dev(form, "class", "svelte-isfeg9");
+    			add_location(form, file$9, 178, 12, 4684);
+    			attr_dev(div2, "id", "login-div");
+    			attr_dev(div2, "class", "svelte-isfeg9");
+    			add_location(div2, file$9, 174, 8, 4530);
+    			set_style(hr, "border", "1px solid green");
+    			add_location(hr, file$9, 185, 8, 5215);
+    			add_location(br3, file$9, 187, 35, 5351);
+    			attr_dev(button1, "class", "login-signup svelte-isfeg9");
+    			attr_dev(button1, "id", "signupBtn");
+    			add_location(button1, file$9, 187, 40, 5356);
+    			attr_dev(h51, "class", "svelte-isfeg9");
+    			add_location(h51, file$9, 187, 8, 5324);
+    			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
+    			attr_dev(div3, "id", "no-Acct-signup");
+    			add_location(div3, file$9, 186, 8, 5261);
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, input0, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div1);
+    			append_dev(div1, div0);
+    			append_dev(div2, t0);
+    			append_dev(div2, form);
+    			append_dev(form, input0);
     			set_input_value(input0, /*logEmail*/ ctx[4]);
-    			insert_dev(target, t0, anchor);
-    			insert_dev(target, input1, anchor);
+    			append_dev(form, br0);
+    			append_dev(form, t1);
+    			append_dev(form, input1);
     			set_input_value(input1, /*logPassword*/ ctx[5]);
-    			insert_dev(target, t1, anchor);
-    			insert_dev(target, button, anchor);
-    			insert_dev(target, t3, anchor);
-    			insert_dev(target, h5, anchor);
-    			append_dev(h5, t4);
-    			append_dev(h5, span);
+    			append_dev(form, br1);
+    			append_dev(form, t2);
+    			append_dev(form, br2);
+    			append_dev(form, a);
+    			append_dev(form, t4);
+    			append_dev(form, h50);
+    			append_dev(h50, button0);
     			insert_dev(target, t6, anchor);
     			insert_dev(target, hr, anchor);
+    			insert_dev(target, t7, anchor);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, h51);
+    			append_dev(h51, t8);
+    			append_dev(h51, br3);
+    			append_dev(h51, button1);
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[12]),
-    				listen_dev(input1, "input", /*input1_input_handler*/ ctx[13]),
-    				listen_dev(button, "click", /*signIn*/ ctx[8], false, false, false),
-    				listen_dev(span, "click", /*click_handler*/ ctx[14], false, false, false)
+    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[13]),
+    				listen_dev(input1, "input", /*input1_input_handler*/ ctx[14]),
+    				listen_dev(button0, "click", /*signIn*/ ctx[8], false, false, false),
+    				listen_dev(button1, "click", /*click_handler*/ ctx[15], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -14131,15 +14959,11 @@ var app = (function () {
     			}
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(input0);
-    			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(input1);
-    			if (detaching) detach_dev(t1);
-    			if (detaching) detach_dev(button);
-    			if (detaching) detach_dev(t3);
-    			if (detaching) detach_dev(h5);
+    			if (detaching) detach_dev(div2);
     			if (detaching) detach_dev(t6);
     			if (detaching) detach_dev(hr);
+    			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(div3);
     			run_all(dispose);
     		}
     	};
@@ -14148,7 +14972,7 @@ var app = (function () {
     		block,
     		id: create_if_block$5.name,
     		type: "if",
-    		source: "(102:4) {#if logPage}",
+    		source: "(174:4) {#if logPage}",
     		ctx
     	});
 
@@ -14156,7 +14980,8 @@ var app = (function () {
     }
 
     function create_fragment$b(ctx) {
-    	let div;
+    	let div1;
+    	let div0;
     	let h3;
     	let t1;
     	let t2;
@@ -14173,34 +14998,38 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
-    			div = element("div");
+    			div1 = element("div");
+    			div0 = element("div");
     			h3 = element("h3");
-    			h3.textContent = "Welcome To Checkas.io";
+    			h3.textContent = "Checkas.io";
     			t1 = space();
     			if_block.c();
     			t2 = space();
     			img = element("img");
-    			attr_dev(h3, "class", "svelte-1ky7wjy");
-    			add_location(h3, file$9, 100, 4, 2743);
-    			attr_dev(div, "id", "entry");
-    			attr_dev(div, "class", "container svelte-1ky7wjy");
-    			add_location(div, file$9, 99, 0, 2704);
+    			attr_dev(h3, "class", "svelte-isfeg9");
+    			add_location(h3, file$9, 172, 4, 4484);
+    			attr_dev(div0, "id", "entry");
+    			attr_dev(div0, "class", "container svelte-isfeg9");
+    			add_location(div0, file$9, 171, 0, 4445);
     			attr_dev(img, "id", "back-image");
     			attr_dev(img, "alt", "checker");
     			if (img.src !== (img_src_value = "./images/checkers.jpg")) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "class", "svelte-1ky7wjy");
-    			add_location(img, file$9, 118, 0, 3674);
+    			attr_dev(img, "class", "svelte-isfeg9");
+    			add_location(img, file$9, 208, 0, 6694);
+    			attr_dev(div1, "class", "background svelte-isfeg9");
+    			add_location(div1, file$9, 170, 0, 4420);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, h3);
-    			append_dev(div, t1);
-    			if_block.m(div, null);
-    			insert_dev(target, t2, anchor);
-    			insert_dev(target, img, anchor);
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, div0);
+    			append_dev(div0, h3);
+    			append_dev(div0, t1);
+    			if_block.m(div0, null);
+    			append_dev(div1, t2);
+    			append_dev(div1, img);
     		},
     		p: function update(ctx, [dirty]) {
     			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
@@ -14211,17 +15040,15 @@ var app = (function () {
 
     				if (if_block) {
     					if_block.c();
-    					if_block.m(div, null);
+    					if_block.m(div0, null);
     				}
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
+    			if (detaching) detach_dev(div1);
     			if_block.d();
-    			if (detaching) detach_dev(t2);
-    			if (detaching) detach_dev(img);
     		}
     	};
 
@@ -14236,6 +15063,46 @@ var app = (function () {
     	return block;
     }
 
+    function validateSigin() {
+    	return true;
+    }
+
+    function validateSignUp() {
+    	return true;
+    }
+
+    function validateSignInEmail() {
+    	
+    }
+
+    function validateSignInPassword() {
+    	
+    }
+
+    function validateSignUpName() {
+    	
+    }
+
+    function validateSignUpEmail() {
+    	
+    }
+
+    function validateSignUppassWord() {
+    	
+    }
+
+    function validateSignUpconPassword() {
+    	
+    }
+
+    function loading() {
+    	window.$(".loader-container").attr("style", "display: flex");
+    }
+
+    function stopLoading() {
+    	window.$(".loader-container").attr("style", "display: none");
+    }
+
     function instance$b($$self, $$props, $$invalidate) {
     	let Email, Name, Password, confirmPassword;
     	let logEmail, logPassword;
@@ -14243,26 +15110,37 @@ var app = (function () {
     	let logPage = true;
 
     	function signUp() {
-    		if (Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
-    			request = {
-    				func: "signUp",
-    				email: Email,
-    				name: Name,
-    				password: Password
-    			};
+    		{
+    			console.log("In sign up");
+    			loading();
 
-    			invokeFunction(request).then(response => {
-    				console.log(response);
+    			if (Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
+    				request = {
+    					func: "signUp",
+    					email: Email,
+    					name: Name,
+    					password: Password
+    				};
 
-    				if (response.msg == "SUCCESS") {
-    					request.func = "createUser";
-    					createUser();
-    				} else {
-    					console.log(response.err);
-    				}
-    			}).catch(err => {
-    				console.log(err);
-    			});
+    				console.log("Sending sign up request");
+
+    				invokeFunction(request).then(response => {
+    					console.log(response);
+
+    					if (response.msg == "SUCCESS") {
+    						request.func = "createUser";
+    						createUser();
+    					} else {
+    						console.log(response.err);
+    					}
+
+    					console.log("stoping loading sign");
+    					stopLoading();
+    				}).catch(err => {
+    					console.log(err);
+    					stopLoading();
+    				});
+    			}
     		}
     	}
 
@@ -14281,25 +15159,33 @@ var app = (function () {
     	}
 
     	function signIn() {
-    		if (logEmail != null && logPassword != null) {
-    			request = {
-    				func: "signIn",
-    				email: logEmail,
-    				password: logPassword
-    			};
+    		{
+    			console.log("In sign in");
+    			loading();
 
-    			invokeFunction(request).then(response => {
-    				if (response.msg != null && response.msg) {
-    					request.func = "retrieveUser";
-    					retrieveUser();
-    				} else if (response.msg != null && !response.msg) {
-    					console.log("Unverified Email");
-    				} else {
-    					console.log(response.err);
-    				}
-    			}).catch(err => {
-    				console.log(err);
-    			});
+    			if (logEmail != null && logPassword != null) {
+    				request = {
+    					func: "signIn",
+    					email: logEmail,
+    					password: logPassword
+    				};
+
+    				invokeFunction(request).then(response => {
+    					if (response.msg != null && response.msg) {
+    						request.func = "retrieveUser";
+    						retrieveUser();
+    					} else if (response.msg != null && !response.msg) {
+    						console.log("Unverified Email");
+    					} else {
+    						console.log(response.err);
+    					}
+
+    					console.log("stoping loading sign");
+    					stopLoading();
+    				}).catch(err => {
+    					console.log(err);
+    				});
+    			}
     		}
     	}
 
@@ -14319,6 +15205,18 @@ var app = (function () {
     			console.log(err);
     		});
     	}
+
+    	function matchesPassword() {
+    		if (Password != confirmPassword) {
+    			console.log("passwords must match");
+    		} else {
+    			console.log("passwords match");
+    		}
+    	}
+
+    	window.$(document).ready(function () {
+    		document.getElementById("signin-loader").addEventListener("load", stopLoading());
+    	});
 
     	const writable_props = [];
 
@@ -14379,7 +15277,18 @@ var app = (function () {
     		signUp,
     		createUser,
     		signIn,
-    		retrieveUser
+    		retrieveUser,
+    		matchesPassword,
+    		validateSigin,
+    		validateSignUp,
+    		validateSignInEmail,
+    		validateSignInPassword,
+    		validateSignUpName,
+    		validateSignUpEmail,
+    		validateSignUppassWord,
+    		validateSignUpconPassword,
+    		loading,
+    		stopLoading
     	});
 
     	$$self.$inject_state = $$props => {
@@ -14407,6 +15316,7 @@ var app = (function () {
     		logPage,
     		signUp,
     		signIn,
+    		matchesPassword,
     		request,
     		createUser,
     		retrieveUser,
@@ -14435,7 +15345,7 @@ var app = (function () {
     	}
     }
 
-    /* src/App.svelte generated by Svelte v3.22.3 */
+    /* src/App.svelte generated by Svelte v3.22.2 */
 
     // (17:0) {:else}
     function create_else_block$3(ctx) {

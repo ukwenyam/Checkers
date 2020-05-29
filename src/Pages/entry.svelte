@@ -13,26 +13,36 @@
 
     function signUp() {
 
-        if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
+        if( validateSignUp() ){
+            console.log("In sign up");
+            loading('signup-loader');
 
-            request = {
-                func : "signUp",
-                email : Email,
-                name : Name,
-                password : Password
-            }
+            if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
 
-            invokeFunction(request).then((response) => {
-                console.log(response);
-                if(response.msg == "SUCCESS") {
-                    request.func = "createUser";
-                    createUser();
-                } else {
-                    console.log(response.err);
+                request = {
+                    func : "signUp",
+                    email : Email,
+                    name : Name,
+                    password : Password
                 }
-            }).catch((err) => {
-                console.log(err);
-            });
+
+                console.log("Sending sign up request");
+
+                invokeFunction(request).then((response) => {
+                    console.log(response);
+                    if(response.msg == "SUCCESS") {
+                        request.func = "createUser";
+                        createUser();
+                    } else {
+                        console.log(response.err);
+                    }
+                    console.log("stoping loading sign");
+                    stopLoading('signin-loader');
+                }).catch((err) => {
+                    console.log(err);
+                    stopLoading('signup-loader');
+                });
+            }
         }
     }
 
@@ -51,27 +61,35 @@
     }
 
     function signIn() {
+        if( validateSigin()){
 
-        if(logEmail != null && logPassword != null) {
+            console.log("In sign in");
+            loading('sigin-loader');
 
-            request = {
-                func : "signIn",
-                email : logEmail,
-                password : logPassword
-            }
 
-            invokeFunction(request).then((response) => {
-                if(response.msg != null && response.msg) {
-                    request.func = "retrieveUser";
-                    retrieveUser();
-                } else if(response.msg != null && !response.msg) {
-                    console.log("Unverified Email")
-                } else {
-                    console.log(response.err);
+            if(logEmail != null && logPassword != null) {
+
+                request = {
+                    func : "signIn",
+                    email : logEmail,
+                    password : logPassword
                 }
-            }).catch((err) => {
-                console.log(err);
-            });
+
+                invokeFunction(request).then((response) => {
+                    if(response.msg != null && response.msg) {
+                        request.func = "retrieveUser";
+                        retrieveUser();
+                    } else if(response.msg != null && !response.msg) {
+                        console.log("Unverified Email")
+                    } else {
+                        console.log(response.err);
+                    }
+                    console.log("stoping loading sign");
+                    stopLoading('signin-loader');
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
         }
     }
 
@@ -95,67 +113,295 @@
             console.log(err);
         });
     }
+
+    function matchesPassword(){
+         if( Password != confirmPassword ){
+             console.log("passwords must match");
+         } 
+         else{
+             console.log("passwords match");
+         }
+    }
+
+    window.$(document).ready(function() {
+        document.getElementById('signin-loader').addEventListener('load', stopLoading());
+    });
+
+    function validateSigin() {
+        return true;
+    }
+
+    function validateSignUp() {
+        return true;
+    }
+
+    function validateSignInEmail() {
+
+    }
+
+    function validateSignInPassword() {
+        
+    }
+
+    function validateSignUpName() {
+        
+    }
+
+    function validateSignUpEmail() {
+        
+    }
+
+    function validateSignUppassWord() {
+        
+    }
+
+    function validateSignUpconPassword() {
+        
+    }
+
+     function loading(){
+        window.$('.loader-container').attr('style', 'display: flex');
+    }
+
+    function stopLoading(){
+         window.$('.loader-container').attr('style', 'display: none');
+    }
+
 </script>
-
+<div class="background">
 <div id="entry" class="container">
-    <h3>Welcome To Checkas.io</h3>
+    <h3>Checkas.io</h3>
     {#if logPage}
-        <input id="logEmail" bind:value="{logEmail}" placeholder="Email"/>
-        <input id="logPassword" bind:value="{logPassword}" placeholder="Password"/>
-        <button class="btn btn-success" on:click="{signIn}">Log In</button>
-
-        <h5>Don't have an Account? <span on:click="{() => (logPage = !logPage)}">Sign Up</span></h5>
-        <hr/>
+        <div id="login-div">
+        <div id="signin-loader"  class="loader-container">
+                <div class="loader"></div>
+            </div>
+            <form name="login-form" id="login-form">
+                <input name="logEmail" id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
+                <input name="logPassword" id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
+                <br/><a id="forgotPassword" href="" >Forgot Password?</a>
+                <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
+            </form>
+        </div>
+        <hr style="border: 1px solid green"/>
+        <div class="no-cred-sign-signup"  id="no-Acct-signup">
+        <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
+        </div>
     {:else}
-        <input id="Name" bind:value="{Name}" placeholder="Display Name"/>
-        <input id="Email" bind:value="{Email}" placeholder="Email"/>
-        <input id="Password" bind:value="{Password}" placeholder="Password"/>
-        <input id="confirmPassword" bind:value="{confirmPassword}" placeholder="Confirm Password"/>
-        <button class="btn btn-success" on:click="{signUp}">Sign Up</button>
-
-        <h5>Already have an Account? <span on:click="{() => (logPage = !logPage)}">Sign In</span></h5>
+        <div id="signup-div">
+            <div id="signup-loader" onload="{stopLoading()}" class="loader-container">
+                <div class="loader"></div>
+            </div>
+            <!-- <form name="signup-form" id="signup-form"> -->
+                <input name="Name" id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
+                <input name="Email" id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
+                <input name="Password" id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
+                <input name="confirmPassword" id="confirmPassword" type="password" bind:value="{confirmPassword}" on:change="{matchesPassword}" placeholder="Confirm Password" required/>
+                <br/><button id="signup-btn" class="btn btn-success" on:click="{signUp}" type="submit" >Sign Up</button>
+            <!-- </form> -->
+        </div>
+        <hr style="border: 1px solid green"/>
+        <div class="no-cred-sign-signup">
+            <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
+        </div>
     {/if}
 </div>
 <img id="back-image" alt="checker" src="./images/checkers.jpg"/>
-
+</div>
 <style>
+
+    .loader-container {
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        display: none;
+    }
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid;
+        color: #3498db;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: loader 1.2s linear infinite;
+    }
+
+    @keyframes loader{
+        25%{
+            color: #2ecc71;
+        }
+        50%{
+            color: #f1c40f;
+        }
+        75%{
+            color: #e74c3c;
+        }
+        to{
+            transform: rotate(360deg);
+        }
+    }
+
+    #entry label {
+        color: #212529;
+        display: inline-block;
+        display: block;
+        color: red;
+
+    }
+
+    span.arrow {
+        color: white;
+        display: block;
+    }
+
+    .background {
+        margin: 0;
+        padding: 0;  
+        font-family: sans-serif;
+        background: #34495e;
+        width: 100%;
+        height: 100%;
+    }
+
+    #login-div #login-form{
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+
+    .no-cred-sign-signup {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+
     #entry {
-        width:30%;
+        width:40%;
+        opacity: .95;
         max-width:500px;
-        height:500px;
-        margin-left:35%;
+        /* height:500px; */
+        padding: 40px;
+        position:absolute;
+        top: 50px;
+        left: 30%;
+        /* transform: translate(-50%, -50%); */
+        background: #191919;
+        text-align: center;
+        /* margin-left:35%; */
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius:0.4rem;
-        margin-top: 100px;
+        /* margin-top: 100px; */
         z-index:99;
-        position:fixed;
-        background:white;
+       
         overflow-y: auto;
+    }
+
+    #entry h3{
+        color: white;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    #entry h5 {
+        color: white;
+        margin-top: 30px;
     }
 
     #back-image {
         width:100%;
         height:100%;
+        position: fixed;
     }
 
-    input {
-        width:100%;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    #entry input[type = "text"], #entry input[type = "password"] {
+        /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
         margin-top:30px;
-        border-radius:0.4rem;
-        outline:none;
+        /* border-radius: 0.4rem; */
+        outline: none;
+        border: 0;
+        background: none;
+        /* display: block; */
+        margin: 20px, auto;
+        text-align: center;
+        border: 2px solid white;
+        padding: 14px 10px;
+        width: 50%;
+        color: white;
+        border-radius: 24px;
+        transition: .25s;
+    
     }
+
+    #forgotPassword {
+        color: white;
+        /* margin: 30px; */
+        /* outline: none; */
+        border: 0;
+       
+        /* background: none; */
+        /* display: block; */
+        margin: 20px, auto;
+        text-align: center;
+        padding: 14px 10px;
+        width: 200px;
+        color: #b88830;
+        margin-top: 50px;
+    }
+
+    #forgotPassword:hover{
+        color:green;
+    }
+
+
+    #entry input[type = "text"]:focus, #entry input[type = "password"]:focus{
+        width: 100%;
+        border-color: #2ecc71;
+    }
+
+    #entry button[type = "submit"]{
+        outline: none;
+        border: 0;
+        background: green;
+        /* display: block; */
+        margin: 20px, auto;
+        text-align: center;
+        /* border: 2px solid #2ecc71; */
+        padding: 14px 40px;
+        color: white;
+        border-radius: 24px;
+        transition: .25s;
+        cursor: pointer;
+    } 
+
+    .login-signup {
+        outline: none;
+        border: 0;
+        background: #b88830;
+        /* display: block; */
+        margin: 20px, auto;
+        text-align: center;
+        /* border: 2px solid #d4a82e; */
+        padding: 14px 40px;
+        color: white;
+        border-radius: 24px;
+        transition: .25s;
+        cursor: pointer;
+    }
+
+    button.login-signup:hover{
+        background: #d4a82e;
+    }
+
+     #entry button[type = "submit"]:hover {
+         background: #2ecc71;
+     }
 
     button {
-        width:100%;
+        /* width:100%; */
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         margin-top:30px;
-        border-radius:0.4rem;
-    }
-
-    h5 {
-        text-align:center;
-        margin-top:30px;
+        /* border-radius:0.4rem; */
     }
 
     h3 {
@@ -167,6 +413,8 @@
         color:blue;
         cursor: pointer;
     }
+
+    
 
     @media screen and (max-width: 800px) {
 
@@ -180,10 +428,13 @@
             box-shadow: none;
             overflow-y: scroll;
             right:1px;
+            transform: translate(-30%, -6%);
         }
+        
 
-        img {
+
+        /* img {
             display:none;
-        }
+        } */
     }
 </style>
