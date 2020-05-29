@@ -23,6 +23,7 @@
             state.numMoves = 0;
             state.rangeMoves = 0;
             state.paused = true;
+            state.finished = false;
             state.side = "red";
             state.secondsPlayed = 0;
             return state;

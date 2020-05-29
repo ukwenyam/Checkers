@@ -41,8 +41,7 @@
         invokeFunction(request).then((response) => {
             console.log(response);
             if(response.msg == "SUCCESS") {
-                request.func = "retrieveUser";
-                retrieveUser();
+                console.log("Verify Email");
             } else {
                 console.log(response.err);
             }
@@ -62,9 +61,11 @@
             }
 
             invokeFunction(request).then((response) => {
-                if(response.msg == "SUCCESS") {
+                if(response.msg != null && response.msg) {
                     request.func = "retrieveUser";
                     retrieveUser();
+                } else if(response.msg != null && !response.msg) {
+                    console.log("Unverified Email")
                 } else {
                     console.log(response.err);
                 }
@@ -81,7 +82,7 @@
             if(response.msg != null) {
                 let data = response.msg;
 
-                data.email = logEmail != null ? logEmail : Email;
+                data.email = logEmail;
 
                 currUser.set(new User(data));
 

@@ -20,6 +20,8 @@ window.onload = async function() {
 
         await gameTab.set(indexes.tab);
 
+        await userGames.set(indexes.games);
+
         await page.set(indexes.page);
 
         sessionStorage.removeItem('idx');
@@ -34,7 +36,7 @@ export const page = writable(0);
 
 export const gameTab = writable(0);
 
-export const userGames = writable(null);
+export const userGames = writable([]);
 
 export const leaderBoard = writable(null);
 
@@ -82,6 +84,11 @@ window.onbeforeunload = async function() {
 
     await gameChat.update(state => {
         indexes.chat = state;
+        return state;
+    });
+
+    await userGames.update(state => {
+        indexes.games = state;
         return state;
     });
 

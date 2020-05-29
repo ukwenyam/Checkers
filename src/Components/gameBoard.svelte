@@ -316,7 +316,7 @@
         }
     }
     
-    function pauseGame() {
+    function startGame() {
 
         if($gamePref.side == $gamePref.currPlayer) {
 
@@ -338,22 +338,26 @@
 
         if($gamePref.side == $gamePref.currPlayer) {
 
+			clearInterval(timeInterval);
+
             let request = {
                 func: "saveGame",
-                gameID: $gameBoard.id,
+                gameID: $gamePref.id,
                 gameHistory: $gameHistory,
                 chatHistory: $gameChat,
                 pri: $gamePref.pri == $currUser.name ? true : false,
                 sec: $gamePref.sec == $currUser.name ? true : false,
-                minutes: Math.floor($gamePref.secondsPlayed / 60)
+				minutes: Math.floor($gamePref.secondsPlayed / 60),
+				currPlayer: $gamePref.currPlayer
             }
             
             invokeFunction(request).then((response) => {
                 console.log(response);
 
                 if(response.msg != null || response.msg == "SUCCESS") {
-                    if(auto == false)
-                        page.set(0);
+					if(auto == false) page.set(0);
+					
+					if(auto) timeInterval = setInterval(countDown, 1000);
                 } else {
                     console.log(response.err);
                 }
@@ -407,21 +411,22 @@
 	<h1 id="time">Timer: {$gamePref.timer}</h1>
 {/if}
 
-<div id="state">
-    <h2 id="rangeBar">Game State at Move: {$gamePref.rangeMoves}</h2>
-    <input class="custom-range" disabled="{!$gamePref.paused}" on:change="{viewBoardHistory}" bind:value={$gamePref.rangeMoves} type="range" min="0" max="{$gamePref.numMoves}" step="1">
-</div>
-
-{#if $gamePref.paused} 
-    <button class="btn btn-success pause" on:click="{pauseGame}">Start Game</button>
-{:else}
-    <button class="btn btn-warning pause" on:click="{pauseGame}">Pause Game</button>
+{#if $gamePref.finished}
+	<div id="state">
+		<h2 id="rangeBar">Game State at Move: {$gamePref.rangeMoves}</h2>
+		<input class="custom-range" disabled="{!$gamePref.paused}" on:change="{viewBoardHistory}" bind:value={$gamePref.rangeMoves} type="range" min="0" max="{$gamePref.numMoves}" step="1">
+	</div>
 {/if}
 
-<button class="btn btn-info switch" on:click="{switchPlayer}">Switch Turn</button>
+{#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer} 
+    <button class="btn btn-success pause" on:click="{startGame}">Start Game</button>\
+{/if}
 
-<button class="btn btn-primary save" on:click="{() => saveGame(false)}">Save Game</button>
-
+{#if $gamePref.side == $gamePref.currPlayer}
+	<button class="btn btn-info switch" on:click="{switchPlayer}">Switch Turn</button>
+	
+	<button class="btn btn-primary save" on:click="{() => saveGame(false)}">Save Game</button>
+{/if}
 <style>
     .pause {
         width:var(--btn-width);

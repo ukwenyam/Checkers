@@ -33,7 +33,11 @@ export const signUp = functions.https.onRequest((request, response) => {
         user.updateProfile({
             displayName: evt.name
         }).then(function() {
-            res.send({msg: "SUCCESS"});
+            user.sendEmailVerification().then(function() {
+                res.send({msg: "SUCCESS"});
+            }).catch(function(error:any) {
+                res.send({err: error});
+            });
         }).catch(function(error:any) {
             res.send({err: error});
         });
@@ -77,7 +81,8 @@ export const signIn = functions.https.onRequest((request, response) => {
     const evt:any = request.body;
 
     auth.signInWithEmailAndPassword(evt.email, evt.password).then(async () => {
-        res.send({msg: "SUCCESS"});
+        const user:any = auth.currentUser;
+        res.send({msg: user.emailVerified});
     }).catch(function(error:any) {
         res.send({err: error.message});
     });
@@ -174,7 +179,8 @@ export const createGame = functions.https.onRequest((request, response) => {
 
     const gameID:any = generator.generate({
         length: 10,
-        numbers: true
+        numbers: true,
+        excludeSimilarCharacters: true
     });
 
     db.collection("GAMES").doc(gameID).set({
@@ -182,13 +188,14 @@ export const createGame = functions.https.onRequest((request, response) => {
         priEmail: evt.email,
         secPlayer: null,
         secEmail: null,
-        priGameHistory: null,
-        secGameHistory: null,
+        priGameHistory: [],
+        secGameHistory: [],
         time: Number(evt.time),
         date: evt.date,
         minutesPlayed: 0,
         finished: false,
-        chatHistory: []
+        chatHistory: [],
+        currPlayer: null
     }).then(function() {
         res.send({msg: gameID});
     }).catch(function(error:any) {
@@ -230,9 +237,10 @@ export const saveGame = functions.https.onRequest((request, response) => {
     if(evt.pri) {
 
         docRef.update({
-            priGameHistory: evt.gameHistory,
+            priGameHistory: JSON.parse(evt.gameHistory),
             minutesPlayed: Number(evt.minutes),
-            chatHistory: evt.chatHistory
+            chatHistory: JSON.parse(evt.chatHistory),
+            currPlayer: evt.currPlayer
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
@@ -243,9 +251,10 @@ export const saveGame = functions.https.onRequest((request, response) => {
     if(evt.sec) {
 
         docRef.update({
-            secGameHistory: evt.gameHistory,
+            secGameHistory: JSON.parse(evt.gameHistory),
             minutesPlayed: Number(evt.minutes),
-            chatHistory: evt.chatHistory
+            chatHistory: JSON.parse(evt.chatHistory),
+            currPlayer: evt.currPlayer
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
@@ -272,9 +281,9 @@ export const finishGame = functions.https.onRequest((request, response) => {
     const docRef:any = db.collection("GAMES").doc(evt.gameID);
 
     docRef.update({
-        gameHistory: evt.gameHistory,
-        minutesPlayed: evt.minutes,
-        chatHistory: evt.chatHistory,
+        gameHistory: JSON.parse(evt.gameHistory),
+        minutesPlayed: Number(evt.minutes),
+        chatHistory: JSON.parse(evt.chatHistory),
         finished: true
     }).then(function() {
         res.send({msg: "SUCCESS"});
@@ -316,33 +325,35 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const games:any = [], gamesDb:any = db.collection("GAMES");
+    const games:any = [];
 
-    gamesDb.where("priEmail", "==", evt.email)
+    db.collection("GAMES").where("priEmail", "==", evt.email)
     .get()
-    .then(function(querySnapshot:any) {
-        querySnapshot.forEach(function(doc:any) {
+    .then(async function(querySnapshot:any) {
+
+        await querySnapshot.forEach(function(doc:any) {
             const data = doc.data();
             data.id = doc.id;
             games.push(data);
         });
     })
     .catch(function(error:any) {
-        res.send({err:error});
+        res.send({err: "Error finding document"});
     });
 
-    gamesDb.where("secEmail", "==", evt.email)
+    db.collection("GAMES").where("secEmail", "==", evt.email)
     .get()
-    .then(function(querySnapshot:any) {
-        querySnapshot.forEach(function(doc:any) {
+    .then(async function(querySnapshot:any) {
+        
+        await querySnapshot.forEach(function(doc:any) {
             const data = doc.data();
             data.id = doc.id;
             games.push(data);
         });
+
+        res.send({msg: games});
     })
     .catch(function(error:any) {
-        res.send({err:error});
+        res.send({err: "Error finding document"});
     });
-
-    res.send({msg: games});
 });

@@ -41,6 +41,7 @@
                             state.numMoves = 0;
                             state.rangeMoves = 0;
                             state.paused = true;
+                            state.finished = false;
                             state.side = "black";
                             state.secondsPlayed = 0;
                             return state;
@@ -82,6 +83,7 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         width:100%;
         margin-top:20px;
+        text-align: center;
     }
 
     button {

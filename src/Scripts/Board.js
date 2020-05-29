@@ -100,10 +100,15 @@ export class Board {
 		for(i = 0; i < 8; i++) {
 			state[i] = [];
 			for(j = 0; j < 8; j++) {
-                if(this.board[i][j] != null)
-					state[i][j] = this.board[i][j];
-				else
-					state[i][j] = null;
+                if(this.board[i][j] != null) {
+                    state[i][j] = {};
+                    state[i][j].stack = this.board[i][j].stack;
+                    state[i][j].side = this.board[i][j].side;
+                    state[i][j].id = this.board[i][j].id;
+                }
+				else {
+                    state[i][j] = null;
+                }
 			}
 		}
 

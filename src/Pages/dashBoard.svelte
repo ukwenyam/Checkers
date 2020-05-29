@@ -52,40 +52,35 @@
 
         setTimeout(() => { viewRightSlide = true; }, 1);
 
-        if($userGames == null) {
-
-            request = {
-                func: "retrieveUserGames",
-                email: $currUser.email
-            }
-
-            invokeFunction(request).then((response) => {
-                //console.log(response);
-                if(response.msg != null) {
-
-                    let games = response.msg;
-                    
-                    userGames.update(state => {
-                        state = [];
-                        for(let i = 0; i < games.length; i++) {
-                            if(games[i].finished)
-                                state.push(games[i]);
-                            else
-                                state.unshift(games[i]);
-                        }
-                        return state;
-                    });
-
-                    setTimeout(() => { gamesView = true; }, 1);
-                } else {
-                    console.log(response.err);
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-        } else {
-            setTimeout(() => { gamesView = true; }, 1);
+        request = {
+            func: "retrieveUserGames",
+            email: $currUser.email
         }
+
+        invokeFunction(request).then((response) => {
+            console.log(response);
+            if(response.msg != null) {
+
+                let games = response.msg;
+                
+                userGames.update(state => {
+                    state = [];
+                    for(let i = 0; i < games.length; i++) {
+                        if(games[i].finished)
+                            state.push(games[i]);
+                        else
+                            state.unshift(games[i]);
+                    }
+                    return state;
+                });
+
+                setTimeout(() => { gamesView = true; }, 1);
+            } else {
+                console.log(response.err);
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     function viewSettings() {
