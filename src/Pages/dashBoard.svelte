@@ -19,6 +19,8 @@
 
     let screenWidth = screen.width;
 
+    let loading = true;
+
     function closeNav() {
 
         viewRightSlide = false, viewLeftSlide = false;
@@ -73,23 +75,28 @@
                     }
                     return state;
                 });
-
+                loading = false;
                 setTimeout(() => { gamesView = true; }, 1);
             } else {
                 console.log(response.err);
+                loading = false;
             }
         }).catch((error) => {
             console.log(error);
+            loading = false;
         });
     }
 
     function viewSettings() {
-
         closeNav();
 
         setTimeout(() => { viewRightSlide = true; }, 1);
 
         setTimeout(() => { settingsView = true; }, 1);
+    }
+
+    function signOut() {
+        currUser.set(null);
     }
 </script>
 
@@ -111,6 +118,8 @@
 
 <div id="backpurple" on:click="{closeNav}">
 
+    <button id="logout" class="btn btn-danger" on:click="{signOut}">Logout</button>
+
     <h1>Dashboard</h1>
 
     <button class="circles btn btn-info" on:click="{popGamePref}">
@@ -127,7 +136,7 @@
 
     <button class="circles btn btn-info">
         Leadership Board 
-    </button>>
+    </button>
 
     <button class="circles btn btn-info">
         Tutorial 
@@ -140,6 +149,11 @@
 
 {#if viewRightSlide}
     <div id="rightSlide" class="container-fluid" transition:fly={{ x:200, duration:1000 }}>
+    {#if loading}
+        <div id="signin-loader" class="loader-container">
+            <div class="loader"></div>
+        </div>
+    {:else}
         {#if screenWidth < 800}
             <button class="btn btn-danger" on:click="{closeNav}">Back</button>
         {/if}
@@ -151,10 +165,44 @@
         {#if settingsView}
             <Settings/>
         {/if}
+    {/if}
     </div>
 {/if}
 
 <style>
+    .loader-container {
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        margin-top:50%;
+    }
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid;
+        color: #3498db;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: loader 1.2s linear infinite;
+    }
+
+    @keyframes loader{
+        25%{
+            color: #2ecc71;
+        }
+        50%{
+            color: #f1c40f;
+        }
+        75%{
+            color: #e74c3c;
+        }
+        to{
+            transform: rotate(360deg);
+        }
+    }
+
     #popUp {
         width:400px;
         height:400px;
@@ -165,6 +213,14 @@
         top:200px;
         left:35%;
         position:fixed;
+    }
+
+    #logout {
+        width:100px;
+        position:fixed;
+        right:20px;
+        top:10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
     .btn-danger {
@@ -217,6 +273,16 @@
             width:100%;
             left:0;
             opacity:1;
+        }
+
+        #logout {
+            position:fixed;
+            right:unset;
+            top:unset;
+            bottom:20px;
+            width:50%;
+            margin-left:25%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
 
         #rightSlide {

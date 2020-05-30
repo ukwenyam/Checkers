@@ -26,24 +26,42 @@ export const signUp = functions.https.onRequest((request, response) => {
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    auth.createUserWithEmailAndPassword(evt.email, evt.password).then(() => {
-        
-        const user:any = auth.currentUser;
+    let names:any = [];
 
-        user.updateProfile({
-            displayName: evt.name
-        }).then(function() {
-            user.sendEmailVerification().then(function() {
-                res.send({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error});
-            });
-        }).catch(function(error:any) {
-            res.send({err: error});
+    db.collection("USERS").where("name", "==", evt.name)
+    .get()
+    .then(async function(snapshot:any) {
+        
+        await snapshot.forEach(function(doc:any) {
+            names.push(doc);
         });
 
-    }).catch(function(error:any) {
-        res.send({err: error});
+        if(names.length > 0) {
+            res.send({msg: "EXIST"});
+        } else {
+            auth.createUserWithEmailAndPassword(evt.email, evt.password).then(() => {
+        
+                const user:any = auth.currentUser;
+        
+                user.updateProfile({
+                    displayName: evt.name
+                }).then(function() {
+                    user.sendEmailVerification().then(function() {
+                        res.send({msg: "SUCCESS"});
+                    }).catch(function(error:any) {
+                        res.send({err: error.message});
+                    });
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+        
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        }
+    })
+    .catch(function(error:any) {
+        res.send({err: "Error finding document"});
     });
 });
 
@@ -71,7 +89,7 @@ export const createUser = functions.https.onRequest((request, response) => {
     }).then(function() {
         res.send({msg: "SUCCESS"});
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 
@@ -98,7 +116,7 @@ export const retrieveUser = functions.https.onRequest((request, response) => {
     docRef.get().then(function(doc:any) {
         res.send({msg: doc.data()});
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 
@@ -199,7 +217,7 @@ export const createGame = functions.https.onRequest((request, response) => {
     }).then(function() {
         res.send({msg: gameID});
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 
@@ -220,10 +238,10 @@ export const joinGame = functions.https.onRequest((request, response) => {
         docRef.get().then(function(doc:any) {
             res.send({msg: doc.data()});
         }).catch(function(error:any) {
-            res.send({err: error});
+            res.send({err: error.message});
         });
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 
@@ -244,7 +262,7 @@ export const saveGame = functions.https.onRequest((request, response) => {
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
-            res.send({err: error});
+            res.send({err: error.message});
         });
     }
 
@@ -258,7 +276,7 @@ export const saveGame = functions.https.onRequest((request, response) => {
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
-            res.send({err: error});
+            res.send({err: error.message});
         });
     }
 });
@@ -288,7 +306,7 @@ export const finishGame = functions.https.onRequest((request, response) => {
     }).then(function() {
         res.send({msg: "SUCCESS"});
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 
@@ -316,7 +334,7 @@ export const updateUsersStats = functions.https.onRequest((request, response) =>
     }).then(function() {
         res({msg: "SUCCESS"});
     }).catch(function(error:any) {
-        res.send({err: error});
+        res.send({err: error.message});
     });
 });
 

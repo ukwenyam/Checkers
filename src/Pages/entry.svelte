@@ -9,14 +9,15 @@
 
     let request;
 
-    let logPage = true;
+    let logPage = true, loading = false, viewError = false;
+
+    let errMsg;
 
     function signUp() {
 
-        console.log("In sign up");
-        loading('signup-loader');
-
         if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
+
+            loading = true;
 
             request = {
                 func : "signUp",
@@ -32,15 +33,25 @@
                 if(response.msg == "SUCCESS") {
                     request.func = "createUser";
                     createUser();
+                    loading = false;
+                } else if(response.msg == "EXIST") {
+                    errMsg = "Display Name Already Exist";
+                    viewError = true;
+                    loading = false;
                 } else {
-                    console.log(response.err);
+                    errMsg = response.err;
+                    viewError = true;
+                    loading = false;
                 }
-                console.log("stoping loading sign");
-                stopLoading('signin-loader');
             }).catch((err) => {
-                console.log(err);
-                stopLoading('signup-loader');
+                errMsg = err;
+                viewError = true;
+                loading = false;
             });
+        } else {
+            errMsg = "All Fields Are Required";
+            viewError = true;
+            loading = false;
         }
     }
 
@@ -49,21 +60,23 @@
         invokeFunction(request).then((response) => {
             console.log(response);
             if(response.msg == "SUCCESS") {
-                console.log("Verify Email");
+                errMsg = "Please Check Your Email For Verification";
+                viewError = true;
             } else {
-                console.log(response.err);
+                errMsg = response.err;
+                viewError = true;
             }
         }).catch((err) => {
-            console.log(err);
+            errMsg = err;
+            viewError = true;
         });
     }
 
     function signIn() {
 
-        console.log("In sign in");
-        loading('sigin-loader');
-
         if(logEmail != null && logPassword != null) {
+
+            loading = true;
 
             request = {
                 func : "signIn",
@@ -76,15 +89,23 @@
                     request.func = "retrieveUser";
                     retrieveUser();
                 } else if(response.msg != null && !response.msg) {
-                    console.log("Unverified Email")
+                    errMsg = "Please Verify Your Email";
+                    viewError = true;
+                    loading = false;
                 } else {
-                    console.log(response.err);
+                    errMsg = response.err;
+                    viewError = true;
+                    loading = false;
                 }
-                console.log("stoping loading sign");
-                stopLoading('signin-loader');
             }).catch((err) => {
-                console.log(err);
+                errMsg = err;
+                viewError = true;
+                loading = false;
             });
+        } else {
+            errMsg = "All Fields Are Required";
+            viewError = true;
+            loading = false;
         }
     }
 
@@ -99,13 +120,19 @@
 
                 currUser.set(new User(data));
 
+                loading = false;
+
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
             } else {
-                console.log(response.err);
+                errMsg = response.err;
+                viewError = true;
+                loading = false;
             }
         }).catch((err) => {
-            console.log(err);
+            errMsg = err;
+            viewError = true;
+            loading = false;
         });
     }
 
@@ -117,88 +144,60 @@
             console.log("passwords match");
         }
     }
-
-    window.$(document).ready(function() {
-        document.getElementById('signin-loader').addEventListener('load', stopLoading());
-    });
-
-    function validateSignInEmail() {
-
-    }
-
-    function validateSignInPassword() {
-        
-    }
-
-    function validateSignUpName() {
-        
-    }
-
-    function validateSignUpEmail() {
-        
-    }
-
-    function validateSignUppassWord() {
-        
-    }
-
-    function validateSignUpconPassword() {
-        
-    }
-
-    function loading(){
-        window.$('.loader-container').attr('style', 'display: flex');
-    }
-
-    function stopLoading(){
-        window.$('.loader-container').attr('style', 'display: none');
-    }
 </script>
 
-<div class="background">
-    <div id="entry" class="container">
-        <h3>Checkas.io</h3>
-        {#if logPage}
-            <div id="login-div">
+<div id="entry" class="container">
+    <h3>Checkas.io</h3>
+    {#if viewError}
+        <h6 style="text-align:center;color:red;margin-top:20px;">{errMsg}</h6>
+    {/if}
+
+    {#if logPage}
+        <div id="login-div">
+            <input id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
+            <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
+            <br/><a id="forgotPassword">Forgot Password?</a>
+            {#if !loading}
+                <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
+            {:else}
                 <div id="signin-loader" class="loader-container">
                     <div class="loader"></div>
                 </div>
-                <input name="logEmail" id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
-                <input name="logPassword" id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
-                <br/><a id="forgotPassword" href="" >Forgot Password?</a>
-                <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
-            </div>
-            <hr style="border: 1px solid green"/>
-            <div class="no-cred-sign-signup"  id="no-Acct-signup">
-                <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
-            </div>
-        {:else}
-            <div id="signup-div">
-                <div id="signup-loader" onload="{stopLoading()}" class="loader-container">
+            {/if}
+        </div>
+        <hr style="border: 1px solid green"/>
+        <div class="no-cred-sign-signup" id="no-Acct-signup">
+            <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
+        </div>
+    {:else}
+        <div id="signup-div">
+            <input id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
+            <input id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
+            <input id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
+            <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:change="{matchesPassword}" placeholder="Confirm Password" required/>
+            {#if !loading}
+                <br/><button class="btn btn-success" on:click="{signUp}" type="submit">Sign Up</button>
+            {:else}
+                <div id="signup-loader" class="loader-container">
                     <div class="loader"></div>
                 </div>
-                <input name="Name" id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
-                <input name="Email" id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
-                <input name="Password" id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
-                <input name="confirmPassword" id="confirmPassword" type="password" bind:value="{confirmPassword}" on:change="{matchesPassword}" placeholder="Confirm Password" required/>
-                <br/><button id="signup-btn" class="btn btn-success" on:click="{signUp}" type="submit" >Sign Up</button>
-            </div>
-            <hr style="border: 1px solid green"/>
-            <div class="no-cred-sign-signup">
-                <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
-            </div>
-        {/if}
-    </div>
-    <img id="back-image" alt="checker" src="./images/checkers.jpg"/>
+            {/if}
+        </div>
+        <hr style="border: 1px solid green"/>
+        <div class="no-cred-sign-signup">
+            <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
+        </div>
+    {/if}
 </div>
+<img id="back-image" alt="checker" src="./images/checkers.jpg"/>
 
 <style>
-
     .loader-container {
         width: 100%;
         align-items: center;
         justify-content: center;
-        display: none;
+        display: flex;
+        margin-top:20px;
     }
 
     .loader {
@@ -231,7 +230,6 @@
         display: inline-block;
         display: block;
         color: red;
-
     }
 
     span.arrow {
@@ -239,14 +237,6 @@
         display: block;
     }
 
-    .background {
-        margin: 0;
-        padding: 0;  
-        font-family: sans-serif;
-        background: #34495e;
-        width: 100%;
-        height: 100%;
-    }
 
     #login-div #login-form{
         width: 100%;
@@ -296,6 +286,8 @@
         width:100%;
         height:100%;
         position: fixed;
+        left:0;
+        top:0;
     }
 
     #entry input[type = "text"], #entry input[type = "password"] {
@@ -377,9 +369,9 @@
         background: #d4a82e;
     }
 
-     #entry button[type = "submit"]:hover {
-         background: #2ecc71;
-     }
+    #entry button[type = "submit"]:hover {
+        background: #2ecc71;
+    }
 
     button {
         /* width:100%; */
@@ -398,8 +390,6 @@
         cursor: pointer;
     }
 
-    
-
     @media screen and (max-width: 800px) {
 
 		#entry {
@@ -411,7 +401,6 @@
             position:fixed;
             box-shadow: none;
             overflow-y: scroll;
-            right:1px;
             transform: translate(-30%, -6%);
         }
         
