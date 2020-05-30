@@ -13,36 +13,34 @@
 
     function signUp() {
 
-        if( validateSignUp() ){
-            console.log("In sign up");
-            loading('signup-loader');
+        console.log("In sign up");
+        loading('signup-loader');
 
-            if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
+        if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
 
-                request = {
-                    func : "signUp",
-                    email : Email,
-                    name : Name,
-                    password : Password
-                }
-
-                console.log("Sending sign up request");
-
-                invokeFunction(request).then((response) => {
-                    console.log(response);
-                    if(response.msg == "SUCCESS") {
-                        request.func = "createUser";
-                        createUser();
-                    } else {
-                        console.log(response.err);
-                    }
-                    console.log("stoping loading sign");
-                    stopLoading('signin-loader');
-                }).catch((err) => {
-                    console.log(err);
-                    stopLoading('signup-loader');
-                });
+            request = {
+                func : "signUp",
+                email : Email,
+                name : Name,
+                password : Password
             }
+
+            console.log("Sending sign up request");
+
+            invokeFunction(request).then((response) => {
+                console.log(response);
+                if(response.msg == "SUCCESS") {
+                    request.func = "createUser";
+                    createUser();
+                } else {
+                    console.log(response.err);
+                }
+                console.log("stoping loading sign");
+                stopLoading('signin-loader');
+            }).catch((err) => {
+                console.log(err);
+                stopLoading('signup-loader');
+            });
         }
     }
 
@@ -61,35 +59,32 @@
     }
 
     function signIn() {
-        if( validateSigin()){
 
-            console.log("In sign in");
-            loading('sigin-loader');
+        console.log("In sign in");
+        loading('sigin-loader');
 
+        if(logEmail != null && logPassword != null) {
 
-            if(logEmail != null && logPassword != null) {
-
-                request = {
-                    func : "signIn",
-                    email : logEmail,
-                    password : logPassword
-                }
-
-                invokeFunction(request).then((response) => {
-                    if(response.msg != null && response.msg) {
-                        request.func = "retrieveUser";
-                        retrieveUser();
-                    } else if(response.msg != null && !response.msg) {
-                        console.log("Unverified Email")
-                    } else {
-                        console.log(response.err);
-                    }
-                    console.log("stoping loading sign");
-                    stopLoading('signin-loader');
-                }).catch((err) => {
-                    console.log(err);
-                });
+            request = {
+                func : "signIn",
+                email : logEmail,
+                password : logPassword
             }
+
+            invokeFunction(request).then((response) => {
+                if(response.msg != null && response.msg) {
+                    request.func = "retrieveUser";
+                    retrieveUser();
+                } else if(response.msg != null && !response.msg) {
+                    console.log("Unverified Email")
+                } else {
+                    console.log(response.err);
+                }
+                console.log("stoping loading sign");
+                stopLoading('signin-loader');
+            }).catch((err) => {
+                console.log(err);
+            });
         }
     }
 
@@ -115,25 +110,17 @@
     }
 
     function matchesPassword(){
-         if( Password != confirmPassword ){
-             console.log("passwords must match");
-         } 
-         else{
-             console.log("passwords match");
-         }
+        if(Password != confirmPassword){
+            console.log("passwords must match");
+        } 
+        else{
+            console.log("passwords match");
+        }
     }
 
     window.$(document).ready(function() {
         document.getElementById('signin-loader').addEventListener('load', stopLoading());
     });
-
-    function validateSigin() {
-        return true;
-    }
-
-    function validateSignUp() {
-        return true;
-    }
 
     function validateSignInEmail() {
 
@@ -159,55 +146,52 @@
         
     }
 
-     function loading(){
+    function loading(){
         window.$('.loader-container').attr('style', 'display: flex');
     }
 
     function stopLoading(){
-         window.$('.loader-container').attr('style', 'display: none');
+        window.$('.loader-container').attr('style', 'display: none');
     }
-
 </script>
+
 <div class="background">
-<div id="entry" class="container">
-    <h3>Checkas.io</h3>
-    {#if logPage}
-        <div id="login-div">
-        <div id="signin-loader"  class="loader-container">
-                <div class="loader"></div>
-            </div>
-            <form name="login-form" id="login-form">
+    <div id="entry" class="container">
+        <h3>Checkas.io</h3>
+        {#if logPage}
+            <div id="login-div">
+                <div id="signin-loader" class="loader-container">
+                    <div class="loader"></div>
+                </div>
                 <input name="logEmail" id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
                 <input name="logPassword" id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
                 <br/><a id="forgotPassword" href="" >Forgot Password?</a>
                 <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
-            </form>
-        </div>
-        <hr style="border: 1px solid green"/>
-        <div class="no-cred-sign-signup"  id="no-Acct-signup">
-        <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
-        </div>
-    {:else}
-        <div id="signup-div">
-            <div id="signup-loader" onload="{stopLoading()}" class="loader-container">
-                <div class="loader"></div>
             </div>
-            <!-- <form name="signup-form" id="signup-form"> -->
+            <hr style="border: 1px solid green"/>
+            <div class="no-cred-sign-signup"  id="no-Acct-signup">
+                <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
+            </div>
+        {:else}
+            <div id="signup-div">
+                <div id="signup-loader" onload="{stopLoading()}" class="loader-container">
+                    <div class="loader"></div>
+                </div>
                 <input name="Name" id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
                 <input name="Email" id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
                 <input name="Password" id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
                 <input name="confirmPassword" id="confirmPassword" type="password" bind:value="{confirmPassword}" on:change="{matchesPassword}" placeholder="Confirm Password" required/>
                 <br/><button id="signup-btn" class="btn btn-success" on:click="{signUp}" type="submit" >Sign Up</button>
-            <!-- </form> -->
-        </div>
-        <hr style="border: 1px solid green"/>
-        <div class="no-cred-sign-signup">
-            <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
-        </div>
-    {/if}
+            </div>
+            <hr style="border: 1px solid green"/>
+            <div class="no-cred-sign-signup">
+                <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
+            </div>
+        {/if}
+    </div>
+    <img id="back-image" alt="checker" src="./images/checkers.jpg"/>
 </div>
-<img id="back-image" alt="checker" src="./images/checkers.jpg"/>
-</div>
+
 <style>
 
     .loader-container {

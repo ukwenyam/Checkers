@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-var app=function(){"use strict";function t(){}const n=t=>t;function r(t){return t()}function o(){return Object.create(null)}function s(t){t.forEach(r)}function i(t){return"function"==typeof t}function a(t,e){return t!=t?e==e:t!==e||t&&"object"==typeof t||"function"==typeof t}function c(e,...n){if(null==e)return t;const r=e.subscribe(...n);return r.unsubscribe?()=>r.unsubscribe():r}function l(t,e,n){t.$$.on_destroy.push(c(e,n))}function u(t){return null==t?"":t}const p="undefined"!=typeof window;let h=p?()=>window.performance.now():()=>Date.now(),f=p?t=>requestAnimationFrame(t):t;const d=new Set;function m(t){d.forEach(e=>{e.c(t)||(d.delete(e),e.f())}),0!==d.size&&f(m)}function y(t){let e;return 0===d.size&&f(m),{promise:new Promise(n=>{d.add(e={c:t,f:n})}),abort(){d.delete(e)}}}function g(t,e){t.appendChild(e)}function v(t,e,n){t.insertBefore(e,n||null)}function b(t){t.parentNode.removeChild(t)}function w(t,e){for(let n=0;n<t.length;n+=1)t[n]&&t[n].d(e)}function C(t){return document.createElement(t)}function k(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function x(t){return document.createTextNode(t)}function P(){return x(" ")}function A(){return x("")}function B(t,e,n,r){return t.addEventListener(e,n,r),()=>t.removeEventListener(e,n,r)}function S(t,e,n){null==n?t.removeAttribute(e):t.getAttribute(e)!==n&&t.setAttribute(e,n)}function E(t){return""===t?void 0:+t}function F(t,e){e=""+e,t.data!==e&&(t.data=e)}function $(t,e){(null!=e||t.value)&&(t.value=e)}function N(t,e,n,r){t.style.setProperty(e,n,r?"important":"")}const T=new Set;let _,M=0;function R(t,e,n,r,o,s,i,a=0){const c=16.666/r;let l="{\n";for(let t=0;t<=1;t+=c){const r=e+(n-e)*s(t);l+=100*t+`%{${i(r,1-r)}}\n`}const u=l+`100% {${i(n,1-n)}}\n}`,p=`__svelte_${function(t){let e=5381,n=t.length;for(;n--;)e=(e<<5)-e^t.charCodeAt(n);return e>>>0}(u)}_${a}`,h=t.ownerDocument;T.add(h);const f=h.__svelte_stylesheet||(h.__svelte_stylesheet=h.head.appendChild(C("style")).sheet),d=h.__svelte_rules||(h.__svelte_rules={});d[p]||(d[p]=!0,f.insertRule(`@keyframes ${p} ${u}`,f.cssRules.length));const m=t.style.animation||"";return t.style.animation=`${m?m+", ":""}${p} ${r}ms linear ${o}ms 1 both`,M+=1,p}function O(t,e){const n=(t.style.animation||"").split(", "),r=n.filter(e?t=>t.indexOf(e)<0:t=>-1===t.indexOf("__svelte")),o=n.length-r.length;o&&(t.style.animation=r.join(", "),M-=o,M||f(()=>{M||(T.forEach(t=>{const e=t.__svelte_stylesheet;let n=e.cssRules.length;for(;n--;)e.deleteRule(n);t.__svelte_rules={}}),T.clear())}))}function I(t){_=t}function j(){if(!_)throw new Error("Function called outside component initialization");return _}const q=[],D=[],U=[],L=[],H=Promise.resolve();let z=!1;function G(t){U.push(t)}let J=!1;const X=new Set;function W(){if(!J){J=!0;do{for(let t=0;t<q.length;t+=1){const e=q[t];I(e),Y(e.$$)}for(q.length=0;D.length;)D.pop()();for(let t=0;t<U.length;t+=1){const e=U[t];X.has(e)||(X.add(e),e())}U.length=0}while(q.length);for(;L.length;)L.pop()();z=!1,J=!1,X.clear()}}function Y(t){if(null!==t.fragment){t.update(),s(t.before_update);const e=t.dirty;t.dirty=[-1],t.fragment&&t.fragment.p(t.ctx,e),t.after_update.forEach(G)}}let V;function K(t,e,n){t.dispatchEvent(function(t,e){const n=document.createEvent("CustomEvent");return n.initCustomEvent(t,!1,!1,e),n}(`${e?"intro":"outro"}${n}`))}const Z=new Set;let Q;function tt(){Q={r:0,c:[],p:Q}}function et(){Q.r||s(Q.c),Q=Q.p}function nt(t,e){t&&t.i&&(Z.delete(t),t.i(e))}function rt(t,e,n,r){if(t&&t.o){if(Z.has(t))return;Z.add(t),Q.c.push(()=>{Z.delete(t),r&&(n&&t.d(1),r())}),t.o(e)}}const ot={duration:0};function st(e,r,o,a){let c=r(e,o),l=a?0:1,u=null,p=null,f=null;function d(){f&&O(e,f)}function m(t,e){const n=t.b-l;return e*=Math.abs(n),{a:l,b:t.b,d:n,duration:e,start:t.start,end:t.start+e,group:t.group}}function g(r){const{delay:o=0,duration:i=300,easing:a=n,tick:g=t,css:v}=c||ot,b={start:h()+o,b:r};r||(b.group=Q,Q.r+=1),u?p=b:(v&&(d(),f=R(e,l,r,i,o,a,v)),r&&g(0,1),u=m(b,i),G(()=>K(e,r,"start")),y(t=>{if(p&&t>p.start&&(u=m(p,i),p=null,K(e,u.b,"start"),v&&(d(),f=R(e,l,u.b,u.duration,0,a,c.css))),u)if(t>=u.end)g(l=u.b,1-l),K(e,u.b,"end"),p||(u.b?d():--u.group.r||s(u.group.c)),u=null;else if(t>=u.start){const e=t-u.start;l=u.a+u.d*a(e/u.duration),g(l,1-l)}return!(!u&&!p)}))}return{run(t){i(c)?(V||(V=Promise.resolve(),V.then(()=>{V=null})),V).then(()=>{c=c(),g(t)}):g(t)},end(){d(),u=p=null}}}function it(t){t&&t.c()}function at(t,e,n){const{fragment:o,on_mount:a,on_destroy:c,after_update:l}=t.$$;o&&o.m(e,n),G(()=>{const e=a.map(r).filter(i);c?c.push(...e):s(e),t.$$.on_mount=[]}),l.forEach(G)}function ct(t,e){const n=t.$$;null!==n.fragment&&(s(n.on_destroy),n.fragment&&n.fragment.d(e),n.on_destroy=n.fragment=null,n.ctx=[])}function lt(t,e){-1===t.$$.dirty[0]&&(q.push(t),z||(z=!0,H.then(W)),t.$$.dirty.fill(0)),t.$$.dirty[e/31|0]|=1<<e%31}function ut(e,n,r,i,a,c,l=[-1]){const u=_;I(e);const p=n.props||{},h=e.$$={fragment:null,ctx:null,props:c,update:t,not_equal:a,bound:o(),on_mount:[],on_destroy:[],before_update:[],after_update:[],context:new Map(u?u.$$.context:[]),callbacks:o(),dirty:l};let f=!1;if(h.ctx=r?r(e,p,(t,n,...r)=>{const o=r.length?r[0]:n;return h.ctx&&a(h.ctx[t],h.ctx[t]=o)&&(h.bound[t]&&h.bound[t](o),f&&lt(e,t)),n}):[],h.update(),f=!0,s(h.before_update),h.fragment=!!i&&i(h.ctx),n.target){if(n.hydrate){const t=function(t){return Array.from(t.childNodes)}(n.target);h.fragment&&h.fragment.l(t),t.forEach(b)}else h.fragment&&h.fragment.c();n.intro&&nt(e.$$.fragment),at(e,n.target,n.anchor),W()}I(u)}class pt{$destroy(){ct(this,1),this.$destroy=t}$on(t,e){const n=this.$$.callbacks[t]||(this.$$.callbacks[t]=[]);return n.push(e),()=>{const t=n.indexOf(e);-1!==t&&n.splice(t,1)}}$set(){}}const ht=[];function ft(e,n=t){let r;const o=[];function s(t){if(a(e,t)&&(e=t,r)){const t=!ht.length;for(let t=0;t<o.length;t+=1){const n=o[t];n[1](),ht.push(n,e)}if(t){for(let t=0;t<ht.length;t+=2)ht[t][0](ht[t+1]);ht.length=0}}}return{set:s,update:function(t){s(t(e))},subscribe:function(i,a=t){const c=[i,a];return o.push(c),1===o.length&&(r=n(s)||t),i(e),()=>{const t=o.indexOf(c);-1!==t&&o.splice(t,1),0===o.length&&(r(),r=null)}}}}function dt(t,e){return t(e={exports:{}},e.exports),e.exports}var mt=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,yt=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],gt=function(t){var e=t,n=t.indexOf("["),r=t.indexOf("]");-1!=n&&-1!=r&&(t=t.substring(0,n)+t.substring(n,r).replace(/:/g,";")+t.substring(r,t.length));for(var o=mt.exec(t||""),s={},i=14;i--;)s[yt[i]]=o[i]||"";return-1!=n&&-1!=r&&(s.source=e,s.host=s.host.substring(1,s.host.length-1).replace(/;/g,":"),s.authority=s.authority.replace("[","").replace("]","").replace(/;/g,":"),s.ipv6uri=!0),s},vt=1e3,bt=6e4,wt=60*bt,Ct=24*wt,kt=function(t,e){e=e||{};var n=typeof t;if("string"===n&&t.length>0)return function(t){if((t=String(t)).length>100)return;var e=/^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(t);if(!e)return;var n=parseFloat(e[1]);switch((e[2]||"ms").toLowerCase()){case"years":case"year":case"yrs":case"yr":case"y":return 315576e5*n;case"weeks":case"week":case"w":return 6048e5*n;case"days":case"day":case"d":return n*Ct;case"hours":case"hour":case"hrs":case"hr":case"h":return n*wt;case"minutes":case"minute":case"mins":case"min":case"m":return n*bt;case"seconds":case"second":case"secs":case"sec":case"s":return n*vt;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return n;default:return}}(t);if("number"===n&&isFinite(t))return e.long?function(t){var e=Math.abs(t);if(e>=Ct)return xt(t,e,Ct,"day");if(e>=wt)return xt(t,e,wt,"hour");if(e>=bt)return xt(t,e,bt,"minute");if(e>=vt)return xt(t,e,vt,"second");return t+" ms"}(t):function(t){var e=Math.abs(t);if(e>=Ct)return Math.round(t/Ct)+"d";if(e>=wt)return Math.round(t/wt)+"h";if(e>=bt)return Math.round(t/bt)+"m";if(e>=vt)return Math.round(t/vt)+"s";return t+"ms"}(t);throw new Error("val is not a non-empty string or a valid number. val="+JSON.stringify(t))};function xt(t,e,n,r){var o=e>=1.5*n;return Math.round(t/n)+" "+r+(o?"s":"")}var Pt=function(t){function e(t){let e=0;for(let n=0;n<t.length;n++)e=(e<<5)-e+t.charCodeAt(n),e|=0;return n.colors[Math.abs(e)%n.colors.length]}function n(t){let s;function i(...t){if(!i.enabled)return;const e=i,r=Number(new Date),o=r-(s||r);e.diff=o,e.prev=s,e.curr=r,s=r,t[0]=n.coerce(t[0]),"string"!=typeof t[0]&&t.unshift("%O");let a=0;t[0]=t[0].replace(/%([a-zA-Z%])/g,(r,o)=>{if("%%"===r)return r;a++;const s=n.formatters[o];if("function"==typeof s){const n=t[a];r=s.call(e,n),t.splice(a,1),a--}return r}),n.formatArgs.call(e,t);(e.log||n.log).apply(e,t)}return i.namespace=t,i.enabled=n.enabled(t),i.useColors=n.useColors(),i.color=e(t),i.destroy=r,i.extend=o,"function"==typeof n.init&&n.init(i),n.instances.push(i),i}function r(){const t=n.instances.indexOf(this);return-1!==t&&(n.instances.splice(t,1),!0)}function o(t,e){const r=n(this.namespace+(void 0===e?":":e)+t);return r.log=this.log,r}function s(t){return t.toString().substring(2,t.toString().length-2).replace(/\.\*\?$/,"*")}return n.debug=n,n.default=n,n.coerce=function(t){if(t instanceof Error)return t.stack||t.message;return t},n.disable=function(){const t=[...n.names.map(s),...n.skips.map(s).map(t=>"-"+t)].join(",");return n.enable(""),t},n.enable=function(t){let e;n.save(t),n.names=[],n.skips=[];const r=("string"==typeof t?t:"").split(/[\s,]+/),o=r.length;for(e=0;e<o;e++)r[e]&&("-"===(t=r[e].replace(/\*/g,".*?"))[0]?n.skips.push(new RegExp("^"+t.substr(1)+"$")):n.names.push(new RegExp("^"+t+"$")));for(e=0;e<n.instances.length;e++){const t=n.instances[e];t.enabled=n.enabled(t.namespace)}},n.enabled=function(t){if("*"===t[t.length-1])return!0;let e,r;for(e=0,r=n.skips.length;e<r;e++)if(n.skips[e].test(t))return!1;for(e=0,r=n.names.length;e<r;e++)if(n.names[e].test(t))return!0;return!1},n.humanize=kt,Object.keys(t).forEach(e=>{n[e]=t[e]}),n.instances=[],n.names=[],n.skips=[],n.formatters={},n.selectColor=e,n.enable(n.load()),n},At=dt((function(t,e){e.log=function(...t){return"object"==typeof console&&console.log&&console.log(...t)},e.formatArgs=function(e){if(e[0]=(this.useColors?"%c":"")+this.namespace+(this.useColors?" %c":" ")+e[0]+(this.useColors?"%c ":" ")+"+"+t.exports.humanize(this.diff),!this.useColors)return;const n="color: "+this.color;e.splice(1,0,n,"color: inherit");let r=0,o=0;e[0].replace(/%[a-zA-Z%]/g,t=>{"%%"!==t&&(r++,"%c"===t&&(o=r))}),e.splice(o,0,n)},e.save=function(t){try{t?e.storage.setItem("debug",t):e.storage.removeItem("debug")}catch(t){}},e.load=function(){let t;try{t=e.storage.getItem("debug")}catch(t){}!t&&"undefined"!=typeof process&&"env"in process&&(t=process.env.DEBUG);return t},e.useColors=function(){if("undefined"!=typeof window&&window.process&&("renderer"===window.process.type||window.process.__nwjs))return!0;if("undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/))return!1;return"undefined"!=typeof document&&document.documentElement&&document.documentElement.style&&document.documentElement.style.WebkitAppearance||"undefined"!=typeof window&&window.console&&(window.console.firebug||window.console.exception&&window.console.table)||"undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)&&parseInt(RegExp.$1,10)>=31||"undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)},e.storage=function(){try{return localStorage}catch(t){}}(),e.colors=["#0000CC","#0000FF","#0033CC","#0033FF","#0066CC","#0066FF","#0099CC","#0099FF","#00CC00","#00CC33","#00CC66","#00CC99","#00CCCC","#00CCFF","#3300CC","#3300FF","#3333CC","#3333FF","#3366CC","#3366FF","#3399CC","#3399FF","#33CC00","#33CC33","#33CC66","#33CC99","#33CCCC","#33CCFF","#6600CC","#6600FF","#6633CC","#6633FF","#66CC00","#66CC33","#9900CC","#9900FF","#9933CC","#9933FF","#99CC00","#99CC33","#CC0000","#CC0033","#CC0066","#CC0099","#CC00CC","#CC00FF","#CC3300","#CC3333","#CC3366","#CC3399","#CC33CC","#CC33FF","#CC6600","#CC6633","#CC9900","#CC9933","#CCCC00","#CCCC33","#FF0000","#FF0033","#FF0066","#FF0099","#FF00CC","#FF00FF","#FF3300","#FF3333","#FF3366","#FF3399","#FF33CC","#FF33FF","#FF6600","#FF6633","#FF9900","#FF9933","#FFCC00","#FFCC33"],t.exports=Pt(e);const{formatters:n}=t.exports;n.j=function(t){try{return JSON.stringify(t)}catch(t){return"[UnexpectedJSONParseError]: "+t.message}}})),Bt=(At.log,At.formatArgs,At.save,At.load,At.useColors,At.storage,At.colors,At("socket.io-client:url")),St=function(t,e){var n=t;e=e||"undefined"!=typeof location&&location,null==t&&(t=e.protocol+"//"+e.host);"string"==typeof t&&("/"===t.charAt(0)&&(t="/"===t.charAt(1)?e.protocol+t:e.host+t),/^(https?|wss?):\/\//.test(t)||(Bt("protocol-less url %s",t),t=void 0!==e?e.protocol+"//"+t:"https://"+t),Bt("parse %s",t),n=gt(t));n.port||(/^(http|ws)$/.test(n.protocol)?n.port="80":/^(http|ws)s$/.test(n.protocol)&&(n.port="443"));n.path=n.path||"/";var r=-1!==n.host.indexOf(":")?"["+n.host+"]":n.host;return n.id=n.protocol+"://"+r+":"+n.port,n.href=n.protocol+"://"+r+(e&&e.port===n.port?"":":"+n.port),n};var Et=36e5,Ft=24*Et,$t=function(t,e){e=e||{};var n=typeof t;if("string"===n&&t.length>0)return function(t){if((t=String(t)).length>100)return;var e=/^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(t);if(!e)return;var n=parseFloat(e[1]);switch((e[2]||"ms").toLowerCase()){case"years":case"year":case"yrs":case"yr":case"y":return 315576e5*n;case"days":case"day":case"d":return n*Ft;case"hours":case"hour":case"hrs":case"hr":case"h":return n*Et;case"minutes":case"minute":case"mins":case"min":case"m":return 6e4*n;case"seconds":case"second":case"secs":case"sec":case"s":return 1e3*n;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return n;default:return}}(t);if("number"===n&&!1===isNaN(t))return e.long?function(t){return Nt(t,Ft,"day")||Nt(t,Et,"hour")||Nt(t,6e4,"minute")||Nt(t,1e3,"second")||t+" ms"}(t):function(t){if(t>=Ft)return Math.round(t/Ft)+"d";if(t>=Et)return Math.round(t/Et)+"h";if(t>=6e4)return Math.round(t/6e4)+"m";if(t>=1e3)return Math.round(t/1e3)+"s";return t+"ms"}(t);throw new Error("val is not a non-empty string or a valid number. val="+JSON.stringify(t))};function Nt(t,e,n){if(!(t<e))return t<1.5*e?Math.floor(t/e)+" "+n:Math.ceil(t/e)+" "+n+"s"}var Tt=dt((function(t,e){function n(t){var n;function o(){if(o.enabled){var t=o,r=+new Date,s=r-(n||r);t.diff=s,t.prev=n,t.curr=r,n=r;for(var i=new Array(arguments.length),a=0;a<i.length;a++)i[a]=arguments[a];i[0]=e.coerce(i[0]),"string"!=typeof i[0]&&i.unshift("%O");var c=0;i[0]=i[0].replace(/%([a-zA-Z%])/g,(function(n,r){if("%%"===n)return n;c++;var o=e.formatters[r];if("function"==typeof o){var s=i[c];n=o.call(t,s),i.splice(c,1),c--}return n})),e.formatArgs.call(t,i);var l=o.log||e.log||console.log.bind(console);l.apply(t,i)}}return o.namespace=t,o.enabled=e.enabled(t),o.useColors=e.useColors(),o.color=function(t){var n,r=0;for(n in t)r=(r<<5)-r+t.charCodeAt(n),r|=0;return e.colors[Math.abs(r)%e.colors.length]}(t),o.destroy=r,"function"==typeof e.init&&e.init(o),e.instances.push(o),o}function r(){var t=e.instances.indexOf(this);return-1!==t&&(e.instances.splice(t,1),!0)}(e=t.exports=n.debug=n.default=n).coerce=function(t){return t instanceof Error?t.stack||t.message:t},e.disable=function(){e.enable("")},e.enable=function(t){var n;e.save(t),e.names=[],e.skips=[];var r=("string"==typeof t?t:"").split(/[\s,]+/),o=r.length;for(n=0;n<o;n++)r[n]&&("-"===(t=r[n].replace(/\*/g,".*?"))[0]?e.skips.push(new RegExp("^"+t.substr(1)+"$")):e.names.push(new RegExp("^"+t+"$")));for(n=0;n<e.instances.length;n++){var s=e.instances[n];s.enabled=e.enabled(s.namespace)}},e.enabled=function(t){if("*"===t[t.length-1])return!0;var n,r;for(n=0,r=e.skips.length;n<r;n++)if(e.skips[n].test(t))return!1;for(n=0,r=e.names.length;n<r;n++)if(e.names[n].test(t))return!0;return!1},e.humanize=$t,e.instances=[],e.names=[],e.skips=[],e.formatters={}})),_t=(Tt.coerce,Tt.disable,Tt.enable,Tt.enabled,Tt.humanize,Tt.instances,Tt.names,Tt.skips,Tt.formatters,dt((function(t,e){function n(){var t;try{t=e.storage.debug}catch(t){}return!t&&"undefined"!=typeof process&&"env"in process&&(t=process.env.DEBUG),t}(e=t.exports=Tt).log=function(){return"object"==typeof console&&console.log&&Function.prototype.apply.call(console.log,console,arguments)},e.formatArgs=function(t){var n=this.useColors;if(t[0]=(n?"%c":"")+this.namespace+(n?" %c":" ")+t[0]+(n?"%c ":" ")+"+"+e.humanize(this.diff),!n)return;var r="color: "+this.color;t.splice(1,0,r,"color: inherit");var o=0,s=0;t[0].replace(/%[a-zA-Z%]/g,(function(t){"%%"!==t&&(o++,"%c"===t&&(s=o))})),t.splice(s,0,r)},e.save=function(t){try{null==t?e.storage.removeItem("debug"):e.storage.debug=t}catch(t){}},e.load=n,e.useColors=function(){if("undefined"!=typeof window&&window.process&&"renderer"===window.process.type)return!0;if("undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/))return!1;return"undefined"!=typeof document&&document.documentElement&&document.documentElement.style&&document.documentElement.style.WebkitAppearance||"undefined"!=typeof window&&window.console&&(window.console.firebug||window.console.exception&&window.console.table)||"undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)&&parseInt(RegExp.$1,10)>=31||"undefined"!=typeof navigator&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)},e.storage="undefined"!=typeof chrome&&void 0!==chrome.storage?chrome.storage.local:function(){try{return window.localStorage}catch(t){}}(),e.colors=["#0000CC","#0000FF","#0033CC","#0033FF","#0066CC","#0066FF","#0099CC","#0099FF","#00CC00","#00CC33","#00CC66","#00CC99","#00CCCC","#00CCFF","#3300CC","#3300FF","#3333CC","#3333FF","#3366CC","#3366FF","#3399CC","#3399FF","#33CC00","#33CC33","#33CC66","#33CC99","#33CCCC","#33CCFF","#6600CC","#6600FF","#6633CC","#6633FF","#66CC00","#66CC33","#9900CC","#9900FF","#9933CC","#9933FF","#99CC00","#99CC33","#CC0000","#CC0033","#CC0066","#CC0099","#CC00CC","#CC00FF","#CC3300","#CC3333","#CC3366","#CC3399","#CC33CC","#CC33FF","#CC6600","#CC6633","#CC9900","#CC9933","#CCCC00","#CCCC33","#FF0000","#FF0033","#FF0066","#FF0099","#FF00CC","#FF00FF","#FF3300","#FF3333","#FF3366","#FF3399","#FF33CC","#FF33FF","#FF6600","#FF6633","#FF9900","#FF9933","#FFCC00","#FFCC33"],e.formatters.j=function(t){try{return JSON.stringify(t)}catch(t){return"[UnexpectedJSONParseError]: "+t.message}},e.enable(n())}))),Mt=(_t.log,_t.formatArgs,_t.save,_t.load,_t.useColors,_t.storage,_t.colors,dt((function(t){function e(t){if(t)return function(t){for(var n in e.prototype)t[n]=e.prototype[n];return t}(t)}t.exports=e,e.prototype.on=e.prototype.addEventListener=function(t,e){return this._callbacks=this._callbacks||{},(this._callbacks["$"+t]=this._callbacks["$"+t]||[]).push(e),this},e.prototype.once=function(t,e){function n(){this.off(t,n),e.apply(this,arguments)}return n.fn=e,this.on(t,n),this},e.prototype.off=e.prototype.removeListener=e.prototype.removeAllListeners=e.prototype.removeEventListener=function(t,e){if(this._callbacks=this._callbacks||{},0==arguments.length)return this._callbacks={},this;var n,r=this._callbacks["$"+t];if(!r)return this;if(1==arguments.length)return delete this._callbacks["$"+t],this;for(var o=0;o<r.length;o++)if((n=r[o])===e||n.fn===e){r.splice(o,1);break}return this},e.prototype.emit=function(t){this._callbacks=this._callbacks||{};var e=[].slice.call(arguments,1),n=this._callbacks["$"+t];if(n)for(var r=0,o=(n=n.slice(0)).length;r<o;++r)n[r].apply(this,e);return this},e.prototype.listeners=function(t){return this._callbacks=this._callbacks||{},this._callbacks["$"+t]||[]},e.prototype.hasListeners=function(t){return!!this.listeners(t).length}}))),Rt={}.toString,Ot=Array.isArray||function(t){return"[object Array]"==Rt.call(t)},It=function(t){return jt&&Buffer.isBuffer(t)||qt&&(t instanceof ArrayBuffer||function(t){return"function"==typeof ArrayBuffer.isView?ArrayBuffer.isView(t):t.buffer instanceof ArrayBuffer}(t))},jt="function"==typeof Buffer&&"function"==typeof Buffer.isBuffer,qt="function"==typeof ArrayBuffer;var Dt=Object.prototype.toString,Ut="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===Dt.call(Blob),Lt="function"==typeof File||"undefined"!=typeof File&&"[object FileConstructor]"===Dt.call(File);var Ht=function(t){var e=[],n=t.data,r=t;return r.data=function t(e,n){if(!e)return e;if(It(e)){var r={_placeholder:!0,num:n.length};return n.push(e),r}if(Ot(e)){for(var o=new Array(e.length),s=0;s<e.length;s++)o[s]=t(e[s],n);return o}if("object"==typeof e&&!(e instanceof Date)){o={};for(var i in e)o[i]=t(e[i],n);return o}return e}(n,e),r.attachments=e.length,{packet:r,buffers:e}},zt=function(t,e){return t.data=function t(e,n){if(!e)return e;if(e&&e._placeholder)return n[e.num];if(Ot(e))for(var r=0;r<e.length;r++)e[r]=t(e[r],n);else if("object"==typeof e)for(var o in e)e[o]=t(e[o],n);return e}(t.data,e),t.attachments=void 0,t},Gt=function(t,e){var n=0,r=t;!function t(o,s,i){if(!o)return o;if(Ut&&o instanceof Blob||Lt&&o instanceof File){n++;var a=new FileReader;a.onload=function(){i?i[s]=this.result:r=this.result,--n||e(r)},a.readAsArrayBuffer(o)}else if(Ot(o))for(var c=0;c<o.length;c++)t(o[c],c,o);else if("object"==typeof o&&!It(o))for(var l in o)t(o[l],l,o)}(r),n||e(r)},Jt=dt((function(t,e){var n=_t("socket.io-parser");function r(){}e.protocol=4,e.types=["CONNECT","DISCONNECT","EVENT","ACK","ERROR","BINARY_EVENT","BINARY_ACK"],e.CONNECT=0,e.DISCONNECT=1,e.EVENT=2,e.ACK=3,e.ERROR=4,e.BINARY_EVENT=5,e.BINARY_ACK=6,e.Encoder=r,e.Decoder=i;var o=e.ERROR+'"encode error"';function s(t){var r=""+t.type;if(e.BINARY_EVENT!==t.type&&e.BINARY_ACK!==t.type||(r+=t.attachments+"-"),t.nsp&&"/"!==t.nsp&&(r+=t.nsp+","),null!=t.id&&(r+=t.id),null!=t.data){var s=function(t){try{return JSON.stringify(t)}catch(t){return!1}}(t.data);if(!1===s)return o;r+=s}return n("encoded %j as %s",t,r),r}function i(){this.reconstructor=null}function a(t){this.reconPack=t,this.buffers=[]}function c(t){return{type:e.ERROR,data:"parser error: "+t}}r.prototype.encode=function(t,r){(n("encoding packet %j",t),e.BINARY_EVENT===t.type||e.BINARY_ACK===t.type)?function(t,e){Gt(t,(function(t){var n=Ht(t),r=s(n.packet),o=n.buffers;o.unshift(r),e(o)}))}(t,r):r([s(t)])},Mt(i.prototype),i.prototype.add=function(t){var r;if("string"==typeof t)r=function(t){var r=0,o={type:Number(t.charAt(0))};if(null==e.types[o.type])return c("unknown packet type "+o.type);if(e.BINARY_EVENT===o.type||e.BINARY_ACK===o.type){for(var s="";"-"!==t.charAt(++r)&&(s+=t.charAt(r),r!=t.length););if(s!=Number(s)||"-"!==t.charAt(r))throw new Error("Illegal attachments");o.attachments=Number(s)}if("/"===t.charAt(r+1))for(o.nsp="";++r;){if(","===(a=t.charAt(r)))break;if(o.nsp+=a,r===t.length)break}else o.nsp="/";var i=t.charAt(r+1);if(""!==i&&Number(i)==i){for(o.id="";++r;){var a;if(null==(a=t.charAt(r))||Number(a)!=a){--r;break}if(o.id+=t.charAt(r),r===t.length)break}o.id=Number(o.id)}if(t.charAt(++r)){var l=function(t){try{return JSON.parse(t)}catch(t){return!1}}(t.substr(r));if(!(!1!==l&&(o.type===e.ERROR||Ot(l))))return c("invalid payload");o.data=l}return n("decoded %s as %j",t,o),o}(t),e.BINARY_EVENT===r.type||e.BINARY_ACK===r.type?(this.reconstructor=new a(r),0===this.reconstructor.reconPack.attachments&&this.emit("decoded",r)):this.emit("decoded",r);else{if(!It(t)&&!t.base64)throw new Error("Unknown type: "+t);if(!this.reconstructor)throw new Error("got binary data when not reconstructing a packet");(r=this.reconstructor.takeBinaryData(t))&&(this.reconstructor=null,this.emit("decoded",r))}},i.prototype.destroy=function(){this.reconstructor&&this.reconstructor.finishedReconstruction()},a.prototype.takeBinaryData=function(t){if(this.buffers.push(t),this.buffers.length===this.reconPack.attachments){var e=zt(this.reconPack,this.buffers);return this.finishedReconstruction(),e}return null},a.prototype.finishedReconstruction=function(){this.reconPack=null,this.buffers=[]}})),Xt=(Jt.protocol,Jt.types,Jt.CONNECT,Jt.DISCONNECT,Jt.EVENT,Jt.ACK,Jt.ERROR,Jt.BINARY_EVENT,Jt.BINARY_ACK,Jt.Encoder,Jt.Decoder,dt((function(t){try{t.exports="undefined"!=typeof XMLHttpRequest&&"withCredentials"in new XMLHttpRequest}catch(e){t.exports=!1}}))),Wt="undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this")(),Yt=function(t){var e=t.xdomain,n=t.xscheme,r=t.enablesXDR;try{if("undefined"!=typeof XMLHttpRequest&&(!e||Xt))return new XMLHttpRequest}catch(t){}try{if("undefined"!=typeof XDomainRequest&&!n&&r)return new XDomainRequest}catch(t){}if(!e)try{return new(Wt[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(t){}},Vt=Object.keys||function(t){var e=[],n=Object.prototype.hasOwnProperty;for(var r in t)n.call(t,r)&&e.push(r);return e},Kt=Object.prototype.toString,Zt="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===Kt.call(Blob),Qt="function"==typeof File||"undefined"!=typeof File&&"[object FileConstructor]"===Kt.call(File),te=function t(e){if(!e||"object"!=typeof e)return!1;if(Ot(e)){for(var n=0,r=e.length;n<r;n++)if(t(e[n]))return!0;return!1}if("function"==typeof Buffer&&Buffer.isBuffer&&Buffer.isBuffer(e)||"function"==typeof ArrayBuffer&&e instanceof ArrayBuffer||Zt&&e instanceof Blob||Qt&&e instanceof File)return!0;if(e.toJSON&&"function"==typeof e.toJSON&&1===arguments.length)return t(e.toJSON(),!0);for(var o in e)if(Object.prototype.hasOwnProperty.call(e,o)&&t(e[o]))return!0;return!1};var ee=function(t,e,n){var r=t.byteLength;if(e=e||0,n=n||r,t.slice)return t.slice(e,n);if(e<0&&(e+=r),n<0&&(n+=r),n>r&&(n=r),e>=r||e>=n||0===r)return new ArrayBuffer(0);for(var o=new Uint8Array(t),s=new Uint8Array(n-e),i=e,a=0;i<n;i++,a++)s[a]=o[i];return s.buffer},ne=function(t,e,n){var r=!1;return n=n||re,o.count=t,0===t?e():o;function o(t,s){if(o.count<=0)throw new Error("after called too many times");--o.count,t?(r=!0,e(t),e=n):0!==o.count||r||e(null,s)}};function re(){}
-/*! https://mths.be/utf8js v2.1.2 by @mathias */var oe,se,ie,ae=String.fromCharCode;function ce(t){for(var e,n,r=[],o=0,s=t.length;o<s;)(e=t.charCodeAt(o++))>=55296&&e<=56319&&o<s?56320==(64512&(n=t.charCodeAt(o++)))?r.push(((1023&e)<<10)+(1023&n)+65536):(r.push(e),o--):r.push(e);return r}function le(t,e){if(t>=55296&&t<=57343){if(e)throw Error("Lone surrogate U+"+t.toString(16).toUpperCase()+" is not a scalar value");return!1}return!0}function ue(t,e){return ae(t>>e&63|128)}function pe(t,e){if(0==(4294967168&t))return ae(t);var n="";return 0==(4294965248&t)?n=ae(t>>6&31|192):0==(4294901760&t)?(le(t,e)||(t=65533),n=ae(t>>12&15|224),n+=ue(t,6)):0==(4292870144&t)&&(n=ae(t>>18&7|240),n+=ue(t,12),n+=ue(t,6)),n+=ae(63&t|128)}function he(){if(ie>=se)throw Error("Invalid byte index");var t=255&oe[ie];if(ie++,128==(192&t))return 63&t;throw Error("Invalid continuation byte")}function fe(t){var e,n;if(ie>se)throw Error("Invalid byte index");if(ie==se)return!1;if(e=255&oe[ie],ie++,0==(128&e))return e;if(192==(224&e)){if((n=(31&e)<<6|he())>=128)return n;throw Error("Invalid continuation byte")}if(224==(240&e)){if((n=(15&e)<<12|he()<<6|he())>=2048)return le(n,t)?n:65533;throw Error("Invalid continuation byte")}if(240==(248&e)&&(n=(7&e)<<18|he()<<12|he()<<6|he())>=65536&&n<=1114111)return n;throw Error("Invalid UTF-8 detected")}var de={version:"2.1.2",encode:function(t,e){for(var n=!1!==(e=e||{}).strict,r=ce(t),o=r.length,s=-1,i="";++s<o;)i+=pe(r[s],n);return i},decode:function(t,e){var n=!1!==(e=e||{}).strict;oe=ce(t),se=oe.length,ie=0;for(var r,o=[];!1!==(r=fe(n));)o.push(r);return function(t){for(var e,n=t.length,r=-1,o="";++r<n;)(e=t[r])>65535&&(o+=ae((e-=65536)>>>10&1023|55296),e=56320|1023&e),o+=ae(e);return o}(o)}},me=dt((function(t,e){!function(){for(var t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n=new Uint8Array(256),r=0;r<t.length;r++)n[t.charCodeAt(r)]=r;e.encode=function(e){var n,r=new Uint8Array(e),o=r.length,s="";for(n=0;n<o;n+=3)s+=t[r[n]>>2],s+=t[(3&r[n])<<4|r[n+1]>>4],s+=t[(15&r[n+1])<<2|r[n+2]>>6],s+=t[63&r[n+2]];return o%3==2?s=s.substring(0,s.length-1)+"=":o%3==1&&(s=s.substring(0,s.length-2)+"=="),s},e.decode=function(t){var e,r,o,s,i,a=.75*t.length,c=t.length,l=0;"="===t[t.length-1]&&(a--,"="===t[t.length-2]&&a--);var u=new ArrayBuffer(a),p=new Uint8Array(u);for(e=0;e<c;e+=4)r=n[t.charCodeAt(e)],o=n[t.charCodeAt(e+1)],s=n[t.charCodeAt(e+2)],i=n[t.charCodeAt(e+3)],p[l++]=r<<2|o>>4,p[l++]=(15&o)<<4|s>>2,p[l++]=(3&s)<<6|63&i;return u}}()})),ye=(me.encode,me.decode,void 0!==ye?ye:"undefined"!=typeof WebKitBlobBuilder?WebKitBlobBuilder:"undefined"!=typeof MSBlobBuilder?MSBlobBuilder:"undefined"!=typeof MozBlobBuilder&&MozBlobBuilder),ge=function(){try{return 2===new Blob(["hi"]).size}catch(t){return!1}}(),ve=ge&&function(){try{return 2===new Blob([new Uint8Array([1,2])]).size}catch(t){return!1}}(),be=ye&&ye.prototype.append&&ye.prototype.getBlob;function we(t){return t.map((function(t){if(t.buffer instanceof ArrayBuffer){var e=t.buffer;if(t.byteLength!==e.byteLength){var n=new Uint8Array(t.byteLength);n.set(new Uint8Array(e,t.byteOffset,t.byteLength)),e=n.buffer}return e}return t}))}function Ce(t,e){e=e||{};var n=new ye;return we(t).forEach((function(t){n.append(t)})),e.type?n.getBlob(e.type):n.getBlob()}function ke(t,e){return new Blob(we(t),e||{})}"undefined"!=typeof Blob&&(Ce.prototype=Blob.prototype,ke.prototype=Blob.prototype);var xe=ge?ve?Blob:ke:be?Ce:void 0,Pe=dt((function(t,e){var n;"undefined"!=typeof ArrayBuffer&&(n=me);var r="undefined"!=typeof navigator&&/Android/i.test(navigator.userAgent),o="undefined"!=typeof navigator&&/PhantomJS/i.test(navigator.userAgent),s=r||o;e.protocol=3;var i=e.packets={open:0,close:1,ping:2,pong:3,message:4,upgrade:5,noop:6},a=Vt(i),c={type:"error",data:"parser error"};function l(t,e,n){for(var r=new Array(t.length),o=ne(t.length,n),s=function(t,n,o){e(n,(function(e,n){r[t]=n,o(e,r)}))},i=0;i<t.length;i++)s(i,t[i],o)}e.encodePacket=function(t,n,r,o){"function"==typeof n&&(o=n,n=!1),"function"==typeof r&&(o=r,r=null);var a=void 0===t.data?void 0:t.data.buffer||t.data;if("undefined"!=typeof ArrayBuffer&&a instanceof ArrayBuffer)return function(t,n,r){if(!n)return e.encodeBase64Packet(t,r);var o=t.data,s=new Uint8Array(o),a=new Uint8Array(1+o.byteLength);a[0]=i[t.type];for(var c=0;c<s.length;c++)a[c+1]=s[c];return r(a.buffer)}(t,n,o);if(void 0!==xe&&a instanceof xe)return function(t,n,r){if(!n)return e.encodeBase64Packet(t,r);if(s)return function(t,n,r){if(!n)return e.encodeBase64Packet(t,r);var o=new FileReader;return o.onload=function(){e.encodePacket({type:t.type,data:o.result},n,!0,r)},o.readAsArrayBuffer(t.data)}(t,n,r);var o=new Uint8Array(1);o[0]=i[t.type];var a=new xe([o.buffer,t.data]);return r(a)}(t,n,o);if(a&&a.base64)return function(t,n){var r="b"+e.packets[t.type]+t.data.data;return n(r)}(t,o);var c=i[t.type];return void 0!==t.data&&(c+=r?de.encode(String(t.data),{strict:!1}):String(t.data)),o(""+c)},e.encodeBase64Packet=function(t,n){var r,o="b"+e.packets[t.type];if(void 0!==xe&&t.data instanceof xe){var s=new FileReader;return s.onload=function(){var t=s.result.split(",")[1];n(o+t)},s.readAsDataURL(t.data)}try{r=String.fromCharCode.apply(null,new Uint8Array(t.data))}catch(e){for(var i=new Uint8Array(t.data),a=new Array(i.length),c=0;c<i.length;c++)a[c]=i[c];r=String.fromCharCode.apply(null,a)}return o+=btoa(r),n(o)},e.decodePacket=function(t,n,r){if(void 0===t)return c;if("string"==typeof t){if("b"===t.charAt(0))return e.decodeBase64Packet(t.substr(1),n);if(r&&!1===(t=function(t){try{t=de.decode(t,{strict:!1})}catch(t){return!1}return t}(t)))return c;var o=t.charAt(0);return Number(o)==o&&a[o]?t.length>1?{type:a[o],data:t.substring(1)}:{type:a[o]}:c}o=new Uint8Array(t)[0];var s=ee(t,1);return xe&&"blob"===n&&(s=new xe([s])),{type:a[o],data:s}},e.decodeBase64Packet=function(t,e){var r=a[t.charAt(0)];if(!n)return{type:r,data:{base64:!0,data:t.substr(1)}};var o=n.decode(t.substr(1));return"blob"===e&&xe&&(o=new xe([o])),{type:r,data:o}},e.encodePayload=function(t,n,r){"function"==typeof n&&(r=n,n=null);var o=te(t);if(n&&o)return xe&&!s?e.encodePayloadAsBlob(t,r):e.encodePayloadAsArrayBuffer(t,r);if(!t.length)return r("0:");l(t,(function(t,r){e.encodePacket(t,!!o&&n,!1,(function(t){r(null,function(t){return t.length+":"+t}(t))}))}),(function(t,e){return r(e.join(""))}))},e.decodePayload=function(t,n,r){if("string"!=typeof t)return e.decodePayloadAsBinary(t,n,r);var o;if("function"==typeof n&&(r=n,n=null),""===t)return r(c,0,1);for(var s,i,a="",l=0,u=t.length;l<u;l++){var p=t.charAt(l);if(":"===p){if(""===a||a!=(s=Number(a)))return r(c,0,1);if(a!=(i=t.substr(l+1,s)).length)return r(c,0,1);if(i.length){if(o=e.decodePacket(i,n,!1),c.type===o.type&&c.data===o.data)return r(c,0,1);if(!1===r(o,l+s,u))return}l+=s,a=""}else a+=p}return""!==a?r(c,0,1):void 0},e.encodePayloadAsArrayBuffer=function(t,n){if(!t.length)return n(new ArrayBuffer(0));l(t,(function(t,n){e.encodePacket(t,!0,!0,(function(t){return n(null,t)}))}),(function(t,e){var r=e.reduce((function(t,e){var n;return t+(n="string"==typeof e?e.length:e.byteLength).toString().length+n+2}),0),o=new Uint8Array(r),s=0;return e.forEach((function(t){var e="string"==typeof t,n=t;if(e){for(var r=new Uint8Array(t.length),i=0;i<t.length;i++)r[i]=t.charCodeAt(i);n=r.buffer}o[s++]=e?0:1;var a=n.byteLength.toString();for(i=0;i<a.length;i++)o[s++]=parseInt(a[i]);o[s++]=255;for(r=new Uint8Array(n),i=0;i<r.length;i++)o[s++]=r[i]})),n(o.buffer)}))},e.encodePayloadAsBlob=function(t,n){l(t,(function(t,n){e.encodePacket(t,!0,!0,(function(t){var e=new Uint8Array(1);if(e[0]=1,"string"==typeof t){for(var r=new Uint8Array(t.length),o=0;o<t.length;o++)r[o]=t.charCodeAt(o);t=r.buffer,e[0]=0}var s=(t instanceof ArrayBuffer?t.byteLength:t.size).toString(),i=new Uint8Array(s.length+1);for(o=0;o<s.length;o++)i[o]=parseInt(s[o]);if(i[s.length]=255,xe){var a=new xe([e.buffer,i.buffer,t]);n(null,a)}}))}),(function(t,e){return n(new xe(e))}))},e.decodePayloadAsBinary=function(t,n,r){"function"==typeof n&&(r=n,n=null);for(var o=t,s=[];o.byteLength>0;){for(var i=new Uint8Array(o),a=0===i[0],l="",u=1;255!==i[u];u++){if(l.length>310)return r(c,0,1);l+=i[u]}o=ee(o,2+l.length),l=parseInt(l);var p=ee(o,0,l);if(a)try{p=String.fromCharCode.apply(null,new Uint8Array(p))}catch(t){var h=new Uint8Array(p);p="";for(u=0;u<h.length;u++)p+=String.fromCharCode(h[u])}s.push(p),o=ee(o,l)}var f=s.length;s.forEach((function(t,o){r(e.decodePacket(t,n,!0),o,f)}))}})),Ae=(Pe.protocol,Pe.packets,Pe.encodePacket,Pe.encodeBase64Packet,Pe.decodePacket,Pe.decodeBase64Packet,Pe.encodePayload,Pe.decodePayload,Pe.encodePayloadAsArrayBuffer,Pe.encodePayloadAsBlob,Pe.decodePayloadAsBinary,dt((function(t){function e(t){if(t)return function(t){for(var n in e.prototype)t[n]=e.prototype[n];return t}(t)}t.exports=e,e.prototype.on=e.prototype.addEventListener=function(t,e){return this._callbacks=this._callbacks||{},(this._callbacks["$"+t]=this._callbacks["$"+t]||[]).push(e),this},e.prototype.once=function(t,e){function n(){this.off(t,n),e.apply(this,arguments)}return n.fn=e,this.on(t,n),this},e.prototype.off=e.prototype.removeListener=e.prototype.removeAllListeners=e.prototype.removeEventListener=function(t,e){if(this._callbacks=this._callbacks||{},0==arguments.length)return this._callbacks={},this;var n,r=this._callbacks["$"+t];if(!r)return this;if(1==arguments.length)return delete this._callbacks["$"+t],this;for(var o=0;o<r.length;o++)if((n=r[o])===e||n.fn===e){r.splice(o,1);break}return 0===r.length&&delete this._callbacks["$"+t],this},e.prototype.emit=function(t){this._callbacks=this._callbacks||{};for(var e=new Array(arguments.length-1),n=this._callbacks["$"+t],r=1;r<arguments.length;r++)e[r-1]=arguments[r];if(n){r=0;for(var o=(n=n.slice(0)).length;r<o;++r)n[r].apply(this,e)}return this},e.prototype.listeners=function(t){return this._callbacks=this._callbacks||{},this._callbacks["$"+t]||[]},e.prototype.hasListeners=function(t){return!!this.listeners(t).length}}))),Be=Se;function Se(t){this.path=t.path,this.hostname=t.hostname,this.port=t.port,this.secure=t.secure,this.query=t.query,this.timestampParam=t.timestampParam,this.timestampRequests=t.timestampRequests,this.readyState="",this.agent=t.agent||!1,this.socket=t.socket,this.enablesXDR=t.enablesXDR,this.withCredentials=t.withCredentials,this.pfx=t.pfx,this.key=t.key,this.passphrase=t.passphrase,this.cert=t.cert,this.ca=t.ca,this.ciphers=t.ciphers,this.rejectUnauthorized=t.rejectUnauthorized,this.forceNode=t.forceNode,this.isReactNative=t.isReactNative,this.extraHeaders=t.extraHeaders,this.localAddress=t.localAddress}Ae(Se.prototype),Se.prototype.onError=function(t,e){var n=new Error(t);return n.type="TransportError",n.description=e,this.emit("error",n),this},Se.prototype.open=function(){return"closed"!==this.readyState&&""!==this.readyState||(this.readyState="opening",this.doOpen()),this},Se.prototype.close=function(){return"opening"!==this.readyState&&"open"!==this.readyState||(this.doClose(),this.onClose()),this},Se.prototype.send=function(t){if("open"!==this.readyState)throw new Error("Transport not open");this.write(t)},Se.prototype.onOpen=function(){this.readyState="open",this.writable=!0,this.emit("open")},Se.prototype.onData=function(t){var e=Pe.decodePacket(t,this.socket.binaryType);this.onPacket(e)},Se.prototype.onPacket=function(t){this.emit("packet",t)},Se.prototype.onClose=function(){this.readyState="closed",this.emit("close")};var Ee,Fe=function(t){var e="";for(var n in t)t.hasOwnProperty(n)&&(e.length&&(e+="&"),e+=encodeURIComponent(n)+"="+encodeURIComponent(t[n]));return e},$e=function(t){for(var e={},n=t.split("&"),r=0,o=n.length;r<o;r++){var s=n[r].split("=");e[decodeURIComponent(s[0])]=decodeURIComponent(s[1])}return e},Ne=function(t,e){var n=function(){};n.prototype=e.prototype,t.prototype=new n,t.prototype.constructor=t},Te="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(""),_e={},Me=0,Re=0;function Oe(t){var e="";do{e=Te[t%64]+e,t=Math.floor(t/64)}while(t>0);return e}function Ie(){var t=Oe(+new Date);return t!==Ee?(Me=0,Ee=t):t+"."+Oe(Me++)}for(;Re<64;Re++)_e[Te[Re]]=Re;Ie.encode=Oe,Ie.decode=function(t){var e=0;for(Re=0;Re<t.length;Re++)e=64*e+_e[t.charAt(Re)];return e};var je=Ie,qe=At("engine.io-client:polling"),De=Le,Ue=null!=new Yt({xdomain:!1}).responseType;function Le(t){var e=t&&t.forceBase64;Ue&&!e||(this.supportsBinary=!1),Be.call(this,t)}Ne(Le,Be),Le.prototype.name="polling",Le.prototype.doOpen=function(){this.poll()},Le.prototype.pause=function(t){var e=this;function n(){qe("paused"),e.readyState="paused",t()}if(this.readyState="pausing",this.polling||!this.writable){var r=0;this.polling&&(qe("we are currently polling - waiting to pause"),r++,this.once("pollComplete",(function(){qe("pre-pause polling complete"),--r||n()}))),this.writable||(qe("we are currently writing - waiting to pause"),r++,this.once("drain",(function(){qe("pre-pause writing complete"),--r||n()})))}else n()},Le.prototype.poll=function(){qe("polling"),this.polling=!0,this.doPoll(),this.emit("poll")},Le.prototype.onData=function(t){var e=this;qe("polling got data %s",t);Pe.decodePayload(t,this.socket.binaryType,(function(t,n,r){if("opening"===e.readyState&&e.onOpen(),"close"===t.type)return e.onClose(),!1;e.onPacket(t)})),"closed"!==this.readyState&&(this.polling=!1,this.emit("pollComplete"),"open"===this.readyState?this.poll():qe('ignoring poll - transport state "%s"',this.readyState))},Le.prototype.doClose=function(){var t=this;function e(){qe("writing close packet"),t.write([{type:"close"}])}"open"===this.readyState?(qe("transport open - closing"),e()):(qe("transport not open - deferring close"),this.once("open",e))},Le.prototype.write=function(t){var e=this;this.writable=!1;var n=function(){e.writable=!0,e.emit("drain")};Pe.encodePayload(t,this.supportsBinary,(function(t){e.doWrite(t,n)}))},Le.prototype.uri=function(){var t=this.query||{},e=this.secure?"https":"http",n="";return!1!==this.timestampRequests&&(t[this.timestampParam]=je()),this.supportsBinary||t.sid||(t.b64=1),t=Fe(t),this.port&&("https"===e&&443!==Number(this.port)||"http"===e&&80!==Number(this.port))&&(n=":"+this.port),t.length&&(t="?"+t),e+"://"+(-1!==this.hostname.indexOf(":")?"["+this.hostname+"]":this.hostname)+n+this.path+t};var He=At("engine.io-client:polling-xhr"),ze=Xe,Ge=We;function Je(){}function Xe(t){if(De.call(this,t),this.requestTimeout=t.requestTimeout,this.extraHeaders=t.extraHeaders,"undefined"!=typeof location){var e="https:"===location.protocol,n=location.port;n||(n=e?443:80),this.xd="undefined"!=typeof location&&t.hostname!==location.hostname||n!==t.port,this.xs=t.secure!==e}}function We(t){this.method=t.method||"GET",this.uri=t.uri,this.xd=!!t.xd,this.xs=!!t.xs,this.async=!1!==t.async,this.data=void 0!==t.data?t.data:null,this.agent=t.agent,this.isBinary=t.isBinary,this.supportsBinary=t.supportsBinary,this.enablesXDR=t.enablesXDR,this.withCredentials=t.withCredentials,this.requestTimeout=t.requestTimeout,this.pfx=t.pfx,this.key=t.key,this.passphrase=t.passphrase,this.cert=t.cert,this.ca=t.ca,this.ciphers=t.ciphers,this.rejectUnauthorized=t.rejectUnauthorized,this.extraHeaders=t.extraHeaders,this.create()}if(Ne(Xe,De),Xe.prototype.supportsBinary=!0,Xe.prototype.request=function(t){return(t=t||{}).uri=this.uri(),t.xd=this.xd,t.xs=this.xs,t.agent=this.agent||!1,t.supportsBinary=this.supportsBinary,t.enablesXDR=this.enablesXDR,t.withCredentials=this.withCredentials,t.pfx=this.pfx,t.key=this.key,t.passphrase=this.passphrase,t.cert=this.cert,t.ca=this.ca,t.ciphers=this.ciphers,t.rejectUnauthorized=this.rejectUnauthorized,t.requestTimeout=this.requestTimeout,t.extraHeaders=this.extraHeaders,new We(t)},Xe.prototype.doWrite=function(t,e){var n="string"!=typeof t&&void 0!==t,r=this.request({method:"POST",data:t,isBinary:n}),o=this;r.on("success",e),r.on("error",(function(t){o.onError("xhr post error",t)})),this.sendXhr=r},Xe.prototype.doPoll=function(){He("xhr poll");var t=this.request(),e=this;t.on("data",(function(t){e.onData(t)})),t.on("error",(function(t){e.onError("xhr poll error",t)})),this.pollXhr=t},Ae(We.prototype),We.prototype.create=function(){var t={agent:this.agent,xdomain:this.xd,xscheme:this.xs,enablesXDR:this.enablesXDR};t.pfx=this.pfx,t.key=this.key,t.passphrase=this.passphrase,t.cert=this.cert,t.ca=this.ca,t.ciphers=this.ciphers,t.rejectUnauthorized=this.rejectUnauthorized;var e=this.xhr=new Yt(t),n=this;try{He("xhr open %s: %s",this.method,this.uri),e.open(this.method,this.uri,this.async);try{if(this.extraHeaders)for(var r in e.setDisableHeaderCheck&&e.setDisableHeaderCheck(!0),this.extraHeaders)this.extraHeaders.hasOwnProperty(r)&&e.setRequestHeader(r,this.extraHeaders[r])}catch(t){}if("POST"===this.method)try{this.isBinary?e.setRequestHeader("Content-type","application/octet-stream"):e.setRequestHeader("Content-type","text/plain;charset=UTF-8")}catch(t){}try{e.setRequestHeader("Accept","*/*")}catch(t){}"withCredentials"in e&&(e.withCredentials=this.withCredentials),this.requestTimeout&&(e.timeout=this.requestTimeout),this.hasXDR()?(e.onload=function(){n.onLoad()},e.onerror=function(){n.onError(e.responseText)}):e.onreadystatechange=function(){if(2===e.readyState)try{var t=e.getResponseHeader("Content-Type");(n.supportsBinary&&"application/octet-stream"===t||"application/octet-stream; charset=UTF-8"===t)&&(e.responseType="arraybuffer")}catch(t){}4===e.readyState&&(200===e.status||1223===e.status?n.onLoad():setTimeout((function(){n.onError("number"==typeof e.status?e.status:0)}),0))},He("xhr data %s",this.data),e.send(this.data)}catch(t){return void setTimeout((function(){n.onError(t)}),0)}"undefined"!=typeof document&&(this.index=We.requestsCount++,We.requests[this.index]=this)},We.prototype.onSuccess=function(){this.emit("success"),this.cleanup()},We.prototype.onData=function(t){this.emit("data",t),this.onSuccess()},We.prototype.onError=function(t){this.emit("error",t),this.cleanup(!0)},We.prototype.cleanup=function(t){if(void 0!==this.xhr&&null!==this.xhr){if(this.hasXDR()?this.xhr.onload=this.xhr.onerror=Je:this.xhr.onreadystatechange=Je,t)try{this.xhr.abort()}catch(t){}"undefined"!=typeof document&&delete We.requests[this.index],this.xhr=null}},We.prototype.onLoad=function(){var t;try{var e;try{e=this.xhr.getResponseHeader("Content-Type")}catch(t){}t=("application/octet-stream"===e||"application/octet-stream; charset=UTF-8"===e)&&this.xhr.response||this.xhr.responseText}catch(t){this.onError(t)}null!=t&&this.onData(t)},We.prototype.hasXDR=function(){return"undefined"!=typeof XDomainRequest&&!this.xs&&this.enablesXDR},We.prototype.abort=function(){this.cleanup()},We.requestsCount=0,We.requests={},"undefined"!=typeof document)if("function"==typeof attachEvent)attachEvent("onunload",Ye);else if("function"==typeof addEventListener){addEventListener("onpagehide"in Wt?"pagehide":"unload",Ye,!1)}function Ye(){for(var t in We.requests)We.requests.hasOwnProperty(t)&&We.requests[t].abort()}ze.Request=Ge;var Ve,Ke=en,Ze=/\n/g,Qe=/\\n/g;function tn(){}function en(t){De.call(this,t),this.query=this.query||{},Ve||(Ve=Wt.___eio=Wt.___eio||[]),this.index=Ve.length;var e=this;Ve.push((function(t){e.onData(t)})),this.query.j=this.index,"function"==typeof addEventListener&&addEventListener("beforeunload",(function(){e.script&&(e.script.onerror=tn)}),!1)}Ne(en,De),en.prototype.supportsBinary=!1,en.prototype.doClose=function(){this.script&&(this.script.parentNode.removeChild(this.script),this.script=null),this.form&&(this.form.parentNode.removeChild(this.form),this.form=null,this.iframe=null),De.prototype.doClose.call(this)},en.prototype.doPoll=function(){var t=this,e=document.createElement("script");this.script&&(this.script.parentNode.removeChild(this.script),this.script=null),e.async=!0,e.src=this.uri(),e.onerror=function(e){t.onError("jsonp poll error",e)};var n=document.getElementsByTagName("script")[0];n?n.parentNode.insertBefore(e,n):(document.head||document.body).appendChild(e),this.script=e,"undefined"!=typeof navigator&&/gecko/i.test(navigator.userAgent)&&setTimeout((function(){var t=document.createElement("iframe");document.body.appendChild(t),document.body.removeChild(t)}),100)},en.prototype.doWrite=function(t,e){var n=this;if(!this.form){var r,o=document.createElement("form"),s=document.createElement("textarea"),i=this.iframeId="eio_iframe_"+this.index;o.className="socketio",o.style.position="absolute",o.style.top="-1000px",o.style.left="-1000px",o.target=i,o.method="POST",o.setAttribute("accept-charset","utf-8"),s.name="d",o.appendChild(s),document.body.appendChild(o),this.form=o,this.area=s}function a(){c(),e()}function c(){if(n.iframe)try{n.form.removeChild(n.iframe)}catch(t){n.onError("jsonp polling iframe removal error",t)}try{var t='<iframe src="javascript:0" name="'+n.iframeId+'">';r=document.createElement(t)}catch(t){(r=document.createElement("iframe")).name=n.iframeId,r.src="javascript:0"}r.id=n.iframeId,n.form.appendChild(r),n.iframe=r}this.form.action=this.uri(),c(),t=t.replace(Qe,"\\\n"),this.area.value=t.replace(Ze,"\\n");try{this.form.submit()}catch(t){}this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===n.iframe.readyState&&a()}:this.iframe.onload=a};var nn,rn,on,sn=(nn=Object.freeze({__proto__:null,default:{}}))&&nn.default||nn,an=At("engine.io-client:websocket");if("undefined"!=typeof WebSocket?rn=WebSocket:"undefined"!=typeof self&&(rn=self.WebSocket||self.MozWebSocket),"undefined"==typeof window)try{on=sn}catch(t){}var cn=rn||on,ln=un;function un(t){t&&t.forceBase64&&(this.supportsBinary=!1),this.perMessageDeflate=t.perMessageDeflate,this.usingBrowserWebSocket=rn&&!t.forceNode,this.protocols=t.protocols,this.usingBrowserWebSocket||(cn=on),Be.call(this,t)}Ne(un,Be),un.prototype.name="websocket",un.prototype.supportsBinary=!0,un.prototype.doOpen=function(){if(this.check()){var t=this.uri(),e=this.protocols,n={agent:this.agent,perMessageDeflate:this.perMessageDeflate};n.pfx=this.pfx,n.key=this.key,n.passphrase=this.passphrase,n.cert=this.cert,n.ca=this.ca,n.ciphers=this.ciphers,n.rejectUnauthorized=this.rejectUnauthorized,this.extraHeaders&&(n.headers=this.extraHeaders),this.localAddress&&(n.localAddress=this.localAddress);try{this.ws=this.usingBrowserWebSocket&&!this.isReactNative?e?new cn(t,e):new cn(t):new cn(t,e,n)}catch(t){return this.emit("error",t)}void 0===this.ws.binaryType&&(this.supportsBinary=!1),this.ws.supports&&this.ws.supports.binary?(this.supportsBinary=!0,this.ws.binaryType="nodebuffer"):this.ws.binaryType="arraybuffer",this.addEventListeners()}},un.prototype.addEventListeners=function(){var t=this;this.ws.onopen=function(){t.onOpen()},this.ws.onclose=function(){t.onClose()},this.ws.onmessage=function(e){t.onData(e.data)},this.ws.onerror=function(e){t.onError("websocket error",e)}},un.prototype.write=function(t){var e=this;this.writable=!1;for(var n=t.length,r=0,o=n;r<o;r++)!function(t){Pe.encodePacket(t,e.supportsBinary,(function(r){if(!e.usingBrowserWebSocket){var o={};if(t.options&&(o.compress=t.options.compress),e.perMessageDeflate)("string"==typeof r?Buffer.byteLength(r):r.length)<e.perMessageDeflate.threshold&&(o.compress=!1)}try{e.usingBrowserWebSocket?e.ws.send(r):e.ws.send(r,o)}catch(t){an("websocket closed before onclose event")}--n||s()}))}(t[r]);function s(){e.emit("flush"),setTimeout((function(){e.writable=!0,e.emit("drain")}),0)}},un.prototype.onClose=function(){Be.prototype.onClose.call(this)},un.prototype.doClose=function(){void 0!==this.ws&&this.ws.close()},un.prototype.uri=function(){var t=this.query||{},e=this.secure?"wss":"ws",n="";return this.port&&("wss"===e&&443!==Number(this.port)||"ws"===e&&80!==Number(this.port))&&(n=":"+this.port),this.timestampRequests&&(t[this.timestampParam]=je()),this.supportsBinary||(t.b64=1),(t=Fe(t)).length&&(t="?"+t),e+"://"+(-1!==this.hostname.indexOf(":")?"["+this.hostname+"]":this.hostname)+n+this.path+t},un.prototype.check=function(){return!(!cn||"__initialize"in cn&&this.name===un.prototype.name)};var pn={polling:function(t){var e=!1,n=!1,r=!1!==t.jsonp;if("undefined"!=typeof location){var o="https:"===location.protocol,s=location.port;s||(s=o?443:80),e=t.hostname!==location.hostname||s!==t.port,n=t.secure!==o}if(t.xdomain=e,t.xscheme=n,"open"in new Yt(t)&&!t.forceJSONP)return new ze(t);if(!r)throw new Error("JSONP disabled");return new Ke(t)},websocket:ln},hn=[].indexOf,fn=function(t,e){if(hn)return t.indexOf(e);for(var n=0;n<t.length;++n)if(t[n]===e)return n;return-1},dn=At("engine.io-client:socket"),mn=yn;function yn(t,e){if(!(this instanceof yn))return new yn(t,e);e=e||{},t&&"object"==typeof t&&(e=t,t=null),t?(t=gt(t),e.hostname=t.host,e.secure="https"===t.protocol||"wss"===t.protocol,e.port=t.port,t.query&&(e.query=t.query)):e.host&&(e.hostname=gt(e.host).host),this.secure=null!=e.secure?e.secure:"undefined"!=typeof location&&"https:"===location.protocol,e.hostname&&!e.port&&(e.port=this.secure?"443":"80"),this.agent=e.agent||!1,this.hostname=e.hostname||("undefined"!=typeof location?location.hostname:"localhost"),this.port=e.port||("undefined"!=typeof location&&location.port?location.port:this.secure?443:80),this.query=e.query||{},"string"==typeof this.query&&(this.query=$e(this.query)),this.upgrade=!1!==e.upgrade,this.path=(e.path||"/engine.io").replace(/\/$/,"")+"/",this.forceJSONP=!!e.forceJSONP,this.jsonp=!1!==e.jsonp,this.forceBase64=!!e.forceBase64,this.enablesXDR=!!e.enablesXDR,this.withCredentials=!1!==e.withCredentials,this.timestampParam=e.timestampParam||"t",this.timestampRequests=e.timestampRequests,this.transports=e.transports||["polling","websocket"],this.transportOptions=e.transportOptions||{},this.readyState="",this.writeBuffer=[],this.prevBufferLen=0,this.policyPort=e.policyPort||843,this.rememberUpgrade=e.rememberUpgrade||!1,this.binaryType=null,this.onlyBinaryUpgrades=e.onlyBinaryUpgrades,this.perMessageDeflate=!1!==e.perMessageDeflate&&(e.perMessageDeflate||{}),!0===this.perMessageDeflate&&(this.perMessageDeflate={}),this.perMessageDeflate&&null==this.perMessageDeflate.threshold&&(this.perMessageDeflate.threshold=1024),this.pfx=e.pfx||null,this.key=e.key||null,this.passphrase=e.passphrase||null,this.cert=e.cert||null,this.ca=e.ca||null,this.ciphers=e.ciphers||null,this.rejectUnauthorized=void 0===e.rejectUnauthorized||e.rejectUnauthorized,this.forceNode=!!e.forceNode,this.isReactNative="undefined"!=typeof navigator&&"string"==typeof navigator.product&&"reactnative"===navigator.product.toLowerCase(),("undefined"==typeof self||this.isReactNative)&&(e.extraHeaders&&Object.keys(e.extraHeaders).length>0&&(this.extraHeaders=e.extraHeaders),e.localAddress&&(this.localAddress=e.localAddress)),this.id=null,this.upgrades=null,this.pingInterval=null,this.pingTimeout=null,this.pingIntervalTimer=null,this.pingTimeoutTimer=null,this.open()}yn.priorWebsocketSuccess=!1,Ae(yn.prototype),yn.protocol=Pe.protocol,yn.Socket=yn,yn.Transport=Be,yn.transports=pn,yn.parser=Pe,yn.prototype.createTransport=function(t){dn('creating transport "%s"',t);var e=function(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);return e}(this.query);e.EIO=Pe.protocol,e.transport=t;var n=this.transportOptions[t]||{};return this.id&&(e.sid=this.id),new pn[t]({query:e,socket:this,agent:n.agent||this.agent,hostname:n.hostname||this.hostname,port:n.port||this.port,secure:n.secure||this.secure,path:n.path||this.path,forceJSONP:n.forceJSONP||this.forceJSONP,jsonp:n.jsonp||this.jsonp,forceBase64:n.forceBase64||this.forceBase64,enablesXDR:n.enablesXDR||this.enablesXDR,withCredentials:n.withCredentials||this.withCredentials,timestampRequests:n.timestampRequests||this.timestampRequests,timestampParam:n.timestampParam||this.timestampParam,policyPort:n.policyPort||this.policyPort,pfx:n.pfx||this.pfx,key:n.key||this.key,passphrase:n.passphrase||this.passphrase,cert:n.cert||this.cert,ca:n.ca||this.ca,ciphers:n.ciphers||this.ciphers,rejectUnauthorized:n.rejectUnauthorized||this.rejectUnauthorized,perMessageDeflate:n.perMessageDeflate||this.perMessageDeflate,extraHeaders:n.extraHeaders||this.extraHeaders,forceNode:n.forceNode||this.forceNode,localAddress:n.localAddress||this.localAddress,requestTimeout:n.requestTimeout||this.requestTimeout,protocols:n.protocols||void 0,isReactNative:this.isReactNative})},yn.prototype.open=function(){var t;if(this.rememberUpgrade&&yn.priorWebsocketSuccess&&-1!==this.transports.indexOf("websocket"))t="websocket";else{if(0===this.transports.length){var e=this;return void setTimeout((function(){e.emit("error","No transports available")}),0)}t=this.transports[0]}this.readyState="opening";try{t=this.createTransport(t)}catch(t){return this.transports.shift(),void this.open()}t.open(),this.setTransport(t)},yn.prototype.setTransport=function(t){dn("setting transport %s",t.name);var e=this;this.transport&&(dn("clearing existing transport %s",this.transport.name),this.transport.removeAllListeners()),this.transport=t,t.on("drain",(function(){e.onDrain()})).on("packet",(function(t){e.onPacket(t)})).on("error",(function(t){e.onError(t)})).on("close",(function(){e.onClose("transport close")}))},yn.prototype.probe=function(t){dn('probing transport "%s"',t);var e=this.createTransport(t,{probe:1}),n=!1,r=this;function o(){if(r.onlyBinaryUpgrades){var o=!this.supportsBinary&&r.transport.supportsBinary;n=n||o}n||(dn('probe transport "%s" opened',t),e.send([{type:"ping",data:"probe"}]),e.once("packet",(function(o){if(!n)if("pong"===o.type&&"probe"===o.data){if(dn('probe transport "%s" pong',t),r.upgrading=!0,r.emit("upgrading",e),!e)return;yn.priorWebsocketSuccess="websocket"===e.name,dn('pausing current transport "%s"',r.transport.name),r.transport.pause((function(){n||"closed"!==r.readyState&&(dn("changing transport and sending upgrade packet"),u(),r.setTransport(e),e.send([{type:"upgrade"}]),r.emit("upgrade",e),e=null,r.upgrading=!1,r.flush())}))}else{dn('probe transport "%s" failed',t);var s=new Error("probe error");s.transport=e.name,r.emit("upgradeError",s)}})))}function s(){n||(n=!0,u(),e.close(),e=null)}function i(n){var o=new Error("probe error: "+n);o.transport=e.name,s(),dn('probe transport "%s" failed because of error: %s',t,n),r.emit("upgradeError",o)}function a(){i("transport closed")}function c(){i("socket closed")}function l(t){e&&t.name!==e.name&&(dn('"%s" works - aborting "%s"',t.name,e.name),s())}function u(){e.removeListener("open",o),e.removeListener("error",i),e.removeListener("close",a),r.removeListener("close",c),r.removeListener("upgrading",l)}yn.priorWebsocketSuccess=!1,e.once("open",o),e.once("error",i),e.once("close",a),this.once("close",c),this.once("upgrading",l),e.open()},yn.prototype.onOpen=function(){if(dn("socket open"),this.readyState="open",yn.priorWebsocketSuccess="websocket"===this.transport.name,this.emit("open"),this.flush(),"open"===this.readyState&&this.upgrade&&this.transport.pause){dn("starting upgrade probes");for(var t=0,e=this.upgrades.length;t<e;t++)this.probe(this.upgrades[t])}},yn.prototype.onPacket=function(t){if("opening"===this.readyState||"open"===this.readyState||"closing"===this.readyState)switch(dn('socket receive: type "%s", data "%s"',t.type,t.data),this.emit("packet",t),this.emit("heartbeat"),t.type){case"open":this.onHandshake(JSON.parse(t.data));break;case"pong":this.setPing(),this.emit("pong");break;case"error":var e=new Error("server error");e.code=t.data,this.onError(e);break;case"message":this.emit("data",t.data),this.emit("message",t.data)}else dn('packet received with socket readyState "%s"',this.readyState)},yn.prototype.onHandshake=function(t){this.emit("handshake",t),this.id=t.sid,this.transport.query.sid=t.sid,this.upgrades=this.filterUpgrades(t.upgrades),this.pingInterval=t.pingInterval,this.pingTimeout=t.pingTimeout,this.onOpen(),"closed"!==this.readyState&&(this.setPing(),this.removeListener("heartbeat",this.onHeartbeat),this.on("heartbeat",this.onHeartbeat))},yn.prototype.onHeartbeat=function(t){clearTimeout(this.pingTimeoutTimer);var e=this;e.pingTimeoutTimer=setTimeout((function(){"closed"!==e.readyState&&e.onClose("ping timeout")}),t||e.pingInterval+e.pingTimeout)},yn.prototype.setPing=function(){var t=this;clearTimeout(t.pingIntervalTimer),t.pingIntervalTimer=setTimeout((function(){dn("writing ping packet - expecting pong within %sms",t.pingTimeout),t.ping(),t.onHeartbeat(t.pingTimeout)}),t.pingInterval)},yn.prototype.ping=function(){var t=this;this.sendPacket("ping",(function(){t.emit("ping")}))},yn.prototype.onDrain=function(){this.writeBuffer.splice(0,this.prevBufferLen),this.prevBufferLen=0,0===this.writeBuffer.length?this.emit("drain"):this.flush()},yn.prototype.flush=function(){"closed"!==this.readyState&&this.transport.writable&&!this.upgrading&&this.writeBuffer.length&&(dn("flushing %d packets in socket",this.writeBuffer.length),this.transport.send(this.writeBuffer),this.prevBufferLen=this.writeBuffer.length,this.emit("flush"))},yn.prototype.write=yn.prototype.send=function(t,e,n){return this.sendPacket("message",t,e,n),this},yn.prototype.sendPacket=function(t,e,n,r){if("function"==typeof e&&(r=e,e=void 0),"function"==typeof n&&(r=n,n=null),"closing"!==this.readyState&&"closed"!==this.readyState){(n=n||{}).compress=!1!==n.compress;var o={type:t,data:e,options:n};this.emit("packetCreate",o),this.writeBuffer.push(o),r&&this.once("flush",r),this.flush()}},yn.prototype.close=function(){if("opening"===this.readyState||"open"===this.readyState){this.readyState="closing";var t=this;this.writeBuffer.length?this.once("drain",(function(){this.upgrading?r():e()})):this.upgrading?r():e()}function e(){t.onClose("forced close"),dn("socket closing - telling transport to close"),t.transport.close()}function n(){t.removeListener("upgrade",n),t.removeListener("upgradeError",n),e()}function r(){t.once("upgrade",n),t.once("upgradeError",n)}return this},yn.prototype.onError=function(t){dn("socket error %j",t),yn.priorWebsocketSuccess=!1,this.emit("error",t),this.onClose("transport error",t)},yn.prototype.onClose=function(t,e){if("opening"===this.readyState||"open"===this.readyState||"closing"===this.readyState){dn('socket close with reason: "%s"',t);clearTimeout(this.pingIntervalTimer),clearTimeout(this.pingTimeoutTimer),this.transport.removeAllListeners("close"),this.transport.close(),this.transport.removeAllListeners(),this.readyState="closed",this.id=null,this.emit("close",t,e),this.writeBuffer=[],this.prevBufferLen=0}},yn.prototype.filterUpgrades=function(t){for(var e=[],n=0,r=t.length;n<r;n++)~fn(this.transports,t[n])&&e.push(t[n]);return e};var gn=mn,vn=Pe;gn.parser=vn;var bn=function(t,e){for(var n=[],r=(e=e||0)||0;r<t.length;r++)n[r-e]=t[r];return n};var wn=function(t,e,n){return t.on(e,n),{destroy:function(){t.removeListener(e,n)}}};var Cn=[].slice,kn=function(t,e){if("string"==typeof e&&(e=t[e]),"function"!=typeof e)throw new Error("bind() requires a function");var n=Cn.call(arguments,2);return function(){return e.apply(t,n.concat(Cn.call(arguments)))}},xn=dt((function(t,e){var n=At("socket.io-client:socket");t.exports=s;var r={connect:1,connect_error:1,connect_timeout:1,connecting:1,disconnect:1,error:1,reconnect:1,reconnect_attempt:1,reconnect_failed:1,reconnect_error:1,reconnecting:1,ping:1,pong:1},o=Mt.prototype.emit;function s(t,e,n){this.io=t,this.nsp=e,this.json=this,this.ids=0,this.acks={},this.receiveBuffer=[],this.sendBuffer=[],this.connected=!1,this.disconnected=!0,this.flags={},n&&n.query&&(this.query=n.query),this.io.autoConnect&&this.open()}Mt(s.prototype),s.prototype.subEvents=function(){if(!this.subs){var t=this.io;this.subs=[wn(t,"open",kn(this,"onopen")),wn(t,"packet",kn(this,"onpacket")),wn(t,"close",kn(this,"onclose"))]}},s.prototype.open=s.prototype.connect=function(){return this.connected||(this.subEvents(),this.io.open(),"open"===this.io.readyState&&this.onopen(),this.emit("connecting")),this},s.prototype.send=function(){var t=bn(arguments);return t.unshift("message"),this.emit.apply(this,t),this},s.prototype.emit=function(t){if(r.hasOwnProperty(t))return o.apply(this,arguments),this;var e=bn(arguments),s={type:(void 0!==this.flags.binary?this.flags.binary:te(e))?Jt.BINARY_EVENT:Jt.EVENT,data:e,options:{}};return s.options.compress=!this.flags||!1!==this.flags.compress,"function"==typeof e[e.length-1]&&(n("emitting packet with ack id %d",this.ids),this.acks[this.ids]=e.pop(),s.id=this.ids++),this.connected?this.packet(s):this.sendBuffer.push(s),this.flags={},this},s.prototype.packet=function(t){t.nsp=this.nsp,this.io.packet(t)},s.prototype.onopen=function(){if(n("transport is open - connecting"),"/"!==this.nsp)if(this.query){var t="object"==typeof this.query?Fe(this.query):this.query;n("sending connect packet with query %s",t),this.packet({type:Jt.CONNECT,query:t})}else this.packet({type:Jt.CONNECT})},s.prototype.onclose=function(t){n("close (%s)",t),this.connected=!1,this.disconnected=!0,delete this.id,this.emit("disconnect",t)},s.prototype.onpacket=function(t){var e=t.nsp===this.nsp,n=t.type===Jt.ERROR&&"/"===t.nsp;if(e||n)switch(t.type){case Jt.CONNECT:this.onconnect();break;case Jt.EVENT:case Jt.BINARY_EVENT:this.onevent(t);break;case Jt.ACK:case Jt.BINARY_ACK:this.onack(t);break;case Jt.DISCONNECT:this.ondisconnect();break;case Jt.ERROR:this.emit("error",t.data)}},s.prototype.onevent=function(t){var e=t.data||[];n("emitting event %j",e),null!=t.id&&(n("attaching ack callback to event"),e.push(this.ack(t.id))),this.connected?o.apply(this,e):this.receiveBuffer.push(e)},s.prototype.ack=function(t){var e=this,r=!1;return function(){if(!r){r=!0;var o=bn(arguments);n("sending ack %j",o),e.packet({type:te(o)?Jt.BINARY_ACK:Jt.ACK,id:t,data:o})}}},s.prototype.onack=function(t){var e=this.acks[t.id];"function"==typeof e?(n("calling ack %s with %j",t.id,t.data),e.apply(this,t.data),delete this.acks[t.id]):n("bad ack %s",t.id)},s.prototype.onconnect=function(){this.connected=!0,this.disconnected=!1,this.emit("connect"),this.emitBuffered()},s.prototype.emitBuffered=function(){var t;for(t=0;t<this.receiveBuffer.length;t++)o.apply(this,this.receiveBuffer[t]);for(this.receiveBuffer=[],t=0;t<this.sendBuffer.length;t++)this.packet(this.sendBuffer[t]);this.sendBuffer=[]},s.prototype.ondisconnect=function(){n("server disconnect (%s)",this.nsp),this.destroy(),this.onclose("io server disconnect")},s.prototype.destroy=function(){if(this.subs){for(var t=0;t<this.subs.length;t++)this.subs[t].destroy();this.subs=null}this.io.destroy(this)},s.prototype.close=s.prototype.disconnect=function(){return this.connected&&(n("performing disconnect (%s)",this.nsp),this.packet({type:Jt.DISCONNECT})),this.destroy(),this.connected&&this.onclose("io client disconnect"),this},s.prototype.compress=function(t){return this.flags.compress=t,this},s.prototype.binary=function(t){return this.flags.binary=t,this}})),Pn=An;function An(t){t=t||{},this.ms=t.min||100,this.max=t.max||1e4,this.factor=t.factor||2,this.jitter=t.jitter>0&&t.jitter<=1?t.jitter:0,this.attempts=0}An.prototype.duration=function(){var t=this.ms*Math.pow(this.factor,this.attempts++);if(this.jitter){var e=Math.random(),n=Math.floor(e*this.jitter*t);t=0==(1&Math.floor(10*e))?t-n:t+n}return 0|Math.min(t,this.max)},An.prototype.reset=function(){this.attempts=0},An.prototype.setMin=function(t){this.ms=t},An.prototype.setMax=function(t){this.max=t},An.prototype.setJitter=function(t){this.jitter=t};var Bn=At("socket.io-client:manager"),Sn=Object.prototype.hasOwnProperty,En=Fn;function Fn(t,e){if(!(this instanceof Fn))return new Fn(t,e);t&&"object"==typeof t&&(e=t,t=void 0),(e=e||{}).path=e.path||"/socket.io",this.nsps={},this.subs=[],this.opts=e,this.reconnection(!1!==e.reconnection),this.reconnectionAttempts(e.reconnectionAttempts||1/0),this.reconnectionDelay(e.reconnectionDelay||1e3),this.reconnectionDelayMax(e.reconnectionDelayMax||5e3),this.randomizationFactor(e.randomizationFactor||.5),this.backoff=new Pn({min:this.reconnectionDelay(),max:this.reconnectionDelayMax(),jitter:this.randomizationFactor()}),this.timeout(null==e.timeout?2e4:e.timeout),this.readyState="closed",this.uri=t,this.connecting=[],this.lastPing=null,this.encoding=!1,this.packetBuffer=[];var n=e.parser||Jt;this.encoder=new n.Encoder,this.decoder=new n.Decoder,this.autoConnect=!1!==e.autoConnect,this.autoConnect&&this.open()}Fn.prototype.emitAll=function(){for(var t in this.emit.apply(this,arguments),this.nsps)Sn.call(this.nsps,t)&&this.nsps[t].emit.apply(this.nsps[t],arguments)},Fn.prototype.updateSocketIds=function(){for(var t in this.nsps)Sn.call(this.nsps,t)&&(this.nsps[t].id=this.generateId(t))},Fn.prototype.generateId=function(t){return("/"===t?"":t+"#")+this.engine.id},Mt(Fn.prototype),Fn.prototype.reconnection=function(t){return arguments.length?(this._reconnection=!!t,this):this._reconnection},Fn.prototype.reconnectionAttempts=function(t){return arguments.length?(this._reconnectionAttempts=t,this):this._reconnectionAttempts},Fn.prototype.reconnectionDelay=function(t){return arguments.length?(this._reconnectionDelay=t,this.backoff&&this.backoff.setMin(t),this):this._reconnectionDelay},Fn.prototype.randomizationFactor=function(t){return arguments.length?(this._randomizationFactor=t,this.backoff&&this.backoff.setJitter(t),this):this._randomizationFactor},Fn.prototype.reconnectionDelayMax=function(t){return arguments.length?(this._reconnectionDelayMax=t,this.backoff&&this.backoff.setMax(t),this):this._reconnectionDelayMax},Fn.prototype.timeout=function(t){return arguments.length?(this._timeout=t,this):this._timeout},Fn.prototype.maybeReconnectOnOpen=function(){!this.reconnecting&&this._reconnection&&0===this.backoff.attempts&&this.reconnect()},Fn.prototype.open=Fn.prototype.connect=function(t,e){if(Bn("readyState %s",this.readyState),~this.readyState.indexOf("open"))return this;Bn("opening %s",this.uri),this.engine=gn(this.uri,this.opts);var n=this.engine,r=this;this.readyState="opening",this.skipReconnect=!1;var o=wn(n,"open",(function(){r.onopen(),t&&t()})),s=wn(n,"error",(function(e){if(Bn("connect_error"),r.cleanup(),r.readyState="closed",r.emitAll("connect_error",e),t){var n=new Error("Connection error");n.data=e,t(n)}else r.maybeReconnectOnOpen()}));if(!1!==this._timeout){var i=this._timeout;Bn("connect attempt will timeout after %d",i);var a=setTimeout((function(){Bn("connect attempt timed out after %d",i),o.destroy(),n.close(),n.emit("error","timeout"),r.emitAll("connect_timeout",i)}),i);this.subs.push({destroy:function(){clearTimeout(a)}})}return this.subs.push(o),this.subs.push(s),this},Fn.prototype.onopen=function(){Bn("open"),this.cleanup(),this.readyState="open",this.emit("open");var t=this.engine;this.subs.push(wn(t,"data",kn(this,"ondata"))),this.subs.push(wn(t,"ping",kn(this,"onping"))),this.subs.push(wn(t,"pong",kn(this,"onpong"))),this.subs.push(wn(t,"error",kn(this,"onerror"))),this.subs.push(wn(t,"close",kn(this,"onclose"))),this.subs.push(wn(this.decoder,"decoded",kn(this,"ondecoded")))},Fn.prototype.onping=function(){this.lastPing=new Date,this.emitAll("ping")},Fn.prototype.onpong=function(){this.emitAll("pong",new Date-this.lastPing)},Fn.prototype.ondata=function(t){this.decoder.add(t)},Fn.prototype.ondecoded=function(t){this.emit("packet",t)},Fn.prototype.onerror=function(t){Bn("error",t),this.emitAll("error",t)},Fn.prototype.socket=function(t,e){var n=this.nsps[t];if(!n){n=new xn(this,t,e),this.nsps[t]=n;var r=this;n.on("connecting",o),n.on("connect",(function(){n.id=r.generateId(t)})),this.autoConnect&&o()}function o(){~fn(r.connecting,n)||r.connecting.push(n)}return n},Fn.prototype.destroy=function(t){var e=fn(this.connecting,t);~e&&this.connecting.splice(e,1),this.connecting.length||this.close()},Fn.prototype.packet=function(t){Bn("writing packet %j",t);var e=this;t.query&&0===t.type&&(t.nsp+="?"+t.query),e.encoding?e.packetBuffer.push(t):(e.encoding=!0,this.encoder.encode(t,(function(n){for(var r=0;r<n.length;r++)e.engine.write(n[r],t.options);e.encoding=!1,e.processPacketQueue()})))},Fn.prototype.processPacketQueue=function(){if(this.packetBuffer.length>0&&!this.encoding){var t=this.packetBuffer.shift();this.packet(t)}},Fn.prototype.cleanup=function(){Bn("cleanup");for(var t=this.subs.length,e=0;e<t;e++){this.subs.shift().destroy()}this.packetBuffer=[],this.encoding=!1,this.lastPing=null,this.decoder.destroy()},Fn.prototype.close=Fn.prototype.disconnect=function(){Bn("disconnect"),this.skipReconnect=!0,this.reconnecting=!1,"opening"===this.readyState&&this.cleanup(),this.backoff.reset(),this.readyState="closed",this.engine&&this.engine.close()},Fn.prototype.onclose=function(t){Bn("onclose"),this.cleanup(),this.backoff.reset(),this.readyState="closed",this.emit("close",t),this._reconnection&&!this.skipReconnect&&this.reconnect()},Fn.prototype.reconnect=function(){if(this.reconnecting||this.skipReconnect)return this;var t=this;if(this.backoff.attempts>=this._reconnectionAttempts)Bn("reconnect failed"),this.backoff.reset(),this.emitAll("reconnect_failed"),this.reconnecting=!1;else{var e=this.backoff.duration();Bn("will wait %dms before reconnect attempt",e),this.reconnecting=!0;var n=setTimeout((function(){t.skipReconnect||(Bn("attempting reconnect"),t.emitAll("reconnect_attempt",t.backoff.attempts),t.emitAll("reconnecting",t.backoff.attempts),t.skipReconnect||t.open((function(e){e?(Bn("reconnect attempt error"),t.reconnecting=!1,t.reconnect(),t.emitAll("reconnect_error",e.data)):(Bn("reconnect success"),t.onreconnect())})))}),e);this.subs.push({destroy:function(){clearTimeout(n)}})}},Fn.prototype.onreconnect=function(){var t=this.backoff.attempts;this.reconnecting=!1,this.backoff.reset(),this.updateSocketIds(),this.emitAll("reconnect",t)};var $n=dt((function(t,e){var n=At("socket.io-client");t.exports=e=o;var r=e.managers={};function o(t,e){"object"==typeof t&&(e=t,t=void 0),e=e||{};var o,s=St(t),i=s.source,a=s.id,c=s.path,l=r[a]&&c in r[a].nsps;return e.forceNew||e["force new connection"]||!1===e.multiplex||l?(n("ignoring socket cache for %s",i),o=En(i,e)):(r[a]||(n("new io instance for %s",i),r[a]=En(i,e)),o=r[a]),s.query&&!e.query&&(e.query=s.query),o.socket(s.path,e)}e.protocol=Jt.protocol,e.connect=o,e.Manager=En,e.Socket=xn}));$n.managers,$n.protocol,$n.connect,$n.Manager,$n.Socket;class Nn{constructor(t,e,n){this.xPos=t,this.yPos=e,this.isEmpty="E"==n}}class Tn{constructor(t,e,n,r,o){this.id=r,this.positon=new Nn(t,e,n),this.side=n,this.stack=null!=o?o:1}getPosition(){return this.positon}setPosition(t,e){this.positon=new Nn(t,e,null)}incrementStack(){this.stack=2}}class _n{constructor(t,e){if(null!=t||e){if(null!=t&&null==e){let e,n;for(this.board=[],e=0;e<8;e++)for(this.board[e]=[],n=0;n<8;n++)null!=t[e][n]?this.board[e][n]=new Tn(e,n,t[e][n].side,t[e][n].id,t[e][n].stack):this.board[e][n]=null}else if(null==t&&e){this.board=[];let t,e,n=23;for(t=0;t<8;t++)for(this.board[t]=[],e=0;e<8;e++){let r=t%2!=0&&e%2!=0;t%2==0&&e%2==0||r||3==t||4==t?this.board[t][e]=null:(this.board[t][e]=new Tn(t,e,0<=t&&t<=2?"red":"black",n,null),n--)}}}else{this.board=[];let t,e,n=0;for(t=0;t<8;t++)for(this.board[t]=[],e=0;e<8;e++){let r=t%2!=0&&e%2!=0;t%2==0&&e%2==0||r||3==t||4==t?this.board[t][e]=null:(this.board[t][e]=new Tn(t,e,0<=t&&t<=2?"black":"red",n,null),n++)}}}saveBoardState(){let t,e,n=[];for(t=0;t<8;t++)for(n[t]=[],e=0;e<8;e++)null!=this.board[t][e]?(n[t][e]={},n[t][e].stack=this.board[t][e].stack,n[t][e].side=this.board[t][e].side,n[t][e].id=this.board[t][e].id):n[t][e]=null;return n}takePiece(t,e,n,r){let o=!1,s=null,i=null;return r.xPos<e.xPos&&r.yPos<e.yPos&&(s=e.xPos-1,i=e.yPos-1,null!=this.board[s][i]&&this.board[s][i].side!=t.side&&(this.board[s][i]=null,o=!0)),r.xPos<e.xPos&&r.yPos>e.yPos&&(s=e.xPos-1,i=e.yPos+1,null!=this.board[s][i]&&this.board[s][i].side!=t.side&&(this.board[s][i]=null,o=!0)),r.xPos>e.xPos&&r.yPos<e.yPos&&(s=e.xPos+1,i=e.yPos-1,null!=this.board[s][i]&&this.board[s][i].side!=t.side&&(this.board[s][i]=null,o=!0)),r.xPos>e.xPos&&r.yPos>e.yPos&&(s=e.xPos+1,i=e.yPos+1,null!=this.board[s][i]&&this.board[s][i].side!=t.side&&(this.board[s][i]=null,o=!0)),o}isMoveLegal(t,e){let n,r,o;Rn.update(t=>(n=t.name,t)),Un.update(t=>(r=t.pri,o=t.sec,t));let s=!1,i=t.getPosition();if(console.log(e.isEmpty),console.log("red: "+t.side=="red"),console.log("black: "+t.side=="black"),"red"==t.side&&e.isEmpty&&n==r){console.log(i.xPos+", "+i.yPos+" --\x3e "+e.xPos+", "+e.yPos);let n=i.xPos-e.xPos,r=i.yPos-e.yPos;if(1==t.stack){(1==r||-1==r)&&1==n&&(s=!0),!(2!=n&&-2!=n||2!=r&&-2!=r)&&this.takePiece(t,i,r,e)&&(s=!0)}else{!(1!=n&&-1!=n||1!=r&&-1!=r)&&(s=!0),!(2!=n&&-2!=n||2!=r&&-2!=r)&&this.takePiece(t,i,r,e)&&(s=!0)}}if("black"==t.side&&e.isEmpty&&n==o){let n=i.xPos-e.xPos,r=i.yPos-e.yPos;if(1==t.stack){(1==r||-1==r)&&1==n&&(s=!0),!(2!=n&&-2!=n||2!=r&&-2!=r)&&this.takePiece(t,i,r,e)&&(s=!0)}else{!(1!=n&&-1!=n||1!=r&&-1!=r)&&(s=!0),!(2!=n&&-2!=n||2!=r&&-2!=r)&&this.takePiece(t,i,r,e)&&(s=!0)}}return s}doMove(t,e){let n,r,o;Rn.update(t=>(n=t.name,t)),Un.update(t=>(r=t.pri,o=t.sec,t));let s=!1,i=null;if(this.isMoveLegal(t,e)){i=this.scanBoard(t,e);let a=new Tn(e.xPos,e.yPos,t.side,t.id,t.stack);n==r&&0==e.xPos&&"red"==a.side&&1==a.stack&&a.incrementStack(),n==o&&0==e.xPos&&"black"==a.side&&1==a.stack&&a.incrementStack(),this.board[e.xPos][e.yPos]=a;let c=t.getPosition();this.board[c.xPos][c.yPos]=null,s=!0}return{move:s,id:i}}scanBoard(t,e){let n,r,o=null;for(n=0;n<8;n++)for(r=0;r<8;r++)if(null!=this.board[n][r]&&this.board[n][r].id!=t.id&&this.board[n][r].side==t.side&&this.checkPiece(this.board[n][r],t,e)){o=t.id;break}return o}checkPiece(t,e,n){let r=!1,o=(n.xPos,n.yPos,t.getPosition().xPos),s=t.getPosition().yPos;return 0<=o-2&&0<=s-2&&o-2<=7&&s-2<=7&&null!=this.board[o-1][s-1]&&this.board[o-1][s-1].side!=e.side&&null==this.board[o-2][s-2]&&(this.board[o][s]=null,r=!0),0<=o+2&&0<=s+2&&o+2<=7&&s+2<=7&&0==r&&null!=this.board[o+1][s+1]&&this.board[o+1][s+1].side!=e.side&&null==this.board[o+2][s+2]&&(this.board[o][s]=null,r=!0),0<=o-2&&0<=s+2&&o-2<=7&&s+2<=7&&0==r&&null!=this.board[o-1][s+1]&&this.board[o-1][s+1].side!=e.side&&null==this.board[o-2][s+2]&&(this.board[o][s]=null,r=!0),0<=o+2&&0<=s-2&&o+2<=7&&s-2<=7&&0==r&&null!=this.board[o+1][s-1]&&this.board[o+1][s-1].side!=e.side&&null==this.board[o+2][s-2]&&(this.board[o][s]=null,r=!0),r}removePiece(t){let e=t.getPosition().xPos,n=t.getPosition().yPos;this.board[e][n]=null}otherPlayerMove(t,e,n){let r,o,s;Rn.update(t=>(r=t.name,t)),Un.update(t=>(o=t.pri,s=t.sec,t));let i=t.getPosition().xPos,a=t.getPosition().yPos,c=i+e,l=a+n,u=new Tn(c,l,t.side,t.id,t.stack);r==o&&0==c&&"red"==u.side&&1==u.stack&&u.incrementStack(),r==s&&0==c&&"black"==u.side&&1==u.stack&&u.incrementStack(),this.board[c][l]=u,2==e&&2==n&&(c=i+e/2,l=a+n/2,this.board[c][l]=null),this.board[i][a]=null}isEmpty(t,e){return null==this.board[t][e]}getId(t,e){return this.board[t][e].id}getSide(t,e){return this.board[t][e].side}getPiece(t,e){if(null!=this.board[t][e])return this.board[t][e]}getPieceFromId(t){let e,n,r;for(e=0;e<8;e++)for(n=0;n<8;n++)if(null!=this.board[e][n]&&this.board[e][n].id==t){r=this.board[e][n];break}return r}getBoard(){return this.board}}window.onload=async function(){if(null!=sessionStorage.getItem("idx")){const t=await JSON.parse(sessionStorage.getItem("idx"));await Rn.set(t.user),await qn.set(new _n(t.board.board,null)),await Dn.set(t.history),await Un.set(t.pref),await Ln.set(t.chat),await In.set(t.tab),await jn.set(t.games),await On.set(t.page),sessionStorage.removeItem("idx")}};const Mn=ft($n("http://localhost:4000/")),Rn=ft(null),On=ft(0),In=ft(0),jn=ft([]),qn=ft(null),Dn=ft([]),Un=ft(null),Ln=ft([]);function Hn(t){return new Promise((e,n)=>{const r="https://us-central1-checker-io.cloudfunctions.net/"+t.func;t=new URLSearchParams(t).toString(),fetch(r,{method:"POST",body:t,headers:{Accept:"*/*","Content-Type":"application/x-www-form-urlencoded"},"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"*"}).then(t=>t.json()).then(t=>{e(t)}).catch(t=>n(t))})}function zn(t){const e=t-1;return e*e*e+1}function Gn(t,{delay:e=0,duration:n=400,easing:r=zn,x:o=0,y:s=0,opacity:i=0}){const a=getComputedStyle(t),c=+a.opacity,l="none"===a.transform?"":a.transform,u=c*(1-i);return{delay:e,duration:n,easing:r,css:(t,e)=>`\n\t\t\ttransform: ${l} translate(${(1-t)*o}px, ${(1-t)*s}px);\n\t\t\topacity: ${c-u*e}`}}function Jn(t,e,n){const r=t.slice();return r[5]=e[n],r}function Xn(t,e,n){const r=t.slice();return r[5]=e[n],r}function Wn(t){let e,n,r,o,s,i,a=t[0],c=[];for(let e=0;e<a.length;e+=1)c[e]=Kn(Xn(t,a,e));let l=t[0],u=[];for(let e=0;e<l.length;e+=1)u[e]=Qn(Jn(t,l,e));return{c(){e=C("h5"),e.textContent="On-Going Games",n=P();for(let t=0;t<c.length;t+=1)c[t].c();r=P(),o=C("h5"),o.textContent="Finished Games",s=P();for(let t=0;t<u.length;t+=1)u[t].c();i=A(),S(e,"class","svelte-4eh53h"),S(o,"class","svelte-4eh53h")},m(t,a){v(t,e,a),v(t,n,a);for(let e=0;e<c.length;e+=1)c[e].m(t,a);v(t,r,a),v(t,o,a),v(t,s,a);for(let e=0;e<u.length;e+=1)u[e].m(t,a);v(t,i,a)},p(t,e){if(3&e){let n;for(a=t[0],n=0;n<a.length;n+=1){const o=Xn(t,a,n);c[n]?c[n].p(o,e):(c[n]=Kn(o),c[n].c(),c[n].m(r.parentNode,r))}for(;n<c.length;n+=1)c[n].d(1);c.length=a.length}if(3&e){let n;for(l=t[0],n=0;n<l.length;n+=1){const r=Jn(t,l,n);u[n]?u[n].p(r,e):(u[n]=Qn(r),u[n].c(),u[n].m(i.parentNode,i))}for(;n<u.length;n+=1)u[n].d(1);u.length=l.length}},d(t){t&&b(e),t&&b(n),w(c,t),t&&b(r),t&&b(o),t&&b(s),w(u,t),t&&b(i)}}}function Yn(e){let n,r,o;return{c(){n=C("h5"),n.textContent="There are no games to view",r=P(),o=C("h5"),o.textContent="Create or Join a Game",S(n,"id","empty"),S(n,"class","svelte-4eh53h"),S(o,"class","svelte-4eh53h")},m(t,e){v(t,n,e),v(t,r,e),v(t,o,e)},p:t,d(t){t&&b(n),t&&b(r),t&&b(o)}}}function Vn(t){let e,n,r,o,s,i,a,c=t[5].priPlayer+"",l=t[5].secPlayer+"",u=t[5].date+"";function p(...e){return t[3](t[5],...e)}return{c(){e=C("button"),n=x(c),r=x(" vs. "),o=x(l),s=x(" - "),i=x(u),S(e,"class","btn btn-warning svelte-4eh53h")},m(t,c,l){v(t,e,c),g(e,n),g(e,r),g(e,o),g(e,s),g(e,i),l&&a(),a=B(e,"click",p)},p(e,r){t=e,1&r&&c!==(c=t[5].priPlayer+"")&&F(n,c),1&r&&l!==(l=t[5].secPlayer+"")&&F(o,l),1&r&&u!==(u=t[5].date+"")&&F(i,u)},d(t){t&&b(e),a()}}}function Kn(t){let e,n=!t[5].finished&&Vn(t);return{c(){n&&n.c(),e=A()},m(t,r){n&&n.m(t,r),v(t,e,r)},p(t,r){t[5].finished?n&&(n.d(1),n=null):n?n.p(t,r):(n=Vn(t),n.c(),n.m(e.parentNode,e))},d(t){n&&n.d(t),t&&b(e)}}}function Zn(t){let e,n,r,o,s,i,a,c=t[5].priPlayer+"",l=t[5].secPlayer+"",u=t[5].date+"";function p(...e){return t[4](t[5],...e)}return{c(){e=C("button"),n=x(c),r=x(" vs. "),o=x(l),s=x(" - "),i=x(u),S(e,"class","btn btn-light svelte-4eh53h")},m(t,c,l){v(t,e,c),g(e,n),g(e,r),g(e,o),g(e,s),g(e,i),l&&a(),a=B(e,"click",p)},p(e,r){t=e,1&r&&c!==(c=t[5].priPlayer+"")&&F(n,c),1&r&&l!==(l=t[5].secPlayer+"")&&F(o,l),1&r&&u!==(u=t[5].date+"")&&F(i,u)},d(t){t&&b(e),a()}}}function Qn(t){let e,n=t[5].finished&&Zn(t);return{c(){n&&n.c(),e=A()},m(t,r){n&&n.m(t,r),v(t,e,r)},p(t,r){t[5].finished?n?n.p(t,r):(n=Zn(t),n.c(),n.m(e.parentNode,e)):n&&(n.d(1),n=null)},d(t){n&&n.d(t),t&&b(e)}}}function tr(e){let n;function r(t,e){return 0==t[0].length?Yn:Wn}let o=r(e),s=o(e);return{c(){s.c(),n=A()},m(t,e){s.m(t,e),v(t,n,e)},p(t,[e]){o===(o=r(t))&&s?s.p(t,e):(s.d(1),s=o(t),s&&(s.c(),s.m(n.parentNode,n)))},i:t,o:t,d(t){s.d(t),t&&b(n)}}}function er(t,e,n){let r,o;function s(t,e){let n=t.priEmail==r.email?JSON.parse(t.priGameHistory):JSON.parse(t.secGameHistory);qn.set(new _n(n[n.length-1],null)),Dn.set(n),Ln.set(JSON.parse(t.chatHistory)),Un.update(o=>((o={}).id=t.id,o.time=t.time,o.timer=t.time,o.pri=t.priEmail==r.email?r.name:null,o.sec=t.secEmail==r.email?r.name:null,o.currPlayer=t.currPlayer,o.numMoves=n.length,o.rangeMoves=n.length,o.paused=1==e,o.finished=1!=e,o.side=t.priEmail==r.email?"red":"black",o.secondsPlayed=60*t.minutesPlayed,o)),On.set(1),In.set(0)}l(t,Rn,t=>n(2,r=t)),l(t,jn,t=>n(0,o=t));return[o,s,r,t=>s(t,!0),t=>s(t,!1)]}window.onbeforeunload=async function(){const t={};await Rn.update(e=>(t.user=e,e)),await On.update(e=>(t.page=e,e)),await In.update(e=>(t.tab=e,e)),await qn.update(e=>(t.board=e,e)),await Dn.update(e=>(t.history=e,e)),await Un.update(e=>(t.pref=e,e)),await Ln.update(e=>(t.chat=e,e)),await jn.update(e=>(t.games=e,e)),await sessionStorage.setItem("idx",JSON.stringify(t))};class nr extends pt{constructor(t){super(),ut(this,t,er,tr,a,{})}}function rr(e){let n,r,o,i,a,c,l,u,p,h,f,d,m,y,w,k,A,E,T,_,M,R,O,I,j,q,D,U,L,H,z,G,J,X,W,Y,V,K,Z,Q,tt,et,nt,rt=e[6].email+"";return{c(){n=C("h3"),n.textContent="Settings",r=P(),o=C("h5"),o.textContent="Profile",i=P(),a=C("h6"),c=x("Account ID: "),l=C("span"),u=x(rt),p=P(),h=C("img"),d=P(),m=C("div"),y=C("input"),w=P(),k=C("label"),A=x(e[5]),E=P(),T=C("p"),T.textContent="Image size should be less than 1MB",_=P(),M=C("div"),R=C("div"),R.innerHTML='<div class="input-group-text">Display Name:</div>',O=P(),I=C("input"),j=P(),q=C("input"),D=P(),U=C("button"),U.textContent="Update Profile",L=P(),H=C("h5"),H.textContent="Reset Password",z=P(),G=C("div"),J=C("div"),J.innerHTML='<div class="input-group-text">Old Password:</div>',X=P(),W=C("input"),Y=P(),V=C("div"),K=C("div"),K.innerHTML='<div class="input-group-text">New Password:</div>',Z=P(),Q=C("input"),tt=P(),et=C("button"),et.textContent="Reset",S(n,"class","svelte-5d476"),N(a,"text-align","center"),N(h,"float","left"),S(h,"alt","propic"),h.src!==(f=e[1])&&S(h,"src",f),S(h,"class","svelte-5d476"),S(y,"type","file"),S(y,"accept","image/jpeg"),S(y,"class","custom-file-input"),S(y,"id","customFile"),S(k,"class","custom-file-label"),S(k,"for","customFile"),S(m,"id","propic"),S(m,"class","custom-file input-group svelte-5d476"),N(T,"float","right"),S(R,"class","input-group-prepend"),S(I,"type","text"),S(I,"class","form-control"),S(I,"id","inlineFormInputGroup"),S(I,"placeholder",e[0]),S(M,"class","input-group mb-2 svelte-5d476"),S(q,"id","authPass"),S(q,"placeholder","Account Password"),S(q,"class","svelte-5d476"),S(U,"class","btn btn-success svelte-5d476"),N(H,"margin-top","60px"),S(J,"class","input-group-prepend"),S(W,"type","text"),S(W,"class","form-control"),S(W,"id","inlineFormInputGroup"),S(W,"placeholder","Account Password"),S(G,"class","input-group mb-2 svelte-5d476"),S(K,"class","input-group-prepend"),S(Q,"type","text"),S(Q,"class","form-control"),S(Q,"id","inlineFormInputGroup"),S(Q,"placeholder","New Password"),S(V,"class","input-group mb-2 svelte-5d476"),S(et,"class","btn btn-success svelte-5d476")},m(t,f,b){v(t,n,f),v(t,r,f),v(t,o,f),v(t,i,f),v(t,a,f),g(a,c),g(a,l),g(l,u),v(t,p,f),v(t,h,f),v(t,d,f),v(t,m,f),g(m,y),g(m,w),g(m,k),g(k,A),v(t,E,f),v(t,T,f),v(t,_,f),v(t,M,f),g(M,R),g(M,O),g(M,I),$(I,e[0]),v(t,j,f),v(t,q,f),$(q,e[2]),v(t,D,f),v(t,U,f),v(t,L,f),v(t,H,f),v(t,z,f),v(t,G,f),g(G,J),g(G,X),g(G,W),$(W,e[3]),v(t,Y,f),v(t,V,f),g(V,K),g(V,Z),g(V,Q),$(Q,e[4]),v(t,tt,f),v(t,et,f),b&&s(nt),nt=[B(y,"change",e[7]),B(I,"input",e[11]),B(q,"input",e[12]),B(U,"click",e[8]),B(W,"input",e[13]),B(Q,"input",e[14]),B(et,"click",e[9])]},p(t,[e]){64&e&&rt!==(rt=t[6].email+"")&&F(u,rt),2&e&&h.src!==(f=t[1])&&S(h,"src",f),32&e&&F(A,t[5]),1&e&&S(I,"placeholder",t[0]),1&e&&I.value!==t[0]&&$(I,t[0]),4&e&&q.value!==t[2]&&$(q,t[2]),8&e&&W.value!==t[3]&&$(W,t[3]),16&e&&Q.value!==t[4]&&$(Q,t[4])},i:t,o:t,d(t){t&&b(n),t&&b(r),t&&b(o),t&&b(i),t&&b(a),t&&b(p),t&&b(h),t&&b(d),t&&b(m),t&&b(E),t&&b(T),t&&b(_),t&&b(M),t&&b(j),t&&b(q),t&&b(D),t&&b(U),t&&b(L),t&&b(H),t&&b(z),t&&b(G),t&&b(Y),t&&b(V),t&&b(tt),t&&b(et),s(nt)}}}function or(t,n,r){let o;l(t,Rn,t=>r(6,o=t));let s,i,a,c,u=o.name,p=o.picture,h="Choose Profile Photo";return[u,p,s,i,a,h,o,function(){if(e.target.files[0].size<=1e6&&"image/jpeg"==e.target.files[0].type){var t=new FileReader;t.onload=function(t){r(1,p=t.target.result),Rn.update(e=>(e.picture=t.target.result,e))},t.readAsDataURL(e.target.files[0]),r(5,h=e.target.files[0].name)}},function(){null!=u&&null!=s&&(c={func:"updateProfile",name:u,picture:p.includes("unsplash")?null:p,password:s,email:o.email},Hn(c).then(t=>{null!=t.msg?(console.log(t.msg),r(2,s=""),Rn.update(t=>(t.name=u,t))):console.log(t.err)}).catch(t=>{console.log(t)}))},function(){null!=i&&null!=a&&i!=a&&(c={func:"resetPassword",email:o.email,password:i,newPass:a},Hn(c).then(t=>{null!=t.msg?(console.log(t.msg),r(3,i=""),r(4,a="")):console.log(t.err)}).catch(t=>{console.log(t)}))},c,function(){u=this.value,r(0,u)},function(){s=this.value,r(2,s)},function(){i=this.value,r(3,i)},function(){a=this.value,r(4,a)}]}class sr extends pt{constructor(t){super(),ut(this,t,or,rr,a,{})}}function ir(e){let n,r,o,i,a,c,l,u,p,h,f;return{c(){n=C("h5"),n.textContent="Game Preferences",r=P(),o=C("h6"),i=x("Time Per Turn: "),a=x(e[0]),c=x(" seconds"),l=P(),u=C("input"),p=P(),h=C("button"),h.textContent="Create",S(n,"class","svelte-ygik97"),S(o,"class","svelte-ygik97"),S(u,"class","custom-range"),S(u,"type","range"),S(u,"min","15"),S(u,"max","60"),S(u,"step","1"),S(h,"class","btn btn-primary svelte-ygik97")},m(t,d,m){v(t,n,d),v(t,r,d),v(t,o,d),g(o,i),g(o,a),g(o,c),v(t,l,d),v(t,u,d),$(u,e[0]),v(t,p,d),v(t,h,d),m&&s(f),f=[B(u,"change",e[6]),B(u,"input",e[6]),B(h,"click",e[1])]},p(t,[e]){1&e&&F(a,t[0]),1&e&&$(u,t[0])},i:t,o:t,d(t){t&&b(n),t&&b(r),t&&b(o),t&&b(l),t&&b(u),t&&b(p),t&&b(h),s(f)}}}function ar(t,e,n){let r,o,s;l(t,Dn,t=>n(3,r=t)),l(t,qn,t=>n(4,o=t)),l(t,Rn,t=>n(5,s=t));let i,a=15;return[a,function(){qn.set(new _n(null,!1)),r.push(o.saveBoardState()),Un.update(t=>((t={}).time=a,t.timer=a,t.pri=s.name,t.sec=null,t.currPlayer=null,t.numMoves=0,t.rangeMoves=0,t.paused=!0,t.finished=!1,t.side="red",t.secondsPlayed=0,t)),i={func:"createGame",email:s.email,name:s.name,time:a,date:(new Date).getFullYear()+"-"+((new Date).getMonth()+1)+"-"+(new Date).getDate()},console.log(i),Hn(i).then(t=>{console.log(t),null!=t.msg?(console.log(t.msg),Un.update(e=>(e.id=t.msg,e)),On.set(1),In.set(0)):console.log(t.err)}).catch(t=>{console.log(t)})},i,r,o,s,function(){a=E(this.value),n(0,a)}]}class cr extends pt{constructor(t){super(),ut(this,t,ar,ir,a,{})}}function lr(e){let n,r,o,i,a,c,l,u,p,h;return{c(){n=C("h5"),n.textContent="Game Password",r=P(),o=C("input"),i=P(),a=C("button"),a.textContent="Join",c=P(),l=C("hr"),u=P(),p=C("button"),p.textContent="Find A Random Game",S(n,"class","svelte-uoxtb0"),S(o,"placeholder","Game Password"),S(o,"class","svelte-uoxtb0"),S(a,"class","btn btn-primary svelte-uoxtb0"),N(a,"margin-bottom","30px"),S(p,"class","btn btn-primary svelte-uoxtb0")},m(t,f,d){v(t,n,f),v(t,r,f),v(t,o,f),$(o,e[0]),v(t,i,f),v(t,a,f),v(t,c,f),v(t,l,f),v(t,u,f),v(t,p,f),d&&s(h),h=[B(o,"input",e[6]),B(a,"click",e[1])]},p(t,[e]){1&e&&o.value!==t[0]&&$(o,t[0])},i:t,o:t,d(t){t&&b(n),t&&b(r),t&&b(o),t&&b(i),t&&b(a),t&&b(c),t&&b(l),t&&b(u),t&&b(p),s(h)}}}function ur(t,e,n){let r,o,s,i,a;return l(t,Rn,t=>n(3,r=t)),l(t,Dn,t=>n(4,o=t)),l(t,qn,t=>n(5,s=t)),[i,function(){null!=i&&(a={func:"joinGame",gameID:i,email:r.email,name:r.name},Hn(a).then(t=>{if(null!=t.msg){console.log(t.msg);let e=t.msg;e.priEmail!=r.email?(qn.set(new _n(null,!0)),o.push(s.saveBoardState()),Un.update(t=>((t={}).time=e.time,t.timer=e.time,t.id=i,t.pri=null,t.sec=e.secPlayer,t.currPlayer=null,t.numMoves=0,t.rangeMoves=0,t.paused=!0,t.finished=!1,t.side="black",t.secondsPlayed=0,t)),On.set(1),In.set(0)):console.log("Same Player")}else console.log(t.err)}).catch(t=>{console.log(t)}))},a,r,o,s,function(){i=this.value,n(0,i)}]}class pr extends pt{constructor(t){super(),ut(this,t,ur,lr,a,{})}}function hr(e){let n,r,o,s,i,a=e[6]<800&&function(e){let n,r;return{c(){n=C("button"),n.textContent="Close",S(n,"class","btn btn-danger svelte-9xhgok")},m(t,o,s){v(t,n,o),s&&r(),r=B(n,"click",e[7])},p:t,d(t){t&&b(n),r()}}}(e),c=e[4]&&fr(),l=e[5]&&dr();return{c(){n=C("div"),a&&a.c(),r=P(),c&&c.c(),o=P(),l&&l.c(),S(n,"id","popUp"),S(n,"class","container-fluid svelte-9xhgok")},m(t,e){v(t,n,e),a&&a.m(n,null),g(n,r),c&&c.m(n,null),g(n,o),l&&l.m(n,null),i=!0},p(t,e){t[6]<800&&a.p(t,e),t[4]?c?16&e&&nt(c,1):(c=fr(),c.c(),nt(c,1),c.m(n,o)):c&&(tt(),rt(c,1,1,()=>{c=null}),et()),t[5]?l?32&e&&nt(l,1):(l=dr(),l.c(),nt(l,1),l.m(n,null)):l&&(tt(),rt(l,1,1,()=>{l=null}),et())},i(t){i||(nt(c),nt(l),G(()=>{s||(s=st(n,Gn,{y:-200,duration:1e3},!0)),s.run(1)}),i=!0)},o(t){rt(c),rt(l),s||(s=st(n,Gn,{y:-200,duration:1e3},!1)),s.run(0),i=!1},d(t){t&&b(n),a&&a.d(),c&&c.d(),l&&l.d(),t&&s&&s.end()}}}function fr(t){let e;const n=new cr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function dr(t){let e;const n=new pr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function mr(e){let n,r,o,s,i,a=e[6]<800&&function(e){let n,r;return{c(){n=C("button"),n.textContent="Back",S(n,"class","btn btn-danger svelte-9xhgok")},m(t,o,s){v(t,n,o),s&&r(),r=B(n,"click",e[7])},p:t,d(t){t&&b(n),r()}}}(e),c=e[1]&&yr(),l=e[2]&&gr();return{c(){n=C("div"),a&&a.c(),r=P(),c&&c.c(),o=P(),l&&l.c(),S(n,"id","rightSlide"),S(n,"class","container-fluid svelte-9xhgok")},m(t,e){v(t,n,e),a&&a.m(n,null),g(n,r),c&&c.m(n,null),g(n,o),l&&l.m(n,null),i=!0},p(t,e){t[6]<800&&a.p(t,e),t[1]?c?2&e&&nt(c,1):(c=yr(),c.c(),nt(c,1),c.m(n,o)):c&&(tt(),rt(c,1,1,()=>{c=null}),et()),t[2]?l?4&e&&nt(l,1):(l=gr(),l.c(),nt(l,1),l.m(n,null)):l&&(tt(),rt(l,1,1,()=>{l=null}),et())},i(t){i||(nt(c),nt(l),G(()=>{s||(s=st(n,Gn,{x:200,duration:1e3},!0)),s.run(1)}),i=!0)},o(t){rt(c),rt(l),s||(s=st(n,Gn,{x:200,duration:1e3},!1)),s.run(0),i=!1},d(t){t&&b(n),a&&a.d(),c&&c.d(),l&&l.d(),t&&s&&s.end()}}}function yr(t){let e;const n=new nr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function gr(t){let e;const n=new sr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function vr(t){let e,n,r,o,i,a,c,l,u,p,h,f,d,m,y,w,k,E,F,$=t[3]&&hr(t),N=t[0]&&mr(t);return{c(){$&&$.c(),e=P(),n=C("div"),r=C("h1"),r.textContent="Dashboard",o=P(),i=C("button"),i.textContent="Create Game",a=P(),c=C("button"),c.textContent="Join Game",l=P(),u=C("button"),u.textContent="View Games",p=P(),h=C("button"),h.textContent="Leadership Board \n    ",f=x(">\n\n    "),d=C("button"),d.textContent="Tutorial",m=P(),y=C("button"),y.textContent="Settings",w=P(),N&&N.c(),k=A(),S(r,"class","svelte-9xhgok"),S(i,"class","circles btn btn-info svelte-9xhgok"),S(c,"class","circles btn btn-info svelte-9xhgok"),S(u,"class","circles btn btn-info svelte-9xhgok"),S(h,"class","circles btn btn-info svelte-9xhgok"),S(d,"class","circles btn btn-info svelte-9xhgok"),S(y,"class","circles btn btn-info svelte-9xhgok"),S(n,"id","backpurple"),S(n,"class","svelte-9xhgok")},m(b,C,x){$&&$.m(b,C),v(b,e,C),v(b,n,C),g(n,r),g(n,o),g(n,i),g(n,a),g(n,c),g(n,l),g(n,u),g(n,p),g(n,h),g(n,f),g(n,d),g(n,m),g(n,y),v(b,w,C),N&&N.m(b,C),v(b,k,C),E=!0,x&&s(F),F=[B(i,"click",t[8]),B(c,"click",t[9]),B(u,"click",t[10]),B(y,"click",t[11]),B(n,"click",t[7])]},p(t,[n]){t[3]?$?($.p(t,n),8&n&&nt($,1)):($=hr(t),$.c(),nt($,1),$.m(e.parentNode,e)):$&&(tt(),rt($,1,1,()=>{$=null}),et()),t[0]?N?(N.p(t,n),1&n&&nt(N,1)):(N=mr(t),N.c(),nt(N,1),N.m(k.parentNode,k)):N&&(tt(),rt(N,1,1,()=>{N=null}),et())},i(t){E||(nt($),nt(N),E=!0)},o(t){rt($),rt(N),E=!1},d(t){$&&$.d(t),t&&b(e),t&&b(n),t&&b(w),N&&N.d(t),t&&b(k),s(F)}}}function br(t,e,n){let r,o;l(t,Rn,t=>n(14,r=t));let s=!1,i=!1,a=!1,c=!1,u=!1,p=!1,h=!1,f=screen.width;function d(){n(0,s=!1),i=!1,n(1,a=!1),n(2,c=!1),n(3,u=!1),n(4,p=!1),n(5,h=!1)}return[s,a,c,u,p,h,f,d,function(){d(),setTimeout(()=>{n(3,u=!0)},1),setTimeout(()=>{n(4,p=!0)},2)},function(){d(),setTimeout(()=>{n(3,u=!0)},1),setTimeout(()=>{n(5,h=!0)},2)},function(){d(),setTimeout(()=>{n(0,s=!0)},1),o={func:"retrieveUserGames",email:r.email},Hn(o).then(t=>{if(console.log(t),null!=t.msg){let e=t.msg;jn.update(t=>{t=[];for(let n=0;n<e.length;n++)e[n].finished?t.push(e[n]):t.unshift(e[n]);return t}),setTimeout(()=>{n(1,a=!0)},1)}else console.log(t.err)}).catch(t=>{console.log(t)})},function(){d(),setTimeout(()=>{n(0,s=!0)},1),setTimeout(()=>{n(2,c=!0)},1)}]}class wr extends pt{constructor(t){super(),ut(this,t,br,vr,a,{})}}function Cr(t){return"[object Date]"===Object.prototype.toString.call(t)}function kr(t,e={}){const n=ft(t),{stiffness:r=.15,damping:o=.8,precision:s=.01}=e;let i,a,c,l=t,u=t,p=1,f=0,d=!1;function m(e,r={}){u=e;const o=c={};if(null==t||r.hard||g.stiffness>=1&&g.damping>=1)return d=!0,i=h(),l=e,n.set(t=u),Promise.resolve();if(r.soft){const t=!0===r.soft?.5:+r.soft;f=1/(60*t),p=0}return a||(i=h(),d=!1,a=y(e=>{if(d)return d=!1,a=null,!1;p=Math.min(p+f,1);const r={inv_mass:p,opts:g,settled:!0,dt:60*(e-i)/1e3},o=function t(e,n,r,o){if("number"==typeof r||Cr(r)){const t=o-r,s=(r-n)/(e.dt||1/60),i=(s+(e.opts.stiffness*t-e.opts.damping*s)*e.inv_mass)*e.dt;return Math.abs(i)<e.opts.precision&&Math.abs(t)<e.opts.precision?o:(e.settled=!1,Cr(r)?new Date(r.getTime()+i):r+i)}if(Array.isArray(r))return r.map((s,i)=>t(e,n[i],r[i],o[i]));if("object"==typeof r){const s={};for(const i in r)s[i]=t(e,n[i],r[i],o[i]);return s}throw new Error(`Cannot spring ${typeof r} values`)}(r,l,t,u);return i=e,l=t,n.set(t=o),r.settled&&(a=null),!r.settled})),new Promise(t=>{a.promise.then(()=>{o===c&&t()})})}const g={set:m,update:(e,n)=>m(e(u,t),n),subscribe:n.subscribe,stiffness:r,damping:o,precision:s};return g}function xr(e){let n,r,o,s,i;return{c(){n=k("svg"),r=k("g"),o=k("circle"),s=k("circle"),i=k("circle"),S(o,"class","dot svelte-16rctq0"),S(o,"cx","3"),S(o,"cy","3"),S(o,"r","3"),S(s,"class","dot svelte-16rctq0"),S(s,"cx","12"),S(s,"cy","3"),S(s,"r","3"),S(i,"class","dot svelte-16rctq0"),S(i,"cx","21"),S(i,"cy","3"),S(i,"r","3"),S(n,"id","typing_bubble"),S(n,"data-name","typing bubble"),S(n,"xmlns","http://www.w3.org/2000/svg"),S(n,"width","24"),S(n,"height","6"),S(n,"viewBox","0 0 24 6")},m(t,e){v(t,n,e),g(n,r),g(r,o),g(r,s),g(r,i)},p:t,i:t,o:t,d(t){t&&b(n)}}}class Pr extends pt{constructor(t){super(),ut(this,t,null,xr,a,{})}}function Ar(t,e,n){const r=t.slice();return r[16]=e[n],r}function Br(t){let e,n,r=t[3].pri+"";return{c(){e=C("h4"),n=x(r),N(e,"text-align","center"),S(e,"class","svelte-12nht46")},m(t,r){v(t,e,r),g(e,n)},p(t,e){8&e&&r!==(r=t[3].pri+"")&&F(n,r)},d(t){t&&b(e)}}}function Sr(e){let n;return{c(){n=C("h4"),n.textContent="Waiting for other player",S(n,"class","blinking svelte-12nht46"),N(n,"text-align","center")},m(t,e){v(t,n,e)},p:t,d(t){t&&b(n)}}}function Er(t){let e,n,r=t[3].sec+"";return{c(){e=C("h4"),n=x(r),N(e,"text-align","center"),S(e,"class","svelte-12nht46")},m(t,r){v(t,e,r),g(e,n)},p(t,e){8&e&&r!==(r=t[3].sec+"")&&F(n,r)},d(t){t&&b(e)}}}function Fr(t){let e,n,r,o=t[16].msg+"";return{c(){e=C("article"),n=C("span"),r=x(o),S(n,"class","txtMsg svelte-12nht46"),S(e,"class","odaMsg svelte-12nht46")},m(t,o){v(t,e,o),g(e,n),g(n,r)},p(t,e){32&e&&o!==(o=t[16].msg+"")&&F(r,o)},d(t){t&&b(e)}}}function $r(t){let e,n,r,o=t[16].msg+"";return{c(){e=C("article"),n=C("span"),r=x(o),S(n,"class","txtMsg svelte-12nht46"),S(e,"class","myMsg svelte-12nht46")},m(t,o){v(t,e,o),g(e,n),g(n,r)},p(t,e){32&e&&o!==(o=t[16].msg+"")&&F(r,o)},d(t){t&&b(e)}}}function Nr(t){let e;function n(t,e){return t[16].name==t[4].name?$r:Fr}let r=n(t),o=r(t);return{c(){o.c(),e=A()},m(t,n){o.m(t,n),v(t,e,n)},p(t,s){r===(r=n(t))&&o?o.p(t,s):(o.d(1),o=r(t),o&&(o.c(),o.m(e.parentNode,e)))},d(t){o.d(t),t&&b(e)}}}function Tr(t){let e,n;const r=new Pr({});return{c(){e=C("span"),it(r.$$.fragment),S(e,"class","txtMsg svelte-12nht46"),S(e,"id","isTypingSpan")},m(t,o){v(t,e,o),at(r,e,null),n=!0},i(t){n||(nt(r.$$.fragment,t),n=!0)},o(t){rt(r.$$.fragment,t),n=!1},d(t){t&&b(e),ct(r)}}}function _r(t){let e,n,r,o,i,a,c,l,u;function p(t,e){return t[3].pri==t[4].name&&null!=t[3].sec?Er:null==t[3].sec||null==t[3].pri?Sr:Br}let h=p(t),f=h(t),d=t[5],m=[];for(let e=0;e<d.length;e+=1)m[e]=Nr(Ar(t,d,e));let y=t[2]&&Tr();return{c(){e=C("div"),f.c(),n=P(),r=C("div");for(let t=0;t<m.length;t+=1)m[t].c();o=P(),i=C("article"),y&&y.c(),a=P(),c=C("input"),S(i,"class","odaMsg svelte-12nht46"),S(i,"id","isTyping"),S(r,"class","scrollable svelte-12nht46"),S(c,"id","user-msg"),S(c,"placeholder","Type Here"),S(c,"class","svelte-12nht46"),S(e,"id","chat"),S(e,"class","container-fluid svelte-12nht46")},m(p,h,d){v(p,e,h),f.m(e,null),g(e,n),g(e,r);for(let t=0;t<m.length;t+=1)m[t].m(r,null);g(r,o),g(r,i),y&&y.m(i,null),t[13](r),g(e,a),g(e,c),$(c,t[1]),l=!0,d&&s(u),u=[B(c,"input",t[14]),B(c,"keyup",t[7]),B(c,"keydown",t[15])]},p(t,[s]){if(h===(h=p(t))&&f?f.p(t,s):(f.d(1),f=h(t),f&&(f.c(),f.m(e,n))),48&s){let e;for(d=t[5],e=0;e<d.length;e+=1){const n=Ar(t,d,e);m[e]?m[e].p(n,s):(m[e]=Nr(n),m[e].c(),m[e].m(r,o))}for(;e<m.length;e+=1)m[e].d(1);m.length=d.length}t[2]?y?4&s&&nt(y,1):(y=Tr(),y.c(),nt(y,1),y.m(i,null)):y&&(tt(),rt(y,1,1,()=>{y=null}),et()),2&s&&c.value!==t[1]&&$(c,t[1])},i(t){l||(nt(y),l=!0)},o(t){rt(y),l=!1},d(n){n&&b(e),f.d(),w(m,n),y&&y.d(),t[13](null),s(u)}}}function Mr(t,e,n){let r,o,s,i,a,c,u;l(t,Un,t=>n(3,r=t)),l(t,Rn,t=>n(4,o=t)),l(t,Ln,t=>n(5,s=t)),l(t,Mn,t=>n(10,i=t));let p=!1;r.pri==o.name&&0==r.numMoves&&null==r.sec&&screen.width>=800&&s.push({name:"System",msg:"Please share Game Password '"+r.id+"' with other player"});let h=r.id,f={};var d;function m(){null==u&&""==u||(f.name=o.name,f.msg=u,f.room=h,i.emit("chat message",f),n(1,u=""))}d=()=>{c=a&&a.offsetHeight+a.scrollTop>a.scrollHeight-20},j().$$.before_update.push(d),function(t){j().$$.after_update.push(t)}(()=>{c&&a.scrollTo(0,a.scrollHeight)}),i.on("typing",t=>{n(2,p=!0)}),i.on("no-typing",t=>{n(2,p=!1)});return[a,u,p,r,o,s,m,function(){""==u?i.emit("no-typing",h):i.emit("typing",h)},c,f,i,void 0,h,function(t){D[t?"unshift":"push"](()=>{n(0,a=t)})},function(){u=this.value,n(1,u)},t=>13===t.which&&m()]}class Rr extends pt{constructor(t){super(),ut(this,t,Mr,_r,a,{})}}function Or(t,e,n){const r=t.slice();return r[40]=e[n],r}function Ir(t,e,n){const r=t.slice();return r[37]=e[n],r}function jr(t){let e,n,r,o,s,i,a,c=t[2].id+"";return{c(){e=C("div"),n=C("h5"),r=x("Please share Game Password '"),o=x(c),s=x("' with other player"),N(n,"text-align","center"),N(n,"margin-top","50%"),S(e,"id","popUp"),S(e,"class","container-fluid svelte-12fbbq6")},m(t,i){v(t,e,i),g(e,n),g(n,r),g(n,o),g(n,s),a=!0},p(t,e){(!a||4&e[0])&&c!==(c=t[2].id+"")&&F(o,c)},i(t){a||(G(()=>{i||(i=st(e,Gn,{y:-200,duration:1e3},!0)),i.run(1)}),a=!0)},o(t){i||(i=st(e,Gn,{y:-200,duration:1e3},!1)),i.run(0),a=!1},d(t){t&&b(e),t&&i&&i.end()}}}function qr(t){let e;return{c(){e=C("div"),S(e,"class","checker reda svelte-12fbbq6")},m(t,n){v(t,e,n)},d(t){t&&b(e)}}}function Dr(t){let e;return{c(){e=C("div"),S(e,"class","checker blacka svelte-12fbbq6")},m(t,n){v(t,e,n)},d(t){t&&b(e)}}}function Ur(t){let e,n=(t[37]%2!=0&&t[40]%2==0||t[37]%2==0&&t[40]%2!=0)&&function(t){let e,n,r,o;function s(...e){return t[34](t[37],t[40],...e)}return{c(){e=k("rect"),S(e,"width",t[1]),S(e,"height",t[1]),N(e,"fill","brown"),S(e,"x",n=t[40]*t[1]),S(e,"y",r=t[37]*t[1])},m(t,n,r){v(t,e,n),r&&o(),o=B(e,"click",s)},p(o,s){t=o,2&s[0]&&S(e,"width",t[1]),2&s[0]&&S(e,"height",t[1]),2&s[0]&&n!==(n=t[40]*t[1])&&S(e,"x",n),2&s[0]&&r!==(r=t[37]*t[1])&&S(e,"y",r)},d(t){t&&b(e),o()}}}(t);return{c(){n&&n.c(),e=A()},m(t,r){n&&n.m(t,r),v(t,e,r)},p(t,e){(t[37]%2!=0&&t[40]%2==0||t[37]%2==0&&t[40]%2!=0)&&n.p(t,e)},d(t){n&&n.d(t),t&&b(e)}}}function Lr(t){let e,n,r,o,s,i,a,c,l,p,h;function f(...e){return t[33](t[37],t[40],...e)}return{c(){e=k("rect"),o=k("circle"),S(e,"width",t[1]),S(e,"height",t[1]),N(e,"fill","brown"),S(e,"x",n=t[40]*t[1]),S(e,"y",r=t[37]*t[1]),S(o,"class",s=u(t[4].getSide(t[37],t[40]))+" svelte-12fbbq6"),S(o,"id",i=t[4].getId(t[37],t[40])),S(o,"cx",a=t[5][t[4].getId(t[37],t[40])].y),S(o,"cy",c=t[5][t[4].getId(t[37],t[40])].x),S(o,"r",t[6]),S(o,"stroke","white"),S(o,"stroke-width",l=2*t[4].getPiece(t[37],t[40]).stack),S(o,"fill",p=t[4].getSide(t[37],t[40]))},m(t,n,r){v(t,e,n),v(t,o,n),r&&h(),h=B(o,"click",f)},p(h,f){t=h,2&f[0]&&S(e,"width",t[1]),2&f[0]&&S(e,"height",t[1]),2&f[0]&&n!==(n=t[40]*t[1])&&S(e,"x",n),2&f[0]&&r!==(r=t[37]*t[1])&&S(e,"y",r),16&f[0]&&s!==(s=u(t[4].getSide(t[37],t[40]))+" svelte-12fbbq6")&&S(o,"class",s),16&f[0]&&i!==(i=t[4].getId(t[37],t[40]))&&S(o,"id",i),48&f[0]&&a!==(a=t[5][t[4].getId(t[37],t[40])].y)&&S(o,"cx",a),48&f[0]&&c!==(c=t[5][t[4].getId(t[37],t[40])].x)&&S(o,"cy",c),64&f[0]&&S(o,"r",t[6]),16&f[0]&&l!==(l=2*t[4].getPiece(t[37],t[40]).stack)&&S(o,"stroke-width",l),16&f[0]&&p!==(p=t[4].getSide(t[37],t[40]))&&S(o,"fill",p)},d(t){t&&b(e),t&&b(o),h()}}}function Hr(t){let e,n,r;function o(t,r){return(null==e||16&r[0])&&(e=!t[4].isEmpty(t[37],t[40])),e?Lr:((null==n||16&r[0])&&(n=!!t[4].isEmpty(t[37],t[40])),n?Ur:void 0)}let s=o(t,[-1]),i=s&&s(t);return{c(){i&&i.c(),r=A()},m(t,e){i&&i.m(t,e),v(t,r,e)},p(t,e){s===(s=o(t,e))&&i?i.p(t,e):(i&&i.d(1),i=s&&s(t),i&&(i.c(),i.m(r.parentNode,r)))},d(t){i&&i.d(t),t&&b(r)}}}function zr(t){let e,n=t[9],r=[];for(let e=0;e<n.length;e+=1)r[e]=Hr(Or(t,n,e));return{c(){for(let t=0;t<r.length;t+=1)r[t].c();e=A()},m(t,n){for(let e=0;e<r.length;e+=1)r[e].m(t,n);v(t,e,n)},p(t,o){if(3698&o[0]){let s;for(n=t[9],s=0;s<n.length;s+=1){const i=Or(t,n,s);r[s]?r[s].p(i,o):(r[s]=Hr(i),r[s].c(),r[s].m(e.parentNode,e))}for(;s<r.length;s+=1)r[s].d(1);r.length=n.length}},d(t){w(r,t),t&&b(e)}}}function Gr(t){let e,n,r,o,i,a,c,l,u,p=t[2].rangeMoves+"";return{c(){e=C("div"),n=C("h2"),r=x("Game State at Move: "),o=x(p),i=P(),a=C("input"),S(n,"id","rangeBar"),S(n,"class","svelte-12fbbq6"),S(a,"class","custom-range svelte-12fbbq6"),a.disabled=c=!t[2].paused,S(a,"type","range"),S(a,"min","0"),S(a,"max",l=t[2].numMoves),S(a,"step","1"),S(e,"id","state"),S(e,"class","svelte-12fbbq6")},m(c,l,p){v(c,e,l),g(e,n),g(n,r),g(n,o),g(e,i),g(e,a),$(a,t[2].rangeMoves),p&&s(u),u=[B(a,"change",t[12]),B(a,"change",t[35]),B(a,"input",t[35])]},p(t,e){4&e[0]&&p!==(p=t[2].rangeMoves+"")&&F(o,p),4&e[0]&&c!==(c=!t[2].paused)&&(a.disabled=c),4&e[0]&&l!==(l=t[2].numMoves)&&S(a,"max",l),4&e[0]&&$(a,t[2].rangeMoves)},d(t){t&&b(e),s(u)}}}function Jr(e){let n,r,o;return{c(){n=C("button"),n.textContent="Start Game",r=x("\\"),S(n,"class","btn btn-success pause svelte-12fbbq6")},m(t,s,i){v(t,n,s),v(t,r,s),i&&o(),o=B(n,"click",e[14])},p:t,d(t){t&&b(n),t&&b(r),o()}}}function Xr(e){let n,r,o,i;return{c(){n=C("button"),n.textContent="Switch Turn",r=P(),o=C("button"),o.textContent="Save Game",S(n,"class","btn btn-info switch svelte-12fbbq6"),S(o,"class","btn btn-primary save svelte-12fbbq6")},m(t,a,c){v(t,n,a),v(t,r,a),v(t,o,a),c&&s(i),i=[B(n,"click",e[13]),B(o,"click",e[36])]},p:t,d(t){t&&b(n),t&&b(r),t&&b(o),s(i)}}}function Wr(t){let e,n,r,o,s,i,a,c,l,u,p,h,f,d,m,y,B,E,$,N=t[2].numMoves+"",T=t[2].pri==t[3].name&&null==t[2].sec&&t[7]<800&&0==t[2].numMoves&&jr(t);function _(t,e){return"black"==t[2].currPlayer?Dr:"red"==t[2].currPlayer?qr:void 0}let M=_(t),R=M&&M(t),O=t[7]>800&&function(t){let e,n,r,o=t[2].timer+"";return{c(){e=C("h2"),n=x("Timer: "),r=x(o),S(e,"id","time"),S(e,"class","svelte-12fbbq6")},m(t,o){v(t,e,o),g(e,n),g(e,r)},p(t,e){4&e[0]&&o!==(o=t[2].timer+"")&&F(r,o)},d(t){t&&b(e)}}}(t),I=t[9],j=[];for(let e=0;e<I.length;e+=1)j[e]=zr(Ir(t,I,e));let q=t[7]<=800&&function(t){let e,n,r,o=t[2].timer+"";return{c(){e=C("h1"),n=x("Timer: "),r=x(o),S(e,"id","time"),S(e,"class","svelte-12fbbq6")},m(t,o){v(t,e,o),g(e,n),g(e,r)},p(t,e){4&e[0]&&o!==(o=t[2].timer+"")&&F(r,o)},d(t){t&&b(e)}}}(t),D=t[2].finished&&Gr(t),U=t[2].paused&&t[2].side==t[2].currPlayer&&null!=t[2].pri&&null!=t[2].sec&&Jr(t),L=t[2].side==t[2].currPlayer&&t[2].numMoves>0&&Xr(t);return{c(){T&&T.c(),e=P(),n=C("h2"),n.textContent="Current Player:",r=P(),R&&R.c(),o=P(),s=C("h2"),i=x("Moves: "),a=x(N),c=P(),O&&O.c(),l=P(),u=C("div"),p=k("svg");for(let t=0;t<j.length;t+=1)j[t].c();var t,g;h=k("use"),f=k("svg"),d=P(),q&&q.c(),m=P(),D&&D.c(),y=P(),U&&U.c(),B=P(),L&&L.c(),E=A(),S(n,"id","player"),S(n,"class","svelte-12fbbq6"),S(s,"id","moves"),S(s,"class","svelte-12fbbq6"),S(h,"id","use"),t="xlink:href",g="#24",h.setAttributeNS("http://www.w3.org/1999/xlink",t,g),S(p,"id","hover"),S(p,"class","svelte-12fbbq6"),S(u,"id","board"),S(u,"class","svelte-12fbbq6")},m(t,b){T&&T.m(t,b),v(t,e,b),v(t,n,b),v(t,r,b),R&&R.m(t,b),v(t,o,b),v(t,s,b),g(s,i),g(s,a),v(t,c,b),O&&O.m(t,b),v(t,l,b),v(t,u,b),g(u,p);for(let t=0;t<j.length;t+=1)j[t].m(p,null);g(p,h),g(p,f),v(t,d,b),q&&q.m(t,b),v(t,m,b),D&&D.m(t,b),v(t,y,b),U&&U.m(t,b),v(t,B,b),L&&L.m(t,b),v(t,E,b),$=!0},p(t,n){if(t[2].pri==t[3].name&&null==t[2].sec&&t[7]<800&&0==t[2].numMoves?T?(T.p(t,n),12&n[0]&&nt(T,1)):(T=jr(t),T.c(),nt(T,1),T.m(e.parentNode,e)):T&&(tt(),rt(T,1,1,()=>{T=null}),et()),M!==(M=_(t))&&(R&&R.d(1),R=M&&M(t),R&&(R.c(),R.m(o.parentNode,o))),(!$||4&n[0])&&N!==(N=t[2].numMoves+"")&&F(a,N),t[7]>800&&O.p(t,n),3698&n[0]){let e;for(I=t[9],e=0;e<I.length;e+=1){const r=Ir(t,I,e);j[e]?j[e].p(r,n):(j[e]=zr(r),j[e].c(),j[e].m(p,h))}for(;e<j.length;e+=1)j[e].d(1);j.length=I.length}t[7]<=800&&q.p(t,n),t[2].finished?D?D.p(t,n):(D=Gr(t),D.c(),D.m(y.parentNode,y)):D&&(D.d(1),D=null),t[2].paused&&t[2].side==t[2].currPlayer&&null!=t[2].pri&&null!=t[2].sec?U?U.p(t,n):(U=Jr(t),U.c(),U.m(B.parentNode,B)):U&&(U.d(1),U=null),t[2].side==t[2].currPlayer&&t[2].numMoves>0?L?L.p(t,n):(L=Xr(t),L.c(),L.m(E.parentNode,E)):L&&(L.d(1),L=null)},i(t){$||(nt(T),$=!0)},o(t){rt(T),$=!1},d(t){T&&T.d(t),t&&b(e),t&&b(n),t&&b(r),R&&R.d(t),t&&b(o),t&&b(s),t&&b(c),O&&O.d(t),t&&b(l),t&&b(u),w(j,t),t&&b(d),q&&q.d(t),t&&b(m),D&&D.d(t),t&&b(y),U&&U.d(t),t&&b(B),L&&L.d(t),t&&b(E)}}}function Yr(e,n,r){let o,s,i,a,u,p,h,f,d=t,m=()=>(d(),d=c(g,t=>r(6,f=t)),g);l(e,Un,t=>r(2,o=t)),l(e,Rn,t=>r(3,s=t)),l(e,Mn,t=>r(25,i=t)),l(e,qn,t=>r(4,a=t)),l(e,Dn,t=>r(26,u=t)),l(e,Ln,t=>r(27,p=t)),e.$$.on_destroy.push(()=>d()),o.pri==s.name&&null==o.currPlayer&&null==o.sec&&Un.update(t=>(t.currPlayer=0==Math.floor(2*Math.random())?"red":"black",t));let y,g,v=null,b=null,w=o.time,C=!1,k=screen.width;m();const x=kr([]);l(e,x,t=>r(5,h=t));let P,A,B,S,F=o.numMoves;i.emit("set-username",s.name),i.emit("join-room",o.id,s.name),screen.width<=800?(B=800/(screen.width-12.5),P=Math.floor((screen.width-10)/8),screen.width>=500?m(g=kr(25)):m(g=kr(12.5)),A=8*P,y=screen.width):(screen.height>=800?(B=1,m(g=kr(30)),P=100):(P=10*Math.floor(screen.height/100),B=1e3/(10*P),m(g=kr(25))),A=8*P,y=.8*(screen.width-800),S=.2*(screen.width-800)-40),i.on("piece-move",async t=>{if(console.log(t),null!=t.remove){let e=await a.getPieceFromId(t.id);await a.removePiece(e)}let e=await a.getPieceFromId(t.id);await a.otherPlayerMove(e,t.xDiff,t.yDiff),await qn.set(a),u.push(a.saveBoardState()),await _(),await Un.update(e=>(e.numMoves=t.num,e.rangeMoves=t.range,e))}),document.documentElement.style.setProperty("--chat-width",y+"px"),document.documentElement.style.setProperty("--board-height",A+"px"),document.documentElement.style.setProperty("--btn-width",S+"px"),_();let $=setInterval(N,1e3);function N(){null!=v&&O(v),o.rangeMoves==o.numMoves&&0==o.paused&&(o.timer>0?Un.update(t=>(t.timer-=1,t.secondsPlayed+=1,t)):(clearInterval($),Un.update(t=>(t.currPlayer="red"==t.currPlayer?"black":"red",t.timer=t.time,t.secondsPlayed+=1,t)),v=null,b=null,C=!1,$=setInterval(N,1e3)))}function T(t){let e=t.xPos,n=t.yPos,r=a.getId(e,n);x.update(t=>(t[r].x=(e+e+1)*(50/B),t[r].y=(n+n+1)*(50/B),t))}function _(){for(let t=0;t<8;t++)for(let e=0;e<8;e++)if(!a.isEmpty(t,e)){let n=a.getId(t,e);x.update(r=>(r[n]={},r[n].x=(t+t+1)*(50/B),r[n].y=(e+e+1)*(50/B),r))}}function M(t,e,n){if(console.log(t+", "+e),o.currPlayer==o.side&&0==C&&o.rangeMoves==o.numMoves&&0==o.paused&&null!=o.sec){let r,i,c=document.getElementById(a.getId(t,e));if("black"==a.getSide(t,e)&&s.name==o.sec){for(r=document.getElementsByClassName("black"),i=0;i<r.length;++i)r[i].setAttribute("style","fill:black");c.setAttribute("style","fill:grey")}if("red"==a.getSide(t,e)&&s.name==o.pri){for(r=document.getElementsByClassName("red"),i=0;i<r.length;++i)r[i].setAttribute("style","fill:red");c.setAttribute("style","fill:pink")}let l=n.target||event.target;document.getElementById("use").setAttributeNS("http://www.w3.org/1999/xlink","xlink:href","#"+l.id),v=a.getPiece(t,e)}}function R(t,e){if(console.log(t+", "+e),a.isEmpty(t,e)&&null!=v&&o.rangeMoves==o.numMoves){b=new Nn(t,e,"E");let n=a.doMove(v,b);if(console.log(n.move),qn.set(a),console.log(a),n.move){Un.update(t=>(t.numMoves+=1,t.rangeMoves+=1,t)),C=!0;let r={id:a.getId(t,e),xDiff:v.getPosition().xPos-b.xPos,yDiff:v.getPosition().yPos-b.yPos,remove:n.id,num:o.numMoves,range:o.rangeMoves,room:o.id};i.emit("piece-move",r),T(b),u.push(a.saveBoardState()),v=a.getPiece(b.xPos,b.yPos)}}}function O(t){let e=t.getPosition().xPos,n=t.getPosition().yPos,r=document.getElementById(a.getId(e,n));"black"==a.getSide(e,n)&&r.setAttribute("style","fill:grey"),"red"==a.getSide(e,n)&&r.setAttribute("style","fill:pink")}function I(t){if(o.side==o.currPlayer&&o.numMoves>0){clearInterval($);let e={func:"saveGame",gameID:o.id,gameHistory:JSON.stringify(u),chatHistory:JSON.stringify(p),pri:o.pri==s.name,sec:o.sec==s.name,minutes:Math.floor(o.secondsPlayed/60),currPlayer:o.currPlayer,auto:t,saved:!1};t?$=setInterval(N,1e3):(i.emit("saveGame",e),On.set(0))}}setInterval((function(){o.numMoves>F&&(I(!0),F=o.numMoves)}),3e5);return[g,P,o,s,a,h,f,k,x,[0,1,2,3,4,5,6,7],M,R,function(){qn.set(new _n(u[o.rangeMoves],null)),_()},function(){if(o.side==o.currPlayer){let t,e;if(clearInterval($),"black"==o.currPlayer)for(t=document.getElementsByClassName("black"),e=0;e<t.length;++e)t[e].setAttribute("style","fill:black");if("red"==o.currPlayer)for(t=document.getElementsByClassName("red"),e=0;e<t.length;++e)t[e].setAttribute("style","fill:red");Un.update(t=>(t.currPlayer="red"==t.currPlayer?"black":"red",t.timer=w,t)),i.emit("current-player",{player:o.currPlayer,room:o.id}),v=null,b=null,C=!1,$=setInterval(N,1e3)}},function(){o.side==o.currPlayer&&(Un.update(t=>(t.paused=!t.paused,t)),i.emit("paused",{paused:o.paused,room:o.id}))},I,v,b,C,y,A,B,S,F,$,i,u,p,w,N,T,_,O,(t,e)=>M(t,e,event),(t,e)=>R(t,e),function(){o.rangeMoves=E(this.value),Un.set(o)},()=>I(!1)]}class Vr extends pt{constructor(t){super(),ut(this,t,Yr,Wr,a,{},[-1,-1])}}function Kr(e){let n,r,o,i,a,c,l;return{c(){n=C("div"),r=C("table"),o=C("tr"),i=C("td"),i.innerHTML='<i class="fa fa-qrcode svelte-nu81iu"></i> \n                <span class="svelte-nu81iu">Game</span>',a=P(),c=C("td"),c.innerHTML='<i class="fa fa-comments svelte-nu81iu"></i> \n                <span class="svelte-nu81iu">Chat</span>',S(i,"class","tabIndex"),S(i,"align","center"),S(c,"class","tabIndex"),S(c,"align","center"),S(o,"height","50"),S(r,"id","sidebar-inner-mob"),S(r,"cellpadding","10"),S(r,"class","svelte-nu81iu"),S(n,"id","sidebar-outer-mob"),S(n,"class","svelte-nu81iu")},m(t,u,p){v(t,n,u),g(n,r),g(r,o),g(o,i),g(o,a),g(o,c),p&&s(l),l=[B(i,"click",e[1]),B(c,"click",e[2])]},p:t,i:t,o:t,d(t){t&&b(n),s(l)}}}function Zr(t){function e(t){In.set(t)}return[e,()=>e(0),()=>e(1)]}class Qr extends pt{constructor(t){super(),ut(this,t,Zr,Kr,a,{})}}function to(t,e,n){let r,o,s,i,a;return l(t,Mn,t=>n(0,r=t)),l(t,Un,t=>n(1,o=t)),l(t,Rn,t=>n(2,s=t)),l(t,Ln,t=>n(3,i=t)),l(t,Dn,t=>n(4,a=t)),r.on("chat message",t=>{console.log("Received: "+t.msg),Ln.update(e=>(e.push(t),e))}),r.on("second-user",t=>{null==o.sec&&null!=o.currPlayer&&(console.log("Received second player"),Un.update(e=>(e.sec=t,e)),r.emit("current-player",{player:o.currPlayer,room:o.id}),r.emit("first-user",{room:o.id,name:s.name}),screen.width<800?In.set(0):i[0].msg.includes(o.id)&&Ln.set([]))}),r.on("first-user",t=>{null==o.pri&&null!=o.currPlayer&&(console.log("Received first player"),Un.update(e=>(e.pri=t,e)),r.emit("current-player",{player:o.currPlayer,room:o.id}),screen.width<800?In.set(0):i[0].msg.includes(o.id)&&Ln.set([]))}),r.on("current-player",t=>{console.log("Received current player"),Un.update(e=>(e.timer=e.time,e.currPlayer=t,e)),console.log(o.currPlayer)}),r.on("paused",t=>{Un.update(e=>(e.paused=t,e))}),r.on("saveGame",t=>{let e={func:"saveGame",gameID:o.id,gameHistory:JSON.stringify(a),chatHistory:JSON.stringify(i),pri:o.pri==s.name,sec:o.sec==s.name,minutes:Math.floor(o.secondsPlayed/60),currPlayer:o.currPlayer,auto:t.auto,saved:!0};r.emit("saveGame",e),t.auto||On.set(0)}),[]}class eo extends pt{constructor(t){super(),ut(this,t,to,null,a,{})}}function no(t){let e;const n=new Rr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function ro(t){let e;const n=new Vr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function oo(t){let e,n,r,o;const s=new eo({});let i=t[1]>800&&function(t){let e,n;const r=new Vr({}),o=new Rr({});return{c(){it(r.$$.fragment),e=P(),it(o.$$.fragment)},m(t,s){at(r,t,s),v(t,e,s),at(o,t,s),n=!0},i(t){n||(nt(r.$$.fragment,t),nt(o.$$.fragment,t),n=!0)},o(t){rt(r.$$.fragment,t),rt(o.$$.fragment,t),n=!1},d(t){ct(r,t),t&&b(e),ct(o,t)}}}(),a=t[1]<=800&&function(t){let e,n,r,o;const s=[ro,no],i=[];function a(t,e){return 0==t[0]?0:1==t[0]?1:-1}~(e=a(t))&&(n=i[e]=s[e](t));const c=new Qr({});return{c(){n&&n.c(),r=P(),it(c.$$.fragment)},m(t,n){~e&&i[e].m(t,n),v(t,r,n),at(c,t,n),o=!0},p(t,o){let c=e;e=a(t),e!==c&&(n&&(tt(),rt(i[c],1,1,()=>{i[c]=null}),et()),~e?(n=i[e],n||(n=i[e]=s[e](t),n.c()),nt(n,1),n.m(r.parentNode,r)):n=null)},i(t){o||(nt(n),nt(c.$$.fragment,t),o=!0)},o(t){rt(n),rt(c.$$.fragment,t),o=!1},d(t){~e&&i[e].d(t),t&&b(r),ct(c,t)}}}(t);return{c(){it(s.$$.fragment),e=P(),i&&i.c(),n=P(),a&&a.c(),r=A()},m(t,c){at(s,t,c),v(t,e,c),i&&i.m(t,c),v(t,n,c),a&&a.m(t,c),v(t,r,c),o=!0},p(t,[e]){t[1]<=800&&a.p(t,e)},i(t){o||(nt(s.$$.fragment,t),nt(i),nt(a),o=!0)},o(t){rt(s.$$.fragment,t),rt(i),rt(a),o=!1},d(t){ct(s,t),t&&b(e),i&&i.d(t),t&&b(n),a&&a.d(t),t&&b(r)}}}function so(t,e,n){let r;l(t,In,t=>n(0,r=t));let o=screen.width;return[r,o]}class io extends pt{constructor(t){super(),ut(this,t,so,oo,a,{})}}class ao{constructor(t){this.isAuth=!0,this.name=t.name,this.email=t.email,this.picture=null==t.picture?"https://source.unsplash.com/900x900/":t.picture,this.wins=t.wins,this.draws=t.draws,this.losses=t.losses,this.gamesPlayed=t.gamesPlayed,this.leastMoves=t.leastMoves,this.mostMoves=t.mostMoves,this.totalMoves=t.totalMoves,this.avgMovesPerGame=t.avgMovesPerGame,this.leastTimePlayed=t.leastTimePlayed,this.mostTimePlayed=t.mostTimePlayed,this.totalTimePlayed=t.totalTimePlayed,this.avgTimePlayPerGame=t.avgTimePlayPerGame,this.totalPoints=t.totalPoints}}function co(t){let e,n,r,o,i,a,c,l,u,p,h,f,d,m;return{c(){e=C("input"),n=P(),r=C("input"),o=P(),i=C("input"),a=P(),c=C("input"),l=P(),u=C("button"),u.textContent="Sign Up",p=P(),h=C("h5"),f=x("Already have an Account? "),d=C("span"),d.textContent="Sign In",S(e,"id","Name"),S(e,"placeholder","Display Name"),S(e,"class","svelte-1ky7wjy"),S(r,"id","Email"),S(r,"placeholder","Email"),S(r,"class","svelte-1ky7wjy"),S(i,"id","Password"),S(i,"placeholder","Password"),S(i,"class","svelte-1ky7wjy"),S(c,"id","confirmPassword"),S(c,"placeholder","Confirm Password"),S(c,"class","svelte-1ky7wjy"),S(u,"class","btn btn-success svelte-1ky7wjy"),S(d,"class","svelte-1ky7wjy"),S(h,"class","svelte-1ky7wjy")},m(y,b,w){v(y,e,b),$(e,t[1]),v(y,n,b),v(y,r,b),$(r,t[0]),v(y,o,b),v(y,i,b),$(i,t[2]),v(y,a,b),v(y,c,b),$(c,t[3]),v(y,l,b),v(y,u,b),v(y,p,b),v(y,h,b),g(h,f),g(h,d),w&&s(m),m=[B(e,"input",t[15]),B(r,"input",t[16]),B(i,"input",t[17]),B(c,"input",t[18]),B(u,"click",t[7]),B(d,"click",t[19])]},p(t,n){2&n&&e.value!==t[1]&&$(e,t[1]),1&n&&r.value!==t[0]&&$(r,t[0]),4&n&&i.value!==t[2]&&$(i,t[2]),8&n&&c.value!==t[3]&&$(c,t[3])},d(t){t&&b(e),t&&b(n),t&&b(r),t&&b(o),t&&b(i),t&&b(a),t&&b(c),t&&b(l),t&&b(u),t&&b(p),t&&b(h),s(m)}}}function lo(t){let e,n,r,o,i,a,c,l,u,p,h,f;return{c(){e=C("input"),n=P(),r=C("input"),o=P(),i=C("button"),i.textContent="Log In",a=P(),c=C("h5"),l=x("Don't have an Account? "),u=C("span"),u.textContent="Sign Up",p=P(),h=C("hr"),S(e,"id","logEmail"),S(e,"placeholder","Email"),S(e,"class","svelte-1ky7wjy"),S(r,"id","logPassword"),S(r,"placeholder","Password"),S(r,"class","svelte-1ky7wjy"),S(i,"class","btn btn-success svelte-1ky7wjy"),S(u,"class","svelte-1ky7wjy"),S(c,"class","svelte-1ky7wjy")},m(d,m,y){v(d,e,m),$(e,t[4]),v(d,n,m),v(d,r,m),$(r,t[5]),v(d,o,m),v(d,i,m),v(d,a,m),v(d,c,m),g(c,l),g(c,u),v(d,p,m),v(d,h,m),y&&s(f),f=[B(e,"input",t[12]),B(r,"input",t[13]),B(i,"click",t[8]),B(u,"click",t[14])]},p(t,n){16&n&&e.value!==t[4]&&$(e,t[4]),32&n&&r.value!==t[5]&&$(r,t[5])},d(t){t&&b(e),t&&b(n),t&&b(r),t&&b(o),t&&b(i),t&&b(a),t&&b(c),t&&b(p),t&&b(h),s(f)}}}function uo(e){let n,r,o,s,i,a;function c(t,e){return t[6]?lo:co}let l=c(e),u=l(e);return{c(){n=C("div"),r=C("h3"),r.textContent="Welcome To Checkas.io",o=P(),u.c(),s=P(),i=C("img"),S(r,"class","svelte-1ky7wjy"),S(n,"id","entry"),S(n,"class","container svelte-1ky7wjy"),S(i,"id","back-image"),S(i,"alt","checker"),i.src!==(a="./images/checkers.jpg")&&S(i,"src","./images/checkers.jpg"),S(i,"class","svelte-1ky7wjy")},m(t,e){v(t,n,e),g(n,r),g(n,o),u.m(n,null),v(t,s,e),v(t,i,e)},p(t,[e]){l===(l=c(t))&&u?u.p(t,e):(u.d(1),u=l(t),u&&(u.c(),u.m(n,null)))},i:t,o:t,d(t){t&&b(n),u.d(),t&&b(s),t&&b(i)}}}function po(t,e,n){let r,o,s,i,a,c,l,u=!0;function p(){Hn(l).then(t=>{console.log(t),"SUCCESS"==t.msg?console.log("Verify Email"):console.log(t.err)}).catch(t=>{console.log(t)})}function h(){Hn(l).then(t=>{if(null!=t.msg){let e=t.msg;e.email=a,Rn.set(new ao(e)),n(0,r=""),n(1,o=""),n(2,s=""),n(3,i=""),n(4,a=""),n(5,c="")}else console.log(t.err)}).catch(t=>{console.log(t)})}return[r,o,s,i,a,c,u,function(){null!=r&&null!=o&&null!=s&&null!=i&&s==i&&(l={func:"signUp",email:r,name:o,password:s},Hn(l).then(t=>{console.log(t),"SUCCESS"==t.msg?(l.func="createUser",p()):console.log(t.err)}).catch(t=>{console.log(t)}))},function(){null!=a&&null!=c&&(l={func:"signIn",email:a,password:c},Hn(l).then(t=>{null!=t.msg&&t.msg?(l.func="retrieveUser",h()):null==t.msg||t.msg?console.log(t.err):console.log("Unverified Email")}).catch(t=>{console.log(t)}))},l,p,h,function(){a=this.value,n(4,a)},function(){c=this.value,n(5,c)},()=>n(6,u=!u),function(){o=this.value,n(1,o)},function(){r=this.value,n(0,r)},function(){s=this.value,n(2,s)},function(){i=this.value,n(3,i)},()=>n(6,u=!u)]}class ho extends pt{constructor(t){super(),ut(this,t,po,uo,a,{})}}function fo(e){let n;const r=new ho({});return{c(){it(r.$$.fragment)},m(t,e){at(r,t,e),n=!0},p:t,i(t){n||(nt(r.$$.fragment,t),n=!0)},o(t){rt(r.$$.fragment,t),n=!1},d(t){ct(r,t)}}}function mo(t){let e,n,r,o=0==t[1]&&yo(),s=1==t[1]&&go();return{c(){o&&o.c(),e=P(),s&&s.c(),n=A()},m(t,i){o&&o.m(t,i),v(t,e,i),s&&s.m(t,i),v(t,n,i),r=!0},p(t,r){0==t[1]?o?2&r&&nt(o,1):(o=yo(),o.c(),nt(o,1),o.m(e.parentNode,e)):o&&(tt(),rt(o,1,1,()=>{o=null}),et()),1==t[1]?s?2&r&&nt(s,1):(s=go(),s.c(),nt(s,1),s.m(n.parentNode,n)):s&&(tt(),rt(s,1,1,()=>{s=null}),et())},i(t){r||(nt(o),nt(s),r=!0)},o(t){rt(o),rt(s),r=!1},d(t){o&&o.d(t),t&&b(e),s&&s.d(t),t&&b(n)}}}function yo(t){let e;const n=new wr({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function go(t){let e;const n=new io({});return{c(){it(n.$$.fragment)},m(t,r){at(n,t,r),e=!0},i(t){e||(nt(n.$$.fragment,t),e=!0)},o(t){rt(n.$$.fragment,t),e=!1},d(t){ct(n,t)}}}function vo(t){let e,n,r,o;const s=[mo,fo],i=[];function a(t,e){return null!=t[0]&&t[0].isAuth?0:1}return e=a(t),n=i[e]=s[e](t),{c(){n.c(),r=A()},m(t,n){i[e].m(t,n),v(t,r,n),o=!0},p(t,[o]){let c=e;e=a(t),e===c?i[e].p(t,o):(tt(),rt(i[c],1,1,()=>{i[c]=null}),et(),n=i[e],n||(n=i[e]=s[e](t),n.c()),nt(n,1),n.m(r.parentNode,r))},i(t){o||(nt(n),o=!0)},o(t){rt(n),o=!1},d(t){i[e].d(t),t&&b(r)}}}function bo(t,e,n){let r,o;return l(t,Rn,t=>n(0,r=t)),l(t,On,t=>n(1,o=t)),[r,o]}return new class extends pt{constructor(t){super(),ut(this,t,bo,vo,a,{})}}({target:document.body})}();
-=======
 
 (function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 var app = (function () {
@@ -566,7 +562,7 @@ var app = (function () {
     }
 
     function dispatch_dev(type, detail) {
-        document.dispatchEvent(custom_event(type, Object.assign({ version: '3.22.2' }, detail)));
+        document.dispatchEvent(custom_event(type, Object.assign({ version: '3.22.3' }, detail)));
     }
     function append_dev(target, node) {
         dispatch_dev("SvelteDOMInsert", { target, node });
@@ -4549,709 +4545,6 @@ var app = (function () {
     var yeast_1 = yeast;
 
     /**
-     * Helpers.
-     */
-
-    var s$2 = 1000;
-    var m$2 = s$2 * 60;
-    var h$2 = m$2 * 60;
-    var d$2 = h$2 * 24;
-    var w$1 = d$2 * 7;
-    var y$2 = d$2 * 365.25;
-
-    /**
-     * Parse or format the given `val`.
-     *
-     * Options:
-     *
-     *  - `long` verbose formatting [false]
-     *
-     * @param {String|Number} val
-     * @param {Object} [options]
-     * @throws {Error} throw an error if val is not a non-empty string or a number
-     * @return {String|Number}
-     * @api public
-     */
-
-    var ms$2 = function(val, options) {
-      options = options || {};
-      var type = typeof val;
-      if (type === 'string' && val.length > 0) {
-        return parse$2(val);
-      } else if (type === 'number' && isFinite(val)) {
-        return options.long ? fmtLong$2(val) : fmtShort$2(val);
-      }
-      throw new Error(
-        'val is not a non-empty string or a valid number. val=' +
-          JSON.stringify(val)
-      );
-    };
-
-    /**
-     * Parse the given `str` and return milliseconds.
-     *
-     * @param {String} str
-     * @return {Number}
-     * @api private
-     */
-
-    function parse$2(str) {
-      str = String(str);
-      if (str.length > 100) {
-        return;
-      }
-      var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
-        str
-      );
-      if (!match) {
-        return;
-      }
-      var n = parseFloat(match[1]);
-      var type = (match[2] || 'ms').toLowerCase();
-      switch (type) {
-        case 'years':
-        case 'year':
-        case 'yrs':
-        case 'yr':
-        case 'y':
-          return n * y$2;
-        case 'weeks':
-        case 'week':
-        case 'w':
-          return n * w$1;
-        case 'days':
-        case 'day':
-        case 'd':
-          return n * d$2;
-        case 'hours':
-        case 'hour':
-        case 'hrs':
-        case 'hr':
-        case 'h':
-          return n * h$2;
-        case 'minutes':
-        case 'minute':
-        case 'mins':
-        case 'min':
-        case 'm':
-          return n * m$2;
-        case 'seconds':
-        case 'second':
-        case 'secs':
-        case 'sec':
-        case 's':
-          return n * s$2;
-        case 'milliseconds':
-        case 'millisecond':
-        case 'msecs':
-        case 'msec':
-        case 'ms':
-          return n;
-        default:
-          return undefined;
-      }
-    }
-
-    /**
-     * Short format for `ms`.
-     *
-     * @param {Number} ms
-     * @return {String}
-     * @api private
-     */
-
-    function fmtShort$2(ms) {
-      var msAbs = Math.abs(ms);
-      if (msAbs >= d$2) {
-        return Math.round(ms / d$2) + 'd';
-      }
-      if (msAbs >= h$2) {
-        return Math.round(ms / h$2) + 'h';
-      }
-      if (msAbs >= m$2) {
-        return Math.round(ms / m$2) + 'm';
-      }
-      if (msAbs >= s$2) {
-        return Math.round(ms / s$2) + 's';
-      }
-      return ms + 'ms';
-    }
-
-    /**
-     * Long format for `ms`.
-     *
-     * @param {Number} ms
-     * @return {String}
-     * @api private
-     */
-
-    function fmtLong$2(ms) {
-      var msAbs = Math.abs(ms);
-      if (msAbs >= d$2) {
-        return plural$2(ms, msAbs, d$2, 'day');
-      }
-      if (msAbs >= h$2) {
-        return plural$2(ms, msAbs, h$2, 'hour');
-      }
-      if (msAbs >= m$2) {
-        return plural$2(ms, msAbs, m$2, 'minute');
-      }
-      if (msAbs >= s$2) {
-        return plural$2(ms, msAbs, s$2, 'second');
-      }
-      return ms + ' ms';
-    }
-
-    /**
-     * Pluralization helper.
-     */
-
-    function plural$2(ms, msAbs, n, name) {
-      var isPlural = msAbs >= n * 1.5;
-      return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
-    }
-
-    /**
-     * This is the common logic for both the Node.js and web browser
-     * implementations of `debug()`.
-     */
-
-    function setup$1(env) {
-    	createDebug.debug = createDebug;
-    	createDebug.default = createDebug;
-    	createDebug.coerce = coerce;
-    	createDebug.disable = disable;
-    	createDebug.enable = enable;
-    	createDebug.enabled = enabled;
-    	createDebug.humanize = ms$2;
-
-    	Object.keys(env).forEach(key => {
-    		createDebug[key] = env[key];
-    	});
-
-    	/**
-    	* Active `debug` instances.
-    	*/
-    	createDebug.instances = [];
-
-    	/**
-    	* The currently active debug mode names, and names to skip.
-    	*/
-
-    	createDebug.names = [];
-    	createDebug.skips = [];
-
-    	/**
-    	* Map of special "%n" handling functions, for the debug "format" argument.
-    	*
-    	* Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
-    	*/
-    	createDebug.formatters = {};
-
-    	/**
-    	* Selects a color for a debug namespace
-    	* @param {String} namespace The namespace string for the for the debug instance to be colored
-    	* @return {Number|String} An ANSI color code for the given namespace
-    	* @api private
-    	*/
-    	function selectColor(namespace) {
-    		let hash = 0;
-
-    		for (let i = 0; i < namespace.length; i++) {
-    			hash = ((hash << 5) - hash) + namespace.charCodeAt(i);
-    			hash |= 0; // Convert to 32bit integer
-    		}
-
-    		return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
-    	}
-    	createDebug.selectColor = selectColor;
-
-    	/**
-    	* Create a debugger with the given `namespace`.
-    	*
-    	* @param {String} namespace
-    	* @return {Function}
-    	* @api public
-    	*/
-    	function createDebug(namespace) {
-    		let prevTime;
-
-    		function debug(...args) {
-    			// Disabled?
-    			if (!debug.enabled) {
-    				return;
-    			}
-
-    			const self = debug;
-
-    			// Set `diff` timestamp
-    			const curr = Number(new Date());
-    			const ms = curr - (prevTime || curr);
-    			self.diff = ms;
-    			self.prev = prevTime;
-    			self.curr = curr;
-    			prevTime = curr;
-
-    			args[0] = createDebug.coerce(args[0]);
-
-    			if (typeof args[0] !== 'string') {
-    				// Anything else let's inspect with %O
-    				args.unshift('%O');
-    			}
-
-    			// Apply any `formatters` transformations
-    			let index = 0;
-    			args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-    				// If we encounter an escaped % then don't increase the array index
-    				if (match === '%%') {
-    					return match;
-    				}
-    				index++;
-    				const formatter = createDebug.formatters[format];
-    				if (typeof formatter === 'function') {
-    					const val = args[index];
-    					match = formatter.call(self, val);
-
-    					// Now we need to remove `args[index]` since it's inlined in the `format`
-    					args.splice(index, 1);
-    					index--;
-    				}
-    				return match;
-    			});
-
-    			// Apply env-specific formatting (colors, etc.)
-    			createDebug.formatArgs.call(self, args);
-
-    			const logFn = self.log || createDebug.log;
-    			logFn.apply(self, args);
-    		}
-
-    		debug.namespace = namespace;
-    		debug.enabled = createDebug.enabled(namespace);
-    		debug.useColors = createDebug.useColors();
-    		debug.color = selectColor(namespace);
-    		debug.destroy = destroy;
-    		debug.extend = extend;
-    		// Debug.formatArgs = formatArgs;
-    		// debug.rawLog = rawLog;
-
-    		// env-specific initialization logic for debug instances
-    		if (typeof createDebug.init === 'function') {
-    			createDebug.init(debug);
-    		}
-
-    		createDebug.instances.push(debug);
-
-    		return debug;
-    	}
-
-    	function destroy() {
-    		const index = createDebug.instances.indexOf(this);
-    		if (index !== -1) {
-    			createDebug.instances.splice(index, 1);
-    			return true;
-    		}
-    		return false;
-    	}
-
-    	function extend(namespace, delimiter) {
-    		const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
-    		newDebug.log = this.log;
-    		return newDebug;
-    	}
-
-    	/**
-    	* Enables a debug mode by namespaces. This can include modes
-    	* separated by a colon and wildcards.
-    	*
-    	* @param {String} namespaces
-    	* @api public
-    	*/
-    	function enable(namespaces) {
-    		createDebug.save(namespaces);
-
-    		createDebug.names = [];
-    		createDebug.skips = [];
-
-    		let i;
-    		const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
-    		const len = split.length;
-
-    		for (i = 0; i < len; i++) {
-    			if (!split[i]) {
-    				// ignore empty strings
-    				continue;
-    			}
-
-    			namespaces = split[i].replace(/\*/g, '.*?');
-
-    			if (namespaces[0] === '-') {
-    				createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
-    			} else {
-    				createDebug.names.push(new RegExp('^' + namespaces + '$'));
-    			}
-    		}
-
-    		for (i = 0; i < createDebug.instances.length; i++) {
-    			const instance = createDebug.instances[i];
-    			instance.enabled = createDebug.enabled(instance.namespace);
-    		}
-    	}
-
-    	/**
-    	* Disable debug output.
-    	*
-    	* @return {String} namespaces
-    	* @api public
-    	*/
-    	function disable() {
-    		const namespaces = [
-    			...createDebug.names.map(toNamespace),
-    			...createDebug.skips.map(toNamespace).map(namespace => '-' + namespace)
-    		].join(',');
-    		createDebug.enable('');
-    		return namespaces;
-    	}
-
-    	/**
-    	* Returns true if the given mode name is enabled, false otherwise.
-    	*
-    	* @param {String} name
-    	* @return {Boolean}
-    	* @api public
-    	*/
-    	function enabled(name) {
-    		if (name[name.length - 1] === '*') {
-    			return true;
-    		}
-
-    		let i;
-    		let len;
-
-    		for (i = 0, len = createDebug.skips.length; i < len; i++) {
-    			if (createDebug.skips[i].test(name)) {
-    				return false;
-    			}
-    		}
-
-    		for (i = 0, len = createDebug.names.length; i < len; i++) {
-    			if (createDebug.names[i].test(name)) {
-    				return true;
-    			}
-    		}
-
-    		return false;
-    	}
-
-    	/**
-    	* Convert regexp to namespace
-    	*
-    	* @param {RegExp} regxep
-    	* @return {String} namespace
-    	* @api private
-    	*/
-    	function toNamespace(regexp) {
-    		return regexp.toString()
-    			.substring(2, regexp.toString().length - 2)
-    			.replace(/\.\*\?$/, '*');
-    	}
-
-    	/**
-    	* Coerce `val`.
-    	*
-    	* @param {Mixed} val
-    	* @return {Mixed}
-    	* @api private
-    	*/
-    	function coerce(val) {
-    		if (val instanceof Error) {
-    			return val.stack || val.message;
-    		}
-    		return val;
-    	}
-
-    	createDebug.enable(createDebug.load());
-
-    	return createDebug;
-    }
-
-    var common$1 = setup$1;
-
-    var browser$3 = createCommonjsModule(function (module, exports) {
-    /* eslint-env browser */
-
-    /**
-     * This is the web browser implementation of `debug()`.
-     */
-
-    exports.log = log;
-    exports.formatArgs = formatArgs;
-    exports.save = save;
-    exports.load = load;
-    exports.useColors = useColors;
-    exports.storage = localstorage();
-
-    /**
-     * Colors.
-     */
-
-    exports.colors = [
-    	'#0000CC',
-    	'#0000FF',
-    	'#0033CC',
-    	'#0033FF',
-    	'#0066CC',
-    	'#0066FF',
-    	'#0099CC',
-    	'#0099FF',
-    	'#00CC00',
-    	'#00CC33',
-    	'#00CC66',
-    	'#00CC99',
-    	'#00CCCC',
-    	'#00CCFF',
-    	'#3300CC',
-    	'#3300FF',
-    	'#3333CC',
-    	'#3333FF',
-    	'#3366CC',
-    	'#3366FF',
-    	'#3399CC',
-    	'#3399FF',
-    	'#33CC00',
-    	'#33CC33',
-    	'#33CC66',
-    	'#33CC99',
-    	'#33CCCC',
-    	'#33CCFF',
-    	'#6600CC',
-    	'#6600FF',
-    	'#6633CC',
-    	'#6633FF',
-    	'#66CC00',
-    	'#66CC33',
-    	'#9900CC',
-    	'#9900FF',
-    	'#9933CC',
-    	'#9933FF',
-    	'#99CC00',
-    	'#99CC33',
-    	'#CC0000',
-    	'#CC0033',
-    	'#CC0066',
-    	'#CC0099',
-    	'#CC00CC',
-    	'#CC00FF',
-    	'#CC3300',
-    	'#CC3333',
-    	'#CC3366',
-    	'#CC3399',
-    	'#CC33CC',
-    	'#CC33FF',
-    	'#CC6600',
-    	'#CC6633',
-    	'#CC9900',
-    	'#CC9933',
-    	'#CCCC00',
-    	'#CCCC33',
-    	'#FF0000',
-    	'#FF0033',
-    	'#FF0066',
-    	'#FF0099',
-    	'#FF00CC',
-    	'#FF00FF',
-    	'#FF3300',
-    	'#FF3333',
-    	'#FF3366',
-    	'#FF3399',
-    	'#FF33CC',
-    	'#FF33FF',
-    	'#FF6600',
-    	'#FF6633',
-    	'#FF9900',
-    	'#FF9933',
-    	'#FFCC00',
-    	'#FFCC33'
-    ];
-
-    /**
-     * Currently only WebKit-based Web Inspectors, Firefox >= v31,
-     * and the Firebug extension (any Firefox version) are known
-     * to support "%c" CSS customizations.
-     *
-     * TODO: add a `localStorage` variable to explicitly enable/disable colors
-     */
-
-    // eslint-disable-next-line complexity
-    function useColors() {
-    	// NB: In an Electron preload script, document will be defined but not fully
-    	// initialized. Since we know we're in Chrome, we'll just detect this case
-    	// explicitly
-    	if (typeof window !== 'undefined' && window.process && (window.process.type === 'renderer' || window.process.__nwjs)) {
-    		return true;
-    	}
-
-    	// Internet Explorer and Edge do not support colors.
-    	if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-    		return false;
-    	}
-
-    	// Is webkit? http://stackoverflow.com/a/16459606/376773
-    	// document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
-    	return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
-    		// Is firebug? http://stackoverflow.com/a/398120/376773
-    		(typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
-    		// Is firefox >= v31?
-    		// https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-    		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31) ||
-    		// Double check webkit in userAgent just in case we are in a worker
-    		(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
-    }
-
-    /**
-     * Colorize log arguments if enabled.
-     *
-     * @api public
-     */
-
-    function formatArgs(args) {
-    	args[0] = (this.useColors ? '%c' : '') +
-    		this.namespace +
-    		(this.useColors ? ' %c' : ' ') +
-    		args[0] +
-    		(this.useColors ? '%c ' : ' ') +
-    		'+' + module.exports.humanize(this.diff);
-
-    	if (!this.useColors) {
-    		return;
-    	}
-
-    	const c = 'color: ' + this.color;
-    	args.splice(1, 0, c, 'color: inherit');
-
-    	// The final "%c" is somewhat tricky, because there could be other
-    	// arguments passed either before or after the %c, so we need to
-    	// figure out the correct index to insert the CSS into
-    	let index = 0;
-    	let lastC = 0;
-    	args[0].replace(/%[a-zA-Z%]/g, match => {
-    		if (match === '%%') {
-    			return;
-    		}
-    		index++;
-    		if (match === '%c') {
-    			// We only are interested in the *last* %c
-    			// (the user may have provided their own)
-    			lastC = index;
-    		}
-    	});
-
-    	args.splice(lastC, 0, c);
-    }
-
-    /**
-     * Invokes `console.log()` when available.
-     * No-op when `console.log` is not a "function".
-     *
-     * @api public
-     */
-    function log(...args) {
-    	// This hackery is required for IE8/9, where
-    	// the `console.log` function doesn't have 'apply'
-    	return typeof console === 'object' &&
-    		console.log &&
-    		console.log(...args);
-    }
-
-    /**
-     * Save `namespaces`.
-     *
-     * @param {String} namespaces
-     * @api private
-     */
-    function save(namespaces) {
-    	try {
-    		if (namespaces) {
-    			exports.storage.setItem('debug', namespaces);
-    		} else {
-    			exports.storage.removeItem('debug');
-    		}
-    	} catch (error) {
-    		// Swallow
-    		// XXX (@Qix-) should we be logging these?
-    	}
-    }
-
-    /**
-     * Load `namespaces`.
-     *
-     * @return {String} returns the previously persisted debug modes
-     * @api private
-     */
-    function load() {
-    	let r;
-    	try {
-    		r = exports.storage.getItem('debug');
-    	} catch (error) {
-    		// Swallow
-    		// XXX (@Qix-) should we be logging these?
-    	}
-
-    	// If debug isn't set in LS, and we're in Electron, try to load $DEBUG
-    	if (!r && typeof process !== 'undefined' && 'env' in process) {
-    		r = process.env.DEBUG;
-    	}
-
-    	return r;
-    }
-
-    /**
-     * Localstorage attempts to return the localstorage.
-     *
-     * This is necessary because safari throws
-     * when a user disables cookies/localstorage
-     * and you attempt to access it.
-     *
-     * @return {LocalStorage}
-     * @api private
-     */
-
-    function localstorage() {
-    	try {
-    		// TVMLKit (Apple TV JS Runtime) does not have a window object, just localStorage in the global context
-    		// The Browser also has localStorage in the global context.
-    		return localStorage;
-    	} catch (error) {
-    		// Swallow
-    		// XXX (@Qix-) should we be logging these?
-    	}
-    }
-
-    module.exports = common$1(exports);
-
-    const {formatters} = module.exports;
-
-    /**
-     * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
-     */
-
-    formatters.j = function (v) {
-    	try {
-    		return JSON.stringify(v);
-    	} catch (error) {
-    		return '[UnexpectedJSONParseError]: ' + error.message;
-    	}
-    };
-    });
-    var browser_1$3 = browser$3.log;
-    var browser_2$3 = browser$3.formatArgs;
-    var browser_3$3 = browser$3.save;
-    var browser_4$3 = browser$3.load;
-    var browser_5$3 = browser$3.useColors;
-    var browser_6$3 = browser$3.storage;
-    var browser_7$3 = browser$3.colors;
-
-    /**
      * Module dependencies.
      */
 
@@ -5260,7 +4553,7 @@ var app = (function () {
 
 
 
-    var debug$2 = browser$3('engine.io-client:polling');
+    var debug$2 = browser('engine.io-client:polling');
 
     /**
      * Module exports.
@@ -5507,7 +4800,7 @@ var app = (function () {
 
 
 
-    var debug$3 = browser$3('engine.io-client:polling-xhr');
+    var debug$3 = browser('engine.io-client:polling-xhr');
 
 
     /**
@@ -6166,7 +5459,7 @@ var app = (function () {
 
 
 
-    var debug$4 = browser$3('engine.io-client:websocket');
+    var debug$4 = browser('engine.io-client:websocket');
 
     var BrowserWebSocket, NodeWebSocket;
 
@@ -6528,7 +5821,7 @@ var app = (function () {
 
 
 
-    var debug$5 = browser$3('engine.io-client:socket');
+    var debug$5 = browser('engine.io-client:socket');
 
 
 
@@ -9187,7 +8480,7 @@ var app = (function () {
         }
     };
 
-    const currSocket = writable(lib$1("https://checkerio-server.herokuapp.com/"));
+    const currSocket = writable(lib$1("http://localhost:4000/"));
 
     const currUser = writable(null);
 
@@ -9259,10 +8552,14 @@ var app = (function () {
             load = new URLSearchParams(load).toString();
 
             fetch(url, {
-                method: 'post',
+                method: 'POST',
                 body: load,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                'Access-Control-Allow-Origin' : '*'
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': '*'
             })
             .then(res => 
                 res.json()
@@ -9296,24 +8593,22 @@ var app = (function () {
         };
     }
 
-    /* src/Components/gameList.svelte generated by Svelte v3.22.2 */
-
-    const { console: console_1 } = globals;
+    /* src/Components/gameList.svelte generated by Svelte v3.22.3 */
     const file = "src/Components/gameList.svelte";
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[8] = list[i];
+    	child_ctx[5] = list[i];
     	return child_ctx;
     }
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[8] = list[i];
+    	child_ctx[5] = list[i];
     	return child_ctx;
     }
 
-    // (90:0) {:else}
+    // (39:0) {:else}
     function create_else_block(ctx) {
     	let h50;
     	let t1;
@@ -9358,9 +8653,9 @@ var app = (function () {
 
     			each1_anchor = empty();
     			attr_dev(h50, "class", "svelte-4eh53h");
-    			add_location(h50, file, 90, 4, 3106);
+    			add_location(h50, file, 39, 4, 1461);
     			attr_dev(h51, "class", "svelte-4eh53h");
-    			add_location(h51, file, 97, 4, 3362);
+    			add_location(h51, file, 46, 4, 1720);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h50, anchor);
@@ -9381,7 +8676,7 @@ var app = (function () {
     			insert_dev(target, each1_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*resumeGame, $userGames*/ 3) {
+    			if (dirty & /*getGame, $userGames*/ 3) {
     				each_value_1 = /*$userGames*/ ctx[0];
     				validate_each_argument(each_value_1);
     				let i;
@@ -9405,7 +8700,7 @@ var app = (function () {
     				each_blocks_1.length = each_value_1.length;
     			}
 
-    			if (dirty & /*reviewGame, $userGames*/ 5) {
+    			if (dirty & /*getGame, $userGames*/ 3) {
     				each_value = /*$userGames*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
@@ -9445,14 +8740,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(90:0) {:else}",
+    		source: "(39:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (87:0) {#if $userGames.length == 0}
+    // (36:0) {#if $userGames.length == 0}
     function create_if_block(ctx) {
     	let h50;
     	let t1;
@@ -9467,9 +8762,9 @@ var app = (function () {
     			h51.textContent = "Create or Join a Game";
     			attr_dev(h50, "id", "empty");
     			attr_dev(h50, "class", "svelte-4eh53h");
-    			add_location(h50, file, 87, 4, 3012);
+    			add_location(h50, file, 36, 4, 1367);
     			attr_dev(h51, "class", "svelte-4eh53h");
-    			add_location(h51, file, 88, 4, 3063);
+    			add_location(h51, file, 37, 4, 1418);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h50, anchor);
@@ -9488,28 +8783,28 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(87:0) {#if $userGames.length == 0}",
+    		source: "(36:0) {#if $userGames.length == 0}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (93:8) {#if !game.finished}
+    // (42:8) {#if !game.finished}
     function create_if_block_2(ctx) {
     	let button;
-    	let t0_value = /*game*/ ctx[8].priPlayer + "";
+    	let t0_value = /*game*/ ctx[5].priPlayer + "";
     	let t0;
     	let t1;
-    	let t2_value = /*game*/ ctx[8].secPlayer + "";
+    	let t2_value = /*game*/ ctx[5].secPlayer + "";
     	let t2;
     	let t3;
-    	let t4_value = /*game*/ ctx[8].date + "";
+    	let t4_value = /*game*/ ctx[5].date + "";
     	let t4;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[6](/*game*/ ctx[8], ...args);
+    		return /*click_handler*/ ctx[3](/*game*/ ctx[5], ...args);
     	}
 
     	const block = {
@@ -9521,7 +8816,7 @@ var app = (function () {
     			t3 = text(" - ");
     			t4 = text(t4_value);
     			attr_dev(button, "class", "btn btn-warning svelte-4eh53h");
-    			add_location(button, file, 93, 12, 3202);
+    			add_location(button, file, 42, 12, 1557);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -9535,9 +8830,9 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty & /*$userGames*/ 1 && t0_value !== (t0_value = /*game*/ ctx[8].priPlayer + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*$userGames*/ 1 && t2_value !== (t2_value = /*game*/ ctx[8].secPlayer + "")) set_data_dev(t2, t2_value);
-    			if (dirty & /*$userGames*/ 1 && t4_value !== (t4_value = /*game*/ ctx[8].date + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*$userGames*/ 1 && t0_value !== (t0_value = /*game*/ ctx[5].priPlayer + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*$userGames*/ 1 && t2_value !== (t2_value = /*game*/ ctx[5].secPlayer + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*$userGames*/ 1 && t4_value !== (t4_value = /*game*/ ctx[5].date + "")) set_data_dev(t4, t4_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(button);
@@ -9549,17 +8844,17 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(93:8) {#if !game.finished}",
+    		source: "(42:8) {#if !game.finished}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (92:4) {#each $userGames as game}
+    // (41:4) {#each $userGames as game}
     function create_each_block_1(ctx) {
     	let if_block_anchor;
-    	let if_block = !/*game*/ ctx[8].finished && create_if_block_2(ctx);
+    	let if_block = !/*game*/ ctx[5].finished && create_if_block_2(ctx);
 
     	const block = {
     		c: function create() {
@@ -9571,7 +8866,7 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (!/*game*/ ctx[8].finished) {
+    			if (!/*game*/ ctx[5].finished) {
     				if (if_block) {
     					if_block.p(ctx, dirty);
     				} else {
@@ -9594,28 +8889,28 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(92:4) {#each $userGames as game}",
+    		source: "(41:4) {#each $userGames as game}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (100:8) {#if game.finished}
+    // (49:8) {#if game.finished}
     function create_if_block_1(ctx) {
     	let button;
-    	let t0_value = /*game*/ ctx[8].priPlayer + "";
+    	let t0_value = /*game*/ ctx[5].priPlayer + "";
     	let t0;
     	let t1;
-    	let t2_value = /*game*/ ctx[8].secPlayer + "";
+    	let t2_value = /*game*/ ctx[5].secPlayer + "";
     	let t2;
     	let t3;
-    	let t4_value = /*game*/ ctx[8].date + "";
+    	let t4_value = /*game*/ ctx[5].date + "";
     	let t4;
     	let dispose;
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[7](/*game*/ ctx[8], ...args);
+    		return /*click_handler_1*/ ctx[4](/*game*/ ctx[5], ...args);
     	}
 
     	const block = {
@@ -9627,7 +8922,7 @@ var app = (function () {
     			t3 = text(" - ");
     			t4 = text(t4_value);
     			attr_dev(button, "class", "btn btn-light svelte-4eh53h");
-    			add_location(button, file, 100, 12, 3457);
+    			add_location(button, file, 49, 12, 1815);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -9641,9 +8936,9 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty & /*$userGames*/ 1 && t0_value !== (t0_value = /*game*/ ctx[8].priPlayer + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*$userGames*/ 1 && t2_value !== (t2_value = /*game*/ ctx[8].secPlayer + "")) set_data_dev(t2, t2_value);
-    			if (dirty & /*$userGames*/ 1 && t4_value !== (t4_value = /*game*/ ctx[8].date + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*$userGames*/ 1 && t0_value !== (t0_value = /*game*/ ctx[5].priPlayer + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*$userGames*/ 1 && t2_value !== (t2_value = /*game*/ ctx[5].secPlayer + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*$userGames*/ 1 && t4_value !== (t4_value = /*game*/ ctx[5].date + "")) set_data_dev(t4, t4_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(button);
@@ -9655,17 +8950,17 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(100:8) {#if game.finished}",
+    		source: "(49:8) {#if game.finished}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (99:4) {#each $userGames as game}
+    // (48:4) {#each $userGames as game}
     function create_each_block(ctx) {
     	let if_block_anchor;
-    	let if_block = /*game*/ ctx[8].finished && create_if_block_1(ctx);
+    	let if_block = /*game*/ ctx[5].finished && create_if_block_1(ctx);
 
     	const block = {
     		c: function create() {
@@ -9677,7 +8972,7 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (/*game*/ ctx[8].finished) {
+    			if (/*game*/ ctx[5].finished) {
     				if (if_block) {
     					if_block.p(ctx, dirty);
     				} else {
@@ -9700,7 +8995,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(99:4) {#each $userGames as game}",
+    		source: "(48:4) {#each $userGames as game}",
     		ctx
     	});
 
@@ -9764,97 +9059,33 @@ var app = (function () {
 
     function instance($$self, $$props, $$invalidate) {
     	let $currUser;
-    	let $gameHistory;
-    	let $gameBoard;
     	let $userGames;
     	validate_store(currUser, "currUser");
-    	component_subscribe($$self, currUser, $$value => $$invalidate(3, $currUser = $$value));
-    	validate_store(gameHistory, "gameHistory");
-    	component_subscribe($$self, gameHistory, $$value => $$invalidate(4, $gameHistory = $$value));
-    	validate_store(gameBoard, "gameBoard");
-    	component_subscribe($$self, gameBoard, $$value => $$invalidate(5, $gameBoard = $$value));
+    	component_subscribe($$self, currUser, $$value => $$invalidate(2, $currUser = $$value));
     	validate_store(userGames, "userGames");
     	component_subscribe($$self, userGames, $$value => $$invalidate(0, $userGames = $$value));
 
-    	function resumeGame(game) {
-    		if (game.priGameHistory.length > 0 || game.secGameHistory.length > 0) {
-    			let gameStates = game.priEmail == $currUser.email
-    			? game.priGameHistory
-    			: game.secGameHistory;
-
-    			console.log(gameStates[gameStates.length - 1]);
-    			gameBoard.set(new Board(gameStates[gameStates.length - 1], null));
-    			$gameHistory.set(gameStates);
-    		} else {
-    			if (game.priEmail == $currUser.email) {
-    				gameBoard.set(new Board(null, false));
-    				$gameHistory.push($gameBoard.saveBoardState());
-    			}
-
-    			if (game.secEmail == $currUser.email) {
-    				gameBoard.set(new Board(null, true));
-    				$gameHistory.push($gameBoard.saveBoardState());
-    			}
-    		}
-
-    		gameChat.set(game.chatHistory);
-
-    		gamePref.update(state => {
-    			state = {};
-    			state.id = game.id;
-    			state.time = game.time;
-    			state.timer = game.time;
-    			state.pri = game.priPlayer;
-    			state.sec = game.secPlayer;
-    			state.currPlayer = game.currPlayer;
-
-    			state.numMoves = game.priEmail == $currUser.email
-    			? game.priGameHistory.length
-    			: game.secGameHistory.length;
-
-    			state.rangeMoves = game.priEmail == $currUser.email
-    			? game.priGameHistory.length
-    			: game.secGameHistory.length;
-
-    			state.paused = true;
-    			state.finished = false;
-    			state.side = game.priEmail == $currUser.email ? "red" : "black";
-    			state.secondsPlayed = game.minutesPlayed * 60;
-    			return state;
-    		});
-
-    		page.set(1);
-    		gameTab.set(0);
-    	}
-
-    	function reviewGame(game) {
+    	function getGame(game, resume) {
     		let gameStates = game.priEmail == $currUser.email
-    		? game.priGameHistory
-    		: game.secGameHistory;
+    		? JSON.parse(game.priGameHistory)
+    		: JSON.parse(game.secGameHistory);
 
     		gameBoard.set(new Board(gameStates[gameStates.length - 1], null));
-    		$gameHistory.set(gameStates);
-    		gameChat.set(game.chatHistory);
+    		gameHistory.set(gameStates);
+    		gameChat.set(JSON.parse(game.chatHistory));
 
     		gamePref.update(state => {
     			state = {};
     			state.id = game.id;
     			state.time = game.time;
     			state.timer = game.time;
-    			state.pri = game.priPlayer;
-    			state.sec = game.secPlayer;
+    			state.pri = game.priEmail == $currUser.email ? $currUser.name : null;
+    			state.sec = game.secEmail == $currUser.email ? $currUser.name : null;
     			state.currPlayer = game.currPlayer;
-
-    			state.numMoves = game.priEmail == $currUser.email
-    			? game.priGameHistory.length
-    			: game.secGameHistory.length;
-
-    			state.rangeMoves = game.priEmail == $currUser.email
-    			? game.priGameHistory.length
-    			: game.secGameHistory.length;
-
-    			state.paused = false;
-    			state.finished = true;
+    			state.numMoves = gameStates.length;
+    			state.rangeMoves = gameStates.length;
+    			state.paused = resume == true ? true : false;
+    			state.finished = resume == true ? false : true;
     			state.side = game.priEmail == $currUser.email ? "red" : "black";
     			state.secondsPlayed = game.minutesPlayed * 60;
     			return state;
@@ -9867,13 +9098,13 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<GameList> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<GameList> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("GameList", $$slots, []);
-    	const click_handler = game => resumeGame(game);
-    	const click_handler_1 = game => reviewGame(game);
+    	const click_handler = game => getGame(game, true);
+    	const click_handler_1 = game => getGame(game, false);
 
     	$$self.$capture_state = () => ({
     		userGames,
@@ -9885,24 +9116,12 @@ var app = (function () {
     		gameHistory,
     		gameChat,
     		Board,
-    		resumeGame,
-    		reviewGame,
+    		getGame,
     		$currUser,
-    		$gameHistory,
-    		$gameBoard,
     		$userGames
     	});
 
-    	return [
-    		$userGames,
-    		resumeGame,
-    		reviewGame,
-    		$currUser,
-    		$gameHistory,
-    		$gameBoard,
-    		click_handler,
-    		click_handler_1
-    	];
+    	return [$userGames, getGame, $currUser, click_handler, click_handler_1];
     }
 
     class GameList extends SvelteComponentDev {
@@ -9919,9 +9138,9 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/settings.svelte generated by Svelte v3.22.2 */
+    /* src/Components/settings.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$1 } = globals;
+    const { console: console_1 } = globals;
     const file$1 = "src/Components/settings.svelte";
 
     function create_fragment$1(ctx) {
@@ -10314,7 +9533,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Settings> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<Settings> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -10403,9 +9622,9 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gamePref.svelte generated by Svelte v3.22.2 */
+    /* src/Components/gamePref.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$2 } = globals;
+    const { console: console_1$1 } = globals;
     const file$2 = "src/Components/gamePref.svelte";
 
     function create_fragment$2(ctx) {
@@ -10570,7 +9789,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<GamePref> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<GamePref> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -10632,9 +9851,9 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gamePass.svelte generated by Svelte v3.22.2 */
+    /* src/Components/gamePass.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$3 } = globals;
+    const { console: console_1$2 } = globals;
     const file$3 = "src/Components/gamePass.svelte";
 
     function create_fragment$3(ctx) {
@@ -10664,16 +9883,16 @@ var app = (function () {
     			button1 = element("button");
     			button1.textContent = "Find A Random Game";
     			attr_dev(h5, "class", "svelte-uoxtb0");
-    			add_location(h5, file$3, 64, 0, 2122);
+    			add_location(h5, file$3, 64, 0, 2112);
     			attr_dev(input, "placeholder", "Game Password");
     			attr_dev(input, "class", "svelte-uoxtb0");
-    			add_location(input, file$3, 66, 0, 2148);
+    			add_location(input, file$3, 66, 0, 2138);
     			attr_dev(button0, "class", "btn btn-primary svelte-uoxtb0");
     			set_style(button0, "margin-bottom", "30px");
-    			add_location(button0, file$3, 68, 0, 2216);
-    			add_location(hr, file$3, 70, 0, 2315);
+    			add_location(button0, file$3, 68, 0, 2206);
+    			add_location(hr, file$3, 70, 0, 2305);
     			attr_dev(button1, "class", "btn btn-primary svelte-uoxtb0");
-    			add_location(button1, file$3, 72, 0, 2324);
+    			add_location(button1, file$3, 72, 0, 2314);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -10764,7 +9983,7 @@ var app = (function () {
     							state.time = game.time;
     							state.timer = game.time;
     							state.id = gamePassword;
-    							state.pri = game.priPlayer;
+    							state.pri = null;
     							state.sec = game.secPlayer;
     							state.currPlayer = null;
     							state.numMoves = 0;
@@ -10793,7 +10012,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<GamePass> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<GamePass> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -10856,9 +10075,9 @@ var app = (function () {
     	}
     }
 
-    /* src/Pages/dashBoard.svelte generated by Svelte v3.22.2 */
+    /* src/Pages/dashBoard.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$4 } = globals;
+    const { console: console_1$3 } = globals;
     const file$4 = "src/Pages/dashBoard.svelte";
 
     // (96:0) {#if popUp}
@@ -11618,7 +10837,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<DashBoard> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<DashBoard> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -11806,7 +11025,7 @@ var app = (function () {
         return spring;
     }
 
-    /* src/Components/typeIndicator.svelte generated by Svelte v3.22.2 */
+    /* src/Components/typeIndicator.svelte generated by Svelte v3.22.3 */
 
     const file$5 = "src/Components/typeIndicator.svelte";
 
@@ -11903,7 +11122,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gameChat.svelte generated by Svelte v3.22.2 */
+    /* src/Components/gameChat.svelte generated by Svelte v3.22.3 */
     const file$6 = "src/Components/gameChat.svelte";
 
     function get_each_context$1(ctx, list, i) {
@@ -11924,7 +11143,7 @@ var app = (function () {
     			t = text(t_value);
     			set_style(h4, "text-align", "center");
     			attr_dev(h4, "class", "svelte-12nht46");
-    			add_location(h4, file$6, 63, 8, 1871);
+    			add_location(h4, file$6, 63, 8, 1898);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h4, anchor);
@@ -11949,7 +11168,7 @@ var app = (function () {
     	return block;
     }
 
-    // (61:36) 
+    // (61:61) 
     function create_if_block_3$1(ctx) {
     	let h4;
 
@@ -11959,7 +11178,7 @@ var app = (function () {
     			h4.textContent = "Waiting for other player";
     			attr_dev(h4, "class", "blinking svelte-12nht46");
     			set_style(h4, "text-align", "center");
-    			add_location(h4, file$6, 61, 8, 1772);
+    			add_location(h4, file$6, 61, 8, 1799);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h4, anchor);
@@ -11974,7 +11193,7 @@ var app = (function () {
     		block,
     		id: create_if_block_3$1.name,
     		type: "if",
-    		source: "(61:36) ",
+    		source: "(61:61) ",
     		ctx
     	});
 
@@ -11993,7 +11212,7 @@ var app = (function () {
     			t = text(t_value);
     			set_style(h4, "text-align", "center");
     			attr_dev(h4, "class", "svelte-12nht46");
-    			add_location(h4, file$6, 59, 8, 1674);
+    			add_location(h4, file$6, 59, 8, 1676);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h4, anchor);
@@ -12031,9 +11250,9 @@ var app = (function () {
     			span = element("span");
     			t = text(t_value);
     			attr_dev(span, "class", "txtMsg svelte-12nht46");
-    			add_location(span, file$6, 74, 20, 2282);
+    			add_location(span, file$6, 74, 20, 2309);
     			attr_dev(article, "class", "odaMsg svelte-12nht46");
-    			add_location(article, file$6, 73, 16, 2236);
+    			add_location(article, file$6, 73, 16, 2263);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, article, anchor);
@@ -12072,9 +11291,9 @@ var app = (function () {
     			span = element("span");
     			t = text(t_value);
     			attr_dev(span, "class", "txtMsg svelte-12nht46");
-    			add_location(span, file$6, 70, 20, 2129);
+    			add_location(span, file$6, 70, 20, 2156);
     			attr_dev(article, "class", "myMsg svelte-12nht46");
-    			add_location(article, file$6, 69, 16, 2084);
+    			add_location(article, file$6, 69, 16, 2111);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, article, anchor);
@@ -12163,7 +11382,7 @@ var app = (function () {
     			create_component(indicator.$$.fragment);
     			attr_dev(span, "class", "txtMsg svelte-12nht46");
     			attr_dev(span, "id", "isTypingSpan");
-    			add_location(span, file$6, 80, 16, 2480);
+    			add_location(span, file$6, 80, 16, 2507);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -12209,7 +11428,7 @@ var app = (function () {
 
     	function select_block_type(ctx, dirty) {
     		if (/*$gamePref*/ ctx[3].pri == /*$currUser*/ ctx[4].name && /*$gamePref*/ ctx[3].sec != null) return create_if_block_2$2;
-    		if (/*$gamePref*/ ctx[3].sec == null) return create_if_block_3$1;
+    		if (/*$gamePref*/ ctx[3].sec == null || /*$gamePref*/ ctx[3].pri == null) return create_if_block_3$1;
     		return create_else_block_1;
     	}
 
@@ -12243,16 +11462,16 @@ var app = (function () {
     			input = element("input");
     			attr_dev(article, "class", "odaMsg svelte-12nht46");
     			attr_dev(article, "id", "isTyping");
-    			add_location(article, file$6, 78, 8, 2396);
+    			add_location(article, file$6, 78, 8, 2423);
     			attr_dev(div0, "class", "scrollable svelte-12nht46");
-    			add_location(div0, file$6, 66, 4, 1940);
+    			add_location(div0, file$6, 66, 4, 1967);
     			attr_dev(input, "id", "user-msg");
     			attr_dev(input, "placeholder", "Type Here");
     			attr_dev(input, "class", "svelte-12nht46");
-    			add_location(input, file$6, 85, 4, 2597);
+    			add_location(input, file$6, 85, 4, 2624);
     			attr_dev(div1, "id", "chat");
     			attr_dev(div1, "class", "container-fluid svelte-12nht46");
-    			add_location(div1, file$6, 57, 0, 1560);
+    			add_location(div1, file$6, 57, 0, 1562);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -12392,7 +11611,7 @@ var app = (function () {
     	let message;
     	let isTyping = false;
 
-    	if ($gamePref.pri == $currUser.name && $gameChat.length == 0 && $gamePref.sec == null && screen.width >= 800) $gameChat.push({
+    	if ($gamePref.pri == $currUser.name && $gamePref.numMoves == 0 && $gamePref.sec == null && screen.width >= 800) $gameChat.push({
     		name: "System",
     		msg: "Please share Game Password '" + $gamePref.id + "' with other player"
     	});
@@ -12531,25 +11750,25 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/gameBoard.svelte generated by Svelte v3.22.2 */
+    /* src/Components/gameBoard.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$5 } = globals;
+    const { console: console_1$4 } = globals;
 
     const file$7 = "src/Components/gameBoard.svelte";
 
     function get_each_context_1$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[39] = list[i];
+    	child_ctx[40] = list[i];
     	return child_ctx;
     }
 
     function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[36] = list[i];
+    	child_ctx[37] = list[i];
     	return child_ctx;
     }
 
-    // (372:0) {#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800}
+    // (370:0) {#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800 && $gamePref.numMoves == 0}
     function create_if_block_10(ctx) {
     	let div;
     	let h5;
@@ -12569,10 +11788,10 @@ var app = (function () {
     			t2 = text("' with other player");
     			set_style(h5, "text-align", "center");
     			set_style(h5, "margin-top", "50%");
-    			add_location(h5, file$7, 373, 2, 10171);
+    			add_location(h5, file$7, 371, 2, 10055);
     			attr_dev(div, "id", "popUp");
     			attr_dev(div, "class", "container-fluid svelte-12fbbq6");
-    			add_location(div, file$7, 372, 1, 10085);
+    			add_location(div, file$7, 370, 1, 9969);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -12610,14 +11829,14 @@ var app = (function () {
     		block,
     		id: create_if_block_10.name,
     		type: "if",
-    		source: "(372:0) {#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800}",
+    		source: "(370:0) {#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800 && $gamePref.numMoves == 0}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (382:40) 
+    // (380:40) 
     function create_if_block_9(ctx) {
     	let div;
 
@@ -12625,7 +11844,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			attr_dev(div, "class", "checker reda svelte-12fbbq6");
-    			add_location(div, file$7, 382, 1, 10456);
+    			add_location(div, file$7, 380, 1, 10340);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -12639,14 +11858,14 @@ var app = (function () {
     		block,
     		id: create_if_block_9.name,
     		type: "if",
-    		source: "(382:40) ",
+    		source: "(380:40) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (380:0) {#if $gamePref.currPlayer == "black"}
+    // (378:0) {#if $gamePref.currPlayer == "black"}
     function create_if_block_8(ctx) {
     	let div;
 
@@ -12654,7 +11873,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			attr_dev(div, "class", "checker blacka svelte-12fbbq6");
-    			add_location(div, file$7, 380, 1, 10379);
+    			add_location(div, file$7, 378, 1, 10263);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -12668,14 +11887,14 @@ var app = (function () {
     		block,
     		id: create_if_block_8.name,
     		type: "if",
-    		source: "(380:0) {#if $gamePref.currPlayer == \\\"black\\\"}",
+    		source: "(378:0) {#if $gamePref.currPlayer == \\\"black\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (388:0) {#if screenWidth > 800}
+    // (386:0) {#if screenWidth > 800}
     function create_if_block_7$1(ctx) {
     	let h2;
     	let t0;
@@ -12689,7 +11908,7 @@ var app = (function () {
     			t1 = text(t1_value);
     			attr_dev(h2, "id", "time");
     			attr_dev(h2, "class", "svelte-12fbbq6");
-    			add_location(h2, file$7, 388, 1, 10570);
+    			add_location(h2, file$7, 386, 1, 10454);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h2, anchor);
@@ -12708,17 +11927,17 @@ var app = (function () {
     		block,
     		id: create_if_block_7$1.name,
     		type: "if",
-    		source: "(388:0) {#if screenWidth > 800}",
+    		source: "(386:0) {#if screenWidth > 800}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (399:39) 
+    // (397:39) 
     function create_if_block_5$1(ctx) {
     	let if_block_anchor;
-    	let if_block = (/*i*/ ctx[36] % 2 != 0 && /*j*/ ctx[39] % 2 == 0 || /*i*/ ctx[36] % 2 == 0 && /*j*/ ctx[39] % 2 != 0) && create_if_block_6$1(ctx);
+    	let if_block = (/*i*/ ctx[37] % 2 != 0 && /*j*/ ctx[40] % 2 == 0 || /*i*/ ctx[37] % 2 == 0 && /*j*/ ctx[40] % 2 != 0) && create_if_block_6$1(ctx);
 
     	const block = {
     		c: function create() {
@@ -12730,7 +11949,7 @@ var app = (function () {
     			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, dirty) {
-    			if (/*i*/ ctx[36] % 2 != 0 && /*j*/ ctx[39] % 2 == 0 || /*i*/ ctx[36] % 2 == 0 && /*j*/ ctx[39] % 2 != 0) if_block.p(ctx, dirty);
+    			if (/*i*/ ctx[37] % 2 != 0 && /*j*/ ctx[40] % 2 == 0 || /*i*/ ctx[37] % 2 == 0 && /*j*/ ctx[40] % 2 != 0) if_block.p(ctx, dirty);
     		},
     		d: function destroy(detaching) {
     			if (if_block) if_block.d(detaching);
@@ -12742,14 +11961,14 @@ var app = (function () {
     		block,
     		id: create_if_block_5$1.name,
     		type: "if",
-    		source: "(399:39) ",
+    		source: "(397:39) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (396:4) {#if !$gameBoard.isEmpty(i, j)}
+    // (394:4) {#if !$gameBoard.isEmpty(i, j)}
     function create_if_block_4$1(ctx) {
     	let rect;
     	let rect_x_value;
@@ -12764,7 +11983,7 @@ var app = (function () {
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[32](/*i*/ ctx[36], /*j*/ ctx[39], ...args);
+    		return /*click_handler*/ ctx[33](/*i*/ ctx[37], /*j*/ ctx[40], ...args);
     	}
 
     	const block = {
@@ -12774,18 +11993,18 @@ var app = (function () {
     			attr_dev(rect, "width", /*squareSize*/ ctx[1]);
     			attr_dev(rect, "height", /*squareSize*/ ctx[1]);
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[39] * /*squareSize*/ ctx[1]);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[36] * /*squareSize*/ ctx[1]);
-    			add_location(rect, file$7, 396, 5, 10744);
-    			attr_dev(circle, "class", circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[36], /*j*/ ctx[39])) + " svelte-12fbbq6"));
-    			attr_dev(circle, "id", circle_id_value = /*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39]));
-    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39])].y);
-    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39])].x);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[40] * /*squareSize*/ ctx[1]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[37] * /*squareSize*/ ctx[1]);
+    			add_location(rect, file$7, 394, 5, 10628);
+    			attr_dev(circle, "class", circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[37], /*j*/ ctx[40])) + " svelte-12fbbq6"));
+    			attr_dev(circle, "id", circle_id_value = /*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40]));
+    			attr_dev(circle, "cx", circle_cx_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40])].y);
+    			attr_dev(circle, "cy", circle_cy_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40])].x);
     			attr_dev(circle, "r", /*$size*/ ctx[6]);
     			attr_dev(circle, "stroke", "white");
-    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*$gameBoard*/ ctx[4].getPiece(/*i*/ ctx[36], /*j*/ ctx[39]).stack * 2);
-    			attr_dev(circle, "fill", circle_fill_value = /*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[36], /*j*/ ctx[39]));
-    			add_location(circle, file$7, 397, 5, 10862);
+    			attr_dev(circle, "stroke-width", circle_stroke_width_value = /*$gameBoard*/ ctx[4].getPiece(/*i*/ ctx[37], /*j*/ ctx[40]).stack * 2);
+    			attr_dev(circle, "fill", circle_fill_value = /*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[37], /*j*/ ctx[40]));
+    			add_location(circle, file$7, 395, 5, 10746);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -12804,27 +12023,27 @@ var app = (function () {
     				attr_dev(rect, "height", /*squareSize*/ ctx[1]);
     			}
 
-    			if (dirty[0] & /*squareSize*/ 2 && rect_x_value !== (rect_x_value = /*j*/ ctx[39] * /*squareSize*/ ctx[1])) {
+    			if (dirty[0] & /*squareSize*/ 2 && rect_x_value !== (rect_x_value = /*j*/ ctx[40] * /*squareSize*/ ctx[1])) {
     				attr_dev(rect, "x", rect_x_value);
     			}
 
-    			if (dirty[0] & /*squareSize*/ 2 && rect_y_value !== (rect_y_value = /*i*/ ctx[36] * /*squareSize*/ ctx[1])) {
+    			if (dirty[0] & /*squareSize*/ 2 && rect_y_value !== (rect_y_value = /*i*/ ctx[37] * /*squareSize*/ ctx[1])) {
     				attr_dev(rect, "y", rect_y_value);
     			}
 
-    			if (dirty[0] & /*$gameBoard*/ 16 && circle_class_value !== (circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[36], /*j*/ ctx[39])) + " svelte-12fbbq6"))) {
+    			if (dirty[0] & /*$gameBoard*/ 16 && circle_class_value !== (circle_class_value = "" + (null_to_empty(/*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[37], /*j*/ ctx[40])) + " svelte-12fbbq6"))) {
     				attr_dev(circle, "class", circle_class_value);
     			}
 
-    			if (dirty[0] & /*$gameBoard*/ 16 && circle_id_value !== (circle_id_value = /*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39]))) {
+    			if (dirty[0] & /*$gameBoard*/ 16 && circle_id_value !== (circle_id_value = /*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40]))) {
     				attr_dev(circle, "id", circle_id_value);
     			}
 
-    			if (dirty[0] & /*$cirPos, $gameBoard*/ 48 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39])].y)) {
+    			if (dirty[0] & /*$cirPos, $gameBoard*/ 48 && circle_cx_value !== (circle_cx_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40])].y)) {
     				attr_dev(circle, "cx", circle_cx_value);
     			}
 
-    			if (dirty[0] & /*$cirPos, $gameBoard*/ 48 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[36], /*j*/ ctx[39])].x)) {
+    			if (dirty[0] & /*$cirPos, $gameBoard*/ 48 && circle_cy_value !== (circle_cy_value = /*$cirPos*/ ctx[5][/*$gameBoard*/ ctx[4].getId(/*i*/ ctx[37], /*j*/ ctx[40])].x)) {
     				attr_dev(circle, "cy", circle_cy_value);
     			}
 
@@ -12832,11 +12051,11 @@ var app = (function () {
     				attr_dev(circle, "r", /*$size*/ ctx[6]);
     			}
 
-    			if (dirty[0] & /*$gameBoard*/ 16 && circle_stroke_width_value !== (circle_stroke_width_value = /*$gameBoard*/ ctx[4].getPiece(/*i*/ ctx[36], /*j*/ ctx[39]).stack * 2)) {
+    			if (dirty[0] & /*$gameBoard*/ 16 && circle_stroke_width_value !== (circle_stroke_width_value = /*$gameBoard*/ ctx[4].getPiece(/*i*/ ctx[37], /*j*/ ctx[40]).stack * 2)) {
     				attr_dev(circle, "stroke-width", circle_stroke_width_value);
     			}
 
-    			if (dirty[0] & /*$gameBoard*/ 16 && circle_fill_value !== (circle_fill_value = /*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[36], /*j*/ ctx[39]))) {
+    			if (dirty[0] & /*$gameBoard*/ 16 && circle_fill_value !== (circle_fill_value = /*$gameBoard*/ ctx[4].getSide(/*i*/ ctx[37], /*j*/ ctx[40]))) {
     				attr_dev(circle, "fill", circle_fill_value);
     			}
     		},
@@ -12851,14 +12070,14 @@ var app = (function () {
     		block,
     		id: create_if_block_4$1.name,
     		type: "if",
-    		source: "(396:4) {#if !$gameBoard.isEmpty(i, j)}",
+    		source: "(394:4) {#if !$gameBoard.isEmpty(i, j)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (400:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
+    // (398:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
     function create_if_block_6$1(ctx) {
     	let rect;
     	let rect_x_value;
@@ -12866,7 +12085,7 @@ var app = (function () {
     	let dispose;
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[33](/*i*/ ctx[36], /*j*/ ctx[39], ...args);
+    		return /*click_handler_1*/ ctx[34](/*i*/ ctx[37], /*j*/ ctx[40], ...args);
     	}
 
     	const block = {
@@ -12875,9 +12094,9 @@ var app = (function () {
     			attr_dev(rect, "width", /*squareSize*/ ctx[1]);
     			attr_dev(rect, "height", /*squareSize*/ ctx[1]);
     			set_style(rect, "fill", "brown");
-    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[39] * /*squareSize*/ ctx[1]);
-    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[36] * /*squareSize*/ ctx[1]);
-    			add_location(rect, file$7, 400, 24, 11323);
+    			attr_dev(rect, "x", rect_x_value = /*j*/ ctx[40] * /*squareSize*/ ctx[1]);
+    			attr_dev(rect, "y", rect_y_value = /*i*/ ctx[37] * /*squareSize*/ ctx[1]);
+    			add_location(rect, file$7, 398, 24, 11207);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, rect, anchor);
@@ -12895,11 +12114,11 @@ var app = (function () {
     				attr_dev(rect, "height", /*squareSize*/ ctx[1]);
     			}
 
-    			if (dirty[0] & /*squareSize*/ 2 && rect_x_value !== (rect_x_value = /*j*/ ctx[39] * /*squareSize*/ ctx[1])) {
+    			if (dirty[0] & /*squareSize*/ 2 && rect_x_value !== (rect_x_value = /*j*/ ctx[40] * /*squareSize*/ ctx[1])) {
     				attr_dev(rect, "x", rect_x_value);
     			}
 
-    			if (dirty[0] & /*squareSize*/ 2 && rect_y_value !== (rect_y_value = /*i*/ ctx[36] * /*squareSize*/ ctx[1])) {
+    			if (dirty[0] & /*squareSize*/ 2 && rect_y_value !== (rect_y_value = /*i*/ ctx[37] * /*squareSize*/ ctx[1])) {
     				attr_dev(rect, "y", rect_y_value);
     			}
     		},
@@ -12913,23 +12132,23 @@ var app = (function () {
     		block,
     		id: create_if_block_6$1.name,
     		type: "if",
-    		source: "(400:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
+    		source: "(398:20) {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (395:3) {#each squares as j}
+    // (393:3) {#each squares as j}
     function create_each_block_1$1(ctx) {
     	let show_if;
     	let show_if_1;
     	let if_block_anchor;
 
     	function select_block_type_1(ctx, dirty) {
-    		if (show_if == null || dirty[0] & /*$gameBoard*/ 16) show_if = !!!/*$gameBoard*/ ctx[4].isEmpty(/*i*/ ctx[36], /*j*/ ctx[39]);
+    		if (show_if == null || dirty[0] & /*$gameBoard*/ 16) show_if = !!!/*$gameBoard*/ ctx[4].isEmpty(/*i*/ ctx[37], /*j*/ ctx[40]);
     		if (show_if) return create_if_block_4$1;
-    		if (show_if_1 == null || dirty[0] & /*$gameBoard*/ 16) show_if_1 = !!/*$gameBoard*/ ctx[4].isEmpty(/*i*/ ctx[36], /*j*/ ctx[39]);
+    		if (show_if_1 == null || dirty[0] & /*$gameBoard*/ 16) show_if_1 = !!/*$gameBoard*/ ctx[4].isEmpty(/*i*/ ctx[37], /*j*/ ctx[40]);
     		if (show_if_1) return create_if_block_5$1;
     	}
 
@@ -12971,14 +12190,14 @@ var app = (function () {
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(395:3) {#each squares as j}",
+    		source: "(393:3) {#each squares as j}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (394:2) {#each squares as i}
+    // (392:2) {#each squares as i}
     function create_each_block$2(ctx) {
     	let each_1_anchor;
     	let each_value_1 = /*squares*/ ctx[9];
@@ -13039,14 +12258,14 @@ var app = (function () {
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(394:2) {#each squares as i}",
+    		source: "(392:2) {#each squares as i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (410:0) {#if screenWidth <= 800}
+    // (408:0) {#if screenWidth <= 800}
     function create_if_block_3$2(ctx) {
     	let h1;
     	let t0;
@@ -13060,7 +12279,7 @@ var app = (function () {
     			t1 = text(t1_value);
     			attr_dev(h1, "id", "time");
     			attr_dev(h1, "class", "svelte-12fbbq6");
-    			add_location(h1, file$7, 410, 1, 11606);
+    			add_location(h1, file$7, 408, 1, 11490);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h1, anchor);
@@ -13079,14 +12298,14 @@ var app = (function () {
     		block,
     		id: create_if_block_3$2.name,
     		type: "if",
-    		source: "(410:0) {#if screenWidth <= 800}",
+    		source: "(408:0) {#if screenWidth <= 800}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (414:0) {#if $gamePref.finished}
+    // (412:0) {#if $gamePref.finished}
     function create_if_block_2$3(ctx) {
     	let div;
     	let h2;
@@ -13109,17 +12328,17 @@ var app = (function () {
     			input = element("input");
     			attr_dev(h2, "id", "rangeBar");
     			attr_dev(h2, "class", "svelte-12fbbq6");
-    			add_location(h2, file$7, 415, 2, 11702);
+    			add_location(h2, file$7, 413, 2, 11586);
     			attr_dev(input, "class", "custom-range svelte-12fbbq6");
     			input.disabled = input_disabled_value = !/*$gamePref*/ ctx[2].paused;
     			attr_dev(input, "type", "range");
     			attr_dev(input, "min", "0");
     			attr_dev(input, "max", input_max_value = /*$gamePref*/ ctx[2].numMoves);
     			attr_dev(input, "step", "1");
-    			add_location(input, file$7, 416, 2, 11770);
+    			add_location(input, file$7, 414, 2, 11654);
     			attr_dev(div, "id", "state");
     			attr_dev(div, "class", "svelte-12fbbq6");
-    			add_location(div, file$7, 414, 1, 11683);
+    			add_location(div, file$7, 412, 1, 11567);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div, anchor);
@@ -13133,8 +12352,8 @@ var app = (function () {
 
     			dispose = [
     				listen_dev(input, "change", /*viewBoardHistory*/ ctx[12], false, false, false),
-    				listen_dev(input, "change", /*input_change_input_handler*/ ctx[34]),
-    				listen_dev(input, "input", /*input_change_input_handler*/ ctx[34])
+    				listen_dev(input, "change", /*input_change_input_handler*/ ctx[35]),
+    				listen_dev(input, "input", /*input_change_input_handler*/ ctx[35])
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -13162,14 +12381,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2$3.name,
     		type: "if",
-    		source: "(414:0) {#if $gamePref.finished}",
+    		source: "(412:0) {#if $gamePref.finished}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (421:0) {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer}
+    // (419:0) {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.pri != null && $gamePref.sec != null}
     function create_if_block_1$3(ctx) {
     	let button;
     	let t1;
@@ -13181,7 +12400,7 @@ var app = (function () {
     			button.textContent = "Start Game";
     			t1 = text("\\");
     			attr_dev(button, "class", "btn btn-success pause svelte-12fbbq6");
-    			add_location(button, file$7, 421, 4, 12037);
+    			add_location(button, file$7, 419, 4, 11971);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -13201,14 +12420,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1$3.name,
     		type: "if",
-    		source: "(421:0) {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer}",
+    		source: "(419:0) {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.pri != null && $gamePref.sec != null}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (425:0) {#if $gamePref.side == $gamePref.currPlayer}
+    // (423:0) {#if $gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0}
     function create_if_block$3(ctx) {
     	let button0;
     	let t1;
@@ -13223,9 +12442,9 @@ var app = (function () {
     			button1 = element("button");
     			button1.textContent = "Save Game";
     			attr_dev(button0, "class", "btn btn-info switch svelte-12fbbq6");
-    			add_location(button0, file$7, 425, 1, 12172);
+    			add_location(button0, file$7, 423, 1, 12132);
     			attr_dev(button1, "class", "btn btn-primary save svelte-12fbbq6");
-    			add_location(button1, file$7, 427, 1, 12258);
+    			add_location(button1, file$7, 425, 1, 12217);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button0, anchor);
@@ -13235,7 +12454,7 @@ var app = (function () {
 
     			dispose = [
     				listen_dev(button0, "click", /*switchPlayer*/ ctx[13], false, false, false),
-    				listen_dev(button1, "click", /*click_handler_2*/ ctx[35], false, false, false)
+    				listen_dev(button1, "click", /*click_handler_2*/ ctx[36], false, false, false)
     			];
     		},
     		p: noop,
@@ -13251,7 +12470,7 @@ var app = (function () {
     		block,
     		id: create_if_block$3.name,
     		type: "if",
-    		source: "(425:0) {#if $gamePref.side == $gamePref.currPlayer}",
+    		source: "(423:0) {#if $gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0}",
     		ctx
     	});
 
@@ -13279,7 +12498,7 @@ var app = (function () {
     	let t11;
     	let if_block6_anchor;
     	let current;
-    	let if_block0 = /*$gamePref*/ ctx[2].pri == /*$currUser*/ ctx[3].name && /*$gamePref*/ ctx[2].sec == null && /*screenWidth*/ ctx[7] < 800 && create_if_block_10(ctx);
+    	let if_block0 = /*$gamePref*/ ctx[2].pri == /*$currUser*/ ctx[3].name && /*$gamePref*/ ctx[2].sec == null && /*screenWidth*/ ctx[7] < 800 && /*$gamePref*/ ctx[2].numMoves == 0 && create_if_block_10(ctx);
 
     	function select_block_type(ctx, dirty) {
     		if (/*$gamePref*/ ctx[2].currPlayer == "black") return create_if_block_8;
@@ -13299,8 +12518,8 @@ var app = (function () {
 
     	let if_block3 = /*screenWidth*/ ctx[7] <= 800 && create_if_block_3$2(ctx);
     	let if_block4 = /*$gamePref*/ ctx[2].finished && create_if_block_2$3(ctx);
-    	let if_block5 = /*$gamePref*/ ctx[2].paused && /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && create_if_block_1$3(ctx);
-    	let if_block6 = /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && create_if_block$3(ctx);
+    	let if_block5 = /*$gamePref*/ ctx[2].paused && /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && /*$gamePref*/ ctx[2].pri != null && /*$gamePref*/ ctx[2].sec != null && create_if_block_1$3(ctx);
+    	let if_block6 = /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && /*$gamePref*/ ctx[2].numMoves > 0 && create_if_block$3(ctx);
 
     	const block = {
     		c: function create() {
@@ -13337,20 +12556,20 @@ var app = (function () {
     			if_block6_anchor = empty();
     			attr_dev(h20, "id", "player");
     			attr_dev(h20, "class", "svelte-12fbbq6");
-    			add_location(h20, file$7, 377, 0, 10302);
+    			add_location(h20, file$7, 375, 0, 10186);
     			attr_dev(h21, "id", "moves");
     			attr_dev(h21, "class", "svelte-12fbbq6");
-    			add_location(h21, file$7, 385, 0, 10496);
+    			add_location(h21, file$7, 383, 0, 10380);
     			attr_dev(use, "id", "use");
     			xlink_attr(use, "xlink:href", "#24");
-    			add_location(use, file$7, 405, 2, 11531);
-    			add_location(svg0, file$7, 406, 1, 11566);
+    			add_location(use, file$7, 403, 2, 11415);
+    			add_location(svg0, file$7, 404, 1, 11450);
     			attr_dev(svg1, "id", "hover");
     			attr_dev(svg1, "class", "svelte-12fbbq6");
-    			add_location(svg1, file$7, 392, 1, 10639);
+    			add_location(svg1, file$7, 390, 1, 10523);
     			attr_dev(div, "id", "board");
     			attr_dev(div, "class", "svelte-12fbbq6");
-    			add_location(div, file$7, 391, 0, 10621);
+    			add_location(div, file$7, 389, 0, 10505);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -13389,7 +12608,7 @@ var app = (function () {
     			current = true;
     		},
     		p: function update(ctx, dirty) {
-    			if (/*$gamePref*/ ctx[2].pri == /*$currUser*/ ctx[3].name && /*$gamePref*/ ctx[2].sec == null && /*screenWidth*/ ctx[7] < 800) {
+    			if (/*$gamePref*/ ctx[2].pri == /*$currUser*/ ctx[3].name && /*$gamePref*/ ctx[2].sec == null && /*screenWidth*/ ctx[7] < 800 && /*$gamePref*/ ctx[2].numMoves == 0) {
     				if (if_block0) {
     					if_block0.p(ctx, dirty);
 
@@ -13464,7 +12683,7 @@ var app = (function () {
     				if_block4 = null;
     			}
 
-    			if (/*$gamePref*/ ctx[2].paused && /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer) {
+    			if (/*$gamePref*/ ctx[2].paused && /*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && /*$gamePref*/ ctx[2].pri != null && /*$gamePref*/ ctx[2].sec != null) {
     				if (if_block5) {
     					if_block5.p(ctx, dirty);
     				} else {
@@ -13477,7 +12696,7 @@ var app = (function () {
     				if_block5 = null;
     			}
 
-    			if (/*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer) {
+    			if (/*$gamePref*/ ctx[2].side == /*$gamePref*/ ctx[2].currPlayer && /*$gamePref*/ ctx[2].numMoves > 0) {
     				if (if_block6) {
     					if_block6.p(ctx, dirty);
     				} else {
@@ -13557,16 +12776,16 @@ var app = (function () {
     	validate_store(currUser, "currUser");
     	component_subscribe($$self, currUser, $$value => $$invalidate(3, $currUser = $$value));
     	validate_store(currSocket, "currSocket");
-    	component_subscribe($$self, currSocket, $$value => $$invalidate(24, $currSocket = $$value));
+    	component_subscribe($$self, currSocket, $$value => $$invalidate(25, $currSocket = $$value));
     	validate_store(gameBoard, "gameBoard");
     	component_subscribe($$self, gameBoard, $$value => $$invalidate(4, $gameBoard = $$value));
     	validate_store(gameHistory, "gameHistory");
-    	component_subscribe($$self, gameHistory, $$value => $$invalidate(25, $gameHistory = $$value));
+    	component_subscribe($$self, gameHistory, $$value => $$invalidate(26, $gameHistory = $$value));
     	validate_store(gameChat, "gameChat");
-    	component_subscribe($$self, gameChat, $$value => $$invalidate(26, $gameChat = $$value));
+    	component_subscribe($$self, gameChat, $$value => $$invalidate(27, $gameChat = $$value));
     	$$self.$$.on_destroy.push(() => $$unsubscribe_size());
 
-    	if ($gamePref.pri == $currUser.name && $gamePref.currPlayer == null) {
+    	if ($gamePref.pri == $currUser.name && $gamePref.currPlayer == null && $gamePref.sec == null) {
     		gamePref.update(state => {
     			state.currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
     			return state;
@@ -13584,6 +12803,7 @@ var app = (function () {
     	component_subscribe($$self, cirPos, value => $$invalidate(5, $cirPos = value));
     	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
     	let squareSize, boardHeight, factor, btnWidth;
+    	let lastNumMoves = $gamePref.numMoves;
     	$currSocket.emit("set-username", $currUser.name);
     	$currSocket.emit("join-room", $gamePref.id, $currUser.name);
 
@@ -13821,45 +13041,44 @@ var app = (function () {
 
     	setInterval(
     		function () {
-    			if ($gamePref.secondsPlayed > $gamePref.timer) saveGame(true);
+    			if ($gamePref.numMoves > lastNumMoves) {
+    				saveGame(true);
+    				lastNumMoves = $gamePref.numMoves;
+    			}
     		},
     		300000
     	);
 
     	function saveGame(auto) {
-    		if ($gamePref.side == $gamePref.currPlayer) {
+    		if ($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) {
     			clearInterval(timeInterval);
 
     			let request = {
     				func: "saveGame",
     				gameID: $gamePref.id,
-    				gameHistory: $gameHistory,
-    				chatHistory: $gameChat,
+    				gameHistory: JSON.stringify($gameHistory),
+    				chatHistory: JSON.stringify($gameChat),
     				pri: $gamePref.pri == $currUser.name ? true : false,
     				sec: $gamePref.sec == $currUser.name ? true : false,
     				minutes: Math.floor($gamePref.secondsPlayed / 60),
-    				currPlayer: $gamePref.currPlayer
+    				currPlayer: $gamePref.currPlayer,
+    				auto,
+    				saved: false
     			};
 
-    			invokeFunction(request).then(response => {
-    				console.log(response);
-
-    				if (response.msg != null || response.msg == "SUCCESS") {
-    					if (auto == false) page.set(0);
-    					if (auto) timeInterval = setInterval(countDown, 1000);
-    				} else {
-    					console.log(response.err);
-    				}
-    			}).catch(error => {
-    				console.log(error);
-    			});
+    			if (auto) {
+    				timeInterval = setInterval(countDown, 1000);
+    			} else {
+    				$currSocket.emit("saveGame", request);
+    				page.set(0);
+    			}
     		}
     	}
 
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<GameBoard> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<GameBoard> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -13901,6 +13120,7 @@ var app = (function () {
     		boardHeight,
     		factor,
     		btnWidth,
+    		lastNumMoves,
     		timeInterval,
     		countDown,
     		updateCirclePositions,
@@ -13935,6 +13155,7 @@ var app = (function () {
     		if ("boardHeight" in $$props) boardHeight = $$props.boardHeight;
     		if ("factor" in $$props) factor = $$props.factor;
     		if ("btnWidth" in $$props) btnWidth = $$props.btnWidth;
+    		if ("lastNumMoves" in $$props) lastNumMoves = $$props.lastNumMoves;
     		if ("timeInterval" in $$props) timeInterval = $$props.timeInterval;
     	};
 
@@ -13966,6 +13187,7 @@ var app = (function () {
     		boardHeight,
     		factor,
     		btnWidth,
+    		lastNumMoves,
     		timeInterval,
     		$currSocket,
     		$gameHistory,
@@ -13996,7 +13218,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/navBar.svelte generated by Svelte v3.22.2 */
+    /* src/Components/navBar.svelte generated by Svelte v3.22.3 */
     const file$8 = "src/Components/navBar.svelte";
 
     function create_fragment$8(ctx) {
@@ -14130,9 +13352,9 @@ var app = (function () {
     	}
     }
 
-    /* src/Components/socketRecv.svelte generated by Svelte v3.22.2 */
+    /* src/Components/socketRecv.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$6 } = globals;
+    const { console: console_1$5 } = globals;
 
     function create_fragment$9(ctx) {
     	const block = {
@@ -14161,10 +13383,19 @@ var app = (function () {
     function instance$9($$self, $$props, $$invalidate) {
     	let $currSocket;
     	let $gamePref;
+    	let $currUser;
+    	let $gameChat;
+    	let $gameHistory;
     	validate_store(currSocket, "currSocket");
     	component_subscribe($$self, currSocket, $$value => $$invalidate(0, $currSocket = $$value));
     	validate_store(gamePref, "gamePref");
     	component_subscribe($$self, gamePref, $$value => $$invalidate(1, $gamePref = $$value));
+    	validate_store(currUser, "currUser");
+    	component_subscribe($$self, currUser, $$value => $$invalidate(2, $currUser = $$value));
+    	validate_store(gameChat, "gameChat");
+    	component_subscribe($$self, gameChat, $$value => $$invalidate(3, $gameChat = $$value));
+    	validate_store(gameHistory, "gameHistory");
+    	component_subscribe($$self, gameHistory, $$value => $$invalidate(4, $gameHistory = $$value));
 
     	$currSocket.on("chat message", data => {
     		console.log("Received: " + data.msg);
@@ -14177,7 +13408,7 @@ var app = (function () {
 
     	$currSocket.on("second-user", data => {
     		if ($gamePref.sec == null && $gamePref.currPlayer != null) {
-    			console.log("Received other username");
+    			console.log("Received second player");
 
     			gamePref.update(state => {
     				state.sec = data;
@@ -14189,8 +13420,26 @@ var app = (function () {
     				room: $gamePref.id
     			});
 
-    			gameChat.set([]);
-    			if (screen.width < 800) gameTab.set(0);
+    			$currSocket.emit("first-user", { room: $gamePref.id, name: $currUser.name });
+    			if (screen.width < 800) gameTab.set(0); else if ($gameChat[0].msg.includes($gamePref.id)) gameChat.set([]);
+    		}
+    	});
+
+    	$currSocket.on("first-user", data => {
+    		if ($gamePref.pri == null && $gamePref.currPlayer != null) {
+    			console.log("Received first player");
+
+    			gamePref.update(state => {
+    				state.pri = data;
+    				return state;
+    			});
+
+    			$currSocket.emit("current-player", {
+    				player: $gamePref.currPlayer,
+    				room: $gamePref.id
+    			});
+
+    			if (screen.width < 800) gameTab.set(0); else if ($gameChat[0].msg.includes($gamePref.id)) gameChat.set([]);
     		}
     	});
 
@@ -14213,10 +13462,28 @@ var app = (function () {
     		});
     	});
 
+    	$currSocket.on("saveGame", data => {
+    		let request = {
+    			func: "saveGame",
+    			gameID: $gamePref.id,
+    			gameHistory: JSON.stringify($gameHistory),
+    			chatHistory: JSON.stringify($gameChat),
+    			pri: $gamePref.pri == $currUser.name ? true : false,
+    			sec: $gamePref.sec == $currUser.name ? true : false,
+    			minutes: Math.floor($gamePref.secondsPlayed / 60),
+    			currPlayer: $gamePref.currPlayer,
+    			auto: data.auto,
+    			saved: true
+    		};
+
+    		$currSocket.emit("saveGame", request);
+    		if (!data.auto) page.set(0);
+    	});
+
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$6.warn(`<SocketRecv> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<SocketRecv> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -14229,8 +13496,13 @@ var app = (function () {
     		gameHistory,
     		gameChat,
     		gameTab,
+    		page,
+    		currUser,
     		$currSocket,
-    		$gamePref
+    		$gamePref,
+    		$currUser,
+    		$gameChat,
+    		$gameHistory
     	});
 
     	return [];
@@ -14250,7 +13522,7 @@ var app = (function () {
     	}
     }
 
-    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.2 */
+    /* src/Pages/gamePlay.svelte generated by Svelte v3.22.3 */
 
     // (18:0) {#if screenWidth > 800}
     function create_if_block_3$3(ctx) {
@@ -14624,12 +13896,12 @@ var app = (function () {
         }
     }
 
-    /* src/Pages/entry.svelte generated by Svelte v3.22.2 */
+    /* src/Pages/entry.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$7 } = globals;
+    const { console: console_1$6 } = globals;
     const file$9 = "src/Pages/entry.svelte";
 
-    // (190:4) {:else}
+    // (175:8) {:else}
     function create_else_block$2(ctx) {
     	let div2;
     	let div1;
@@ -14683,55 +13955,55 @@ var app = (function () {
     			button1 = element("button");
     			button1.textContent = "Sign In";
     			attr_dev(div0, "class", "loader svelte-isfeg9");
-    			add_location(div0, file$9, 192, 16, 5622);
+    			add_location(div0, file$9, 177, 20, 5216);
     			attr_dev(div1, "id", "signup-loader");
     			attr_dev(div1, "onload", div1_onload_value = stopLoading());
     			attr_dev(div1, "class", "loader-container svelte-isfeg9");
-    			add_location(div1, file$9, 191, 12, 5531);
+    			add_location(div1, file$9, 176, 16, 5121);
     			attr_dev(input0, "name", "Name");
     			attr_dev(input0, "id", "Name");
     			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Display Name");
     			input0.required = true;
     			attr_dev(input0, "class", "svelte-isfeg9");
-    			add_location(input0, file$9, 195, 16, 5748);
+    			add_location(input0, file$9, 179, 16, 5282);
     			attr_dev(input1, "name", "Email");
     			attr_dev(input1, "id", "Email");
     			attr_dev(input1, "type", "text");
     			attr_dev(input1, "placeholder", "Email");
     			input1.required = true;
     			attr_dev(input1, "class", "svelte-isfeg9");
-    			add_location(input1, file$9, 196, 16, 5863);
+    			add_location(input1, file$9, 180, 16, 5397);
     			attr_dev(input2, "name", "Password");
     			attr_dev(input2, "id", "Password");
     			attr_dev(input2, "type", "password");
     			attr_dev(input2, "placeholder", "Password");
     			input2.required = true;
     			attr_dev(input2, "class", "svelte-isfeg9");
-    			add_location(input2, file$9, 197, 16, 5974);
+    			add_location(input2, file$9, 181, 16, 5508);
     			attr_dev(input3, "name", "confirmPassword");
     			attr_dev(input3, "id", "confirmPassword");
     			attr_dev(input3, "type", "password");
     			attr_dev(input3, "placeholder", "Confirm Password");
     			input3.required = true;
     			attr_dev(input3, "class", "svelte-isfeg9");
-    			add_location(input3, file$9, 198, 16, 6101);
-    			add_location(br0, file$9, 199, 16, 6287);
+    			add_location(input3, file$9, 182, 16, 5635);
+    			add_location(br0, file$9, 183, 16, 5821);
     			attr_dev(button0, "id", "signup-btn");
     			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
     			attr_dev(button0, "type", "submit");
-    			add_location(button0, file$9, 199, 21, 6292);
+    			add_location(button0, file$9, 183, 21, 5826);
     			attr_dev(div2, "id", "signup-div");
-    			add_location(div2, file$9, 190, 8, 5497);
+    			add_location(div2, file$9, 175, 12, 5083);
     			set_style(hr, "border", "1px solid green");
-    			add_location(hr, file$9, 202, 8, 6444);
-    			add_location(br1, file$9, 204, 41, 6565);
+    			add_location(hr, file$9, 185, 12, 5957);
+    			add_location(br1, file$9, 187, 45, 6086);
     			attr_dev(button1, "class", "login-signup svelte-isfeg9");
-    			add_location(button1, file$9, 204, 46, 6570);
+    			add_location(button1, file$9, 187, 50, 6091);
     			attr_dev(h5, "class", "svelte-isfeg9");
-    			add_location(h5, file$9, 204, 12, 6536);
+    			add_location(h5, file$9, 187, 16, 6057);
     			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
-    			add_location(div3, file$9, 203, 8, 6490);
+    			add_location(div3, file$9, 186, 12, 6007);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
@@ -14803,20 +14075,19 @@ var app = (function () {
     		block,
     		id: create_else_block$2.name,
     		type: "else",
-    		source: "(190:4) {:else}",
+    		source: "(175:8) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (174:4) {#if logPage}
+    // (161:8) {#if logPage}
     function create_if_block$5(ctx) {
     	let div2;
     	let div1;
     	let div0;
     	let t0;
-    	let form;
     	let input0;
     	let br0;
     	let t1;
@@ -14844,7 +14115,6 @@ var app = (function () {
     			div1 = element("div");
     			div0 = element("div");
     			t0 = space();
-    			form = element("form");
     			input0 = element("input");
     			br0 = element("br");
     			t1 = space();
@@ -14868,73 +14138,67 @@ var app = (function () {
     			button1 = element("button");
     			button1.textContent = "Sign Up";
     			attr_dev(div0, "class", "loader svelte-isfeg9");
-    			add_location(div0, file$9, 176, 16, 4626);
+    			add_location(div0, file$9, 163, 20, 4249);
     			attr_dev(div1, "id", "signin-loader");
     			attr_dev(div1, "class", "loader-container svelte-isfeg9");
-    			add_location(div1, file$9, 175, 8, 4559);
+    			add_location(div1, file$9, 162, 16, 4179);
     			attr_dev(input0, "name", "logEmail");
     			attr_dev(input0, "id", "logEmail");
     			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Email");
     			input0.required = true;
     			attr_dev(input0, "class", "svelte-isfeg9");
-    			add_location(input0, file$9, 179, 16, 4741);
-    			add_location(br0, file$9, 179, 119, 4844);
+    			add_location(input0, file$9, 165, 16, 4315);
+    			add_location(br0, file$9, 165, 119, 4418);
     			attr_dev(input1, "name", "logPassword");
     			attr_dev(input1, "id", "logPassword");
     			attr_dev(input1, "type", "password");
     			attr_dev(input1, "placeholder", "Password");
     			input1.required = true;
     			attr_dev(input1, "class", "svelte-isfeg9");
-    			add_location(input1, file$9, 180, 16, 4866);
-    			add_location(br1, file$9, 180, 135, 4985);
-    			add_location(br2, file$9, 181, 16, 5007);
+    			add_location(input1, file$9, 166, 16, 4440);
+    			add_location(br1, file$9, 166, 135, 4559);
+    			add_location(br2, file$9, 167, 16, 4581);
     			attr_dev(a, "id", "forgotPassword");
     			attr_dev(a, "href", "");
     			attr_dev(a, "class", "svelte-isfeg9");
-    			add_location(a, file$9, 181, 21, 5012);
+    			add_location(a, file$9, 167, 21, 4586);
     			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
     			attr_dev(button0, "type", "submit");
-    			add_location(button0, file$9, 182, 20, 5085);
+    			add_location(button0, file$9, 168, 20, 4659);
     			attr_dev(h50, "class", "svelte-isfeg9");
-    			add_location(h50, file$9, 182, 16, 5081);
-    			attr_dev(form, "name", "login-form");
-    			attr_dev(form, "id", "login-form");
-    			attr_dev(form, "class", "svelte-isfeg9");
-    			add_location(form, file$9, 178, 12, 4684);
+    			add_location(h50, file$9, 168, 16, 4655);
     			attr_dev(div2, "id", "login-div");
-    			attr_dev(div2, "class", "svelte-isfeg9");
-    			add_location(div2, file$9, 174, 8, 4530);
+    			add_location(div2, file$9, 161, 12, 4142);
     			set_style(hr, "border", "1px solid green");
-    			add_location(hr, file$9, 185, 8, 5215);
-    			add_location(br3, file$9, 187, 35, 5351);
+    			add_location(hr, file$9, 170, 12, 4777);
+    			add_location(br3, file$9, 172, 43, 4925);
     			attr_dev(button1, "class", "login-signup svelte-isfeg9");
     			attr_dev(button1, "id", "signupBtn");
-    			add_location(button1, file$9, 187, 40, 5356);
+    			add_location(button1, file$9, 172, 48, 4930);
     			attr_dev(h51, "class", "svelte-isfeg9");
-    			add_location(h51, file$9, 187, 8, 5324);
+    			add_location(h51, file$9, 172, 16, 4898);
     			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
     			attr_dev(div3, "id", "no-Acct-signup");
-    			add_location(div3, file$9, 186, 8, 5261);
+    			add_location(div3, file$9, 171, 12, 4827);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
     			append_dev(div2, div1);
     			append_dev(div1, div0);
     			append_dev(div2, t0);
-    			append_dev(div2, form);
-    			append_dev(form, input0);
+    			append_dev(div2, input0);
     			set_input_value(input0, /*logEmail*/ ctx[4]);
-    			append_dev(form, br0);
-    			append_dev(form, t1);
-    			append_dev(form, input1);
+    			append_dev(div2, br0);
+    			append_dev(div2, t1);
+    			append_dev(div2, input1);
     			set_input_value(input1, /*logPassword*/ ctx[5]);
-    			append_dev(form, br1);
-    			append_dev(form, t2);
-    			append_dev(form, br2);
-    			append_dev(form, a);
-    			append_dev(form, t4);
-    			append_dev(form, h50);
+    			append_dev(div2, br1);
+    			append_dev(div2, t2);
+    			append_dev(div2, br2);
+    			append_dev(div2, a);
+    			append_dev(div2, t4);
+    			append_dev(div2, h50);
     			append_dev(h50, button0);
     			insert_dev(target, t6, anchor);
     			insert_dev(target, hr, anchor);
@@ -14976,7 +14240,7 @@ var app = (function () {
     		block,
     		id: create_if_block$5.name,
     		type: "if",
-    		source: "(174:4) {#if logPage}",
+    		source: "(161:8) {#if logPage}",
     		ctx
     	});
 
@@ -15011,17 +14275,17 @@ var app = (function () {
     			t2 = space();
     			img = element("img");
     			attr_dev(h3, "class", "svelte-isfeg9");
-    			add_location(h3, file$9, 172, 4, 4484);
+    			add_location(h3, file$9, 159, 8, 4088);
     			attr_dev(div0, "id", "entry");
     			attr_dev(div0, "class", "container svelte-isfeg9");
-    			add_location(div0, file$9, 171, 0, 4445);
+    			add_location(div0, file$9, 158, 4, 4045);
     			attr_dev(img, "id", "back-image");
     			attr_dev(img, "alt", "checker");
     			if (img.src !== (img_src_value = "./images/checkers.jpg")) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "class", "svelte-isfeg9");
-    			add_location(img, file$9, 208, 0, 6694);
+    			add_location(img, file$9, 191, 4, 6231);
     			attr_dev(div1, "class", "background svelte-isfeg9");
-    			add_location(div1, file$9, 170, 0, 4420);
+    			add_location(div1, file$9, 157, 0, 4016);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -15067,14 +14331,6 @@ var app = (function () {
     	return block;
     }
 
-    function validateSigin() {
-    	return true;
-    }
-
-    function validateSignUp() {
-    	return true;
-    }
-
     function validateSignInEmail() {
     	
     }
@@ -15114,37 +14370,35 @@ var app = (function () {
     	let logPage = true;
 
     	function signUp() {
-    		{
-    			console.log("In sign up");
-    			loading();
+    		console.log("In sign up");
+    		loading();
 
-    			if (Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
-    				request = {
-    					func: "signUp",
-    					email: Email,
-    					name: Name,
-    					password: Password
-    				};
+    		if (Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
+    			request = {
+    				func: "signUp",
+    				email: Email,
+    				name: Name,
+    				password: Password
+    			};
 
-    				console.log("Sending sign up request");
+    			console.log("Sending sign up request");
 
-    				invokeFunction(request).then(response => {
-    					console.log(response);
+    			invokeFunction(request).then(response => {
+    				console.log(response);
 
-    					if (response.msg == "SUCCESS") {
-    						request.func = "createUser";
-    						createUser();
-    					} else {
-    						console.log(response.err);
-    					}
+    				if (response.msg == "SUCCESS") {
+    					request.func = "createUser";
+    					createUser();
+    				} else {
+    					console.log(response.err);
+    				}
 
-    					console.log("stoping loading sign");
-    					stopLoading();
-    				}).catch(err => {
-    					console.log(err);
-    					stopLoading();
-    				});
-    			}
+    				console.log("stoping loading sign");
+    				stopLoading();
+    			}).catch(err => {
+    				console.log(err);
+    				stopLoading();
+    			});
     		}
     	}
 
@@ -15163,33 +14417,31 @@ var app = (function () {
     	}
 
     	function signIn() {
-    		{
-    			console.log("In sign in");
-    			loading();
+    		console.log("In sign in");
+    		loading();
 
-    			if (logEmail != null && logPassword != null) {
-    				request = {
-    					func: "signIn",
-    					email: logEmail,
-    					password: logPassword
-    				};
+    		if (logEmail != null && logPassword != null) {
+    			request = {
+    				func: "signIn",
+    				email: logEmail,
+    				password: logPassword
+    			};
 
-    				invokeFunction(request).then(response => {
-    					if (response.msg != null && response.msg) {
-    						request.func = "retrieveUser";
-    						retrieveUser();
-    					} else if (response.msg != null && !response.msg) {
-    						console.log("Unverified Email");
-    					} else {
-    						console.log(response.err);
-    					}
+    			invokeFunction(request).then(response => {
+    				if (response.msg != null && response.msg) {
+    					request.func = "retrieveUser";
+    					retrieveUser();
+    				} else if (response.msg != null && !response.msg) {
+    					console.log("Unverified Email");
+    				} else {
+    					console.log(response.err);
+    				}
 
-    					console.log("stoping loading sign");
-    					stopLoading();
-    				}).catch(err => {
-    					console.log(err);
-    				});
-    			}
+    				console.log("stoping loading sign");
+    				stopLoading();
+    			}).catch(err => {
+    				console.log(err);
+    			});
     		}
     	}
 
@@ -15225,7 +14477,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$7.warn(`<Entry> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$6.warn(`<Entry> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -15283,8 +14535,6 @@ var app = (function () {
     		signIn,
     		retrieveUser,
     		matchesPassword,
-    		validateSigin,
-    		validateSignUp,
     		validateSignInEmail,
     		validateSignInPassword,
     		validateSignUpName,
@@ -15349,7 +14599,7 @@ var app = (function () {
     	}
     }
 
-    /* src/App.svelte generated by Svelte v3.22.2 */
+    /* src/App.svelte generated by Svelte v3.22.3 */
 
     // (17:0) {:else}
     function create_else_block$3(ctx) {
@@ -15691,5 +14941,4 @@ var app = (function () {
     return app;
 
 }());
->>>>>>> e62c91d46b41ed59e85ac09eb85a62cbf3160da4
 //# sourceMappingURL=bundle.js.map
