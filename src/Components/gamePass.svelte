@@ -35,7 +35,7 @@
                             state.time = game.time;
                             state.timer = game.time;
                             state.id = gamePassword;
-                            state.pri = game.priPlayer;
+                            state.pri = null;
                             state.sec = game.secPlayer;
                             state.currPlayer = null;
                             state.numMoves = 0;

@@ -237,9 +237,9 @@ export const saveGame = functions.https.onRequest((request, response) => {
     if(evt.pri) {
 
         docRef.update({
-            priGameHistory: JSON.parse(evt.gameHistory),
+            priGameHistory: evt.gameHistory,
             minutesPlayed: Number(evt.minutes),
-            chatHistory: JSON.parse(evt.chatHistory),
+            chatHistory: evt.chatHistory,
             currPlayer: evt.currPlayer
         }).then(function() {
             res.send({msg: "SUCCESS"});
@@ -251,9 +251,9 @@ export const saveGame = functions.https.onRequest((request, response) => {
     if(evt.sec) {
 
         docRef.update({
-            secGameHistory: JSON.parse(evt.gameHistory),
+            secGameHistory: evt.gameHistory,
             minutesPlayed: Number(evt.minutes),
-            chatHistory: JSON.parse(evt.chatHistory),
+            chatHistory: evt.chatHistory,
             currPlayer: evt.currPlayer
         }).then(function() {
             res.send({msg: "SUCCESS"});

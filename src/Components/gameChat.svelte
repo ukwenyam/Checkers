@@ -8,7 +8,7 @@
     let message;
     let isTyping = false;
 
-    if($gamePref.pri == $currUser.name && $gameChat.length == 0 && $gamePref.sec == null && screen.width >= 800)
+    if($gamePref.pri == $currUser.name && $gamePref.numMoves == 0 && $gamePref.sec == null && screen.width >= 800)
         $gameChat.push({name: "System", msg: "Please share Game Password '" + $gamePref.id + "' with other player"});
     
     let socket;
@@ -58,7 +58,7 @@
 <div id="chat" class="container-fluid">
 	{#if $gamePref.pri == $currUser.name && $gamePref.sec != null}
         <h4 style="text-align:center">{$gamePref.sec}</h4>
-    {:else if $gamePref.sec == null}
+    {:else if $gamePref.sec == null || $gamePref.pri == null}
         <h4 class="blinking" style="text-align:center">Waiting for other player</h4>
     {:else}
         <h4 style="text-align:center">{$gamePref.pri}</h4>

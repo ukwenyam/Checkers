@@ -1,5 +1,5 @@
 <script>
-    import { gamePref, gameBoard, currSocket, gameHistory, gameChat, gameTab } from '../Scripts/Init.js';
+    import { gamePref, gameBoard, currSocket, gameHistory, gameChat, gameTab, page, currUser } from '../Scripts/Init.js';
 
     $currSocket.on('chat message', (data) => {
 
@@ -15,7 +15,7 @@
 
         if($gamePref.sec == null && $gamePref.currPlayer != null) {
 
-            console.log('Received other username');
+            console.log('Received second player');
 
             gamePref.update(state => {
                 state.sec = data;
@@ -24,9 +24,36 @@
 
             $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
 
-            gameChat.set([]); 
-            
-            if(screen.width < 800) gameTab.set(0); 
+            $currSocket.emit('first-user', { room: $gamePref.id, name: $currUser.name });
+
+            if(screen.width < 800) 
+                gameTab.set(0);
+            else
+                if($gameChat[0].msg.includes($gamePref.id))
+                    gameChat.set([]);
+
+        }
+    });
+
+
+    $currSocket.on('first-user', (data) => {
+
+        if($gamePref.pri == null && $gamePref.currPlayer != null) {
+
+            console.log('Received first player');
+
+            gamePref.update(state => {
+                state.pri = data;
+                return state;
+            });
+
+            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
+
+            if(screen.width < 800) 
+                gameTab.set(0);
+            else
+                if($gameChat[0].msg.includes($gamePref.id))
+                    gameChat.set([]);
         }
     });
 
@@ -49,5 +76,25 @@
             state.paused = data;
             return state;
         });
+    });
+
+    $currSocket.on('saveGame', (data) => {
+
+        let request = {
+            func: "saveGame",
+            gameID: $gamePref.id,
+            gameHistory: JSON.stringify($gameHistory),
+            chatHistory: JSON.stringify($gameChat),
+            pri: $gamePref.pri == $currUser.name ? true : false,
+            sec: $gamePref.sec == $currUser.name ? true : false,
+            minutes: Math.floor($gamePref.secondsPlayed / 60),
+            currPlayer: $gamePref.currPlayer,
+            auto: data.auto,
+            saved: true
+        }
+
+        $currSocket.emit('saveGame', request);
+
+        if(!data.auto) page.set(0);
     });
 </script>

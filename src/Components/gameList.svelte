@@ -2,79 +2,28 @@
     import { userGames, gamePref, page, gameTab, currUser, gameBoard, gameHistory, gameChat } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
 
-    function resumeGame(game) {
+    function getGame(game, resume) {
 
-        if(game.priGameHistory.length > 0 || game.secGameHistory.length > 0) {
-
-            let gameStates = game.priEmail == $currUser.email ? game.priGameHistory : game.secGameHistory;
-
-            console.log(gameStates[gameStates.length - 1]);
-
-            gameBoard.set(new Board(gameStates[gameStates.length - 1], null));
-
-            $gameHistory.set(gameStates);
-
-        } else {
-
-            if(game.priEmail == $currUser.email) {
-
-                gameBoard.set(new Board(null, false));
-
-                $gameHistory.push($gameBoard.saveBoardState());
-            } 
-
-            if(game.secEmail == $currUser.email) {
-
-                gameBoard.set(new Board(null, true));
-
-                $gameHistory.push($gameBoard.saveBoardState());
-            }
-        }
-
-        gameChat.set(game.chatHistory);
-
-        gamePref.update(state => {
-            state = {};
-            state.id = game.id;
-            state.time = game.time;
-            state.timer = game.time;
-            state.pri = game.priPlayer;
-            state.sec = game.secPlayer;
-            state.currPlayer = game.currPlayer;
-            state.numMoves = game.priEmail == $currUser.email ? game.priGameHistory.length : game.secGameHistory.length;
-            state.rangeMoves = game.priEmail == $currUser.email ? game.priGameHistory.length : game.secGameHistory.length;
-            state.paused = true;
-            state.finished = false;
-            state.side = game.priEmail == $currUser.email ? "red" : "black";
-            state.secondsPlayed = game.minutesPlayed * 60;
-            return state;
-        });
-
-        page.set(1); gameTab.set(0);
-    }
-
-    function reviewGame(game) {
-
-        let gameStates = game.priEmail == $currUser.email ? game.priGameHistory : game.secGameHistory;
+        let gameStates = game.priEmail == $currUser.email ? JSON.parse(game.priGameHistory) : JSON.parse(game.secGameHistory);
 
         gameBoard.set(new Board(gameStates[gameStates.length - 1], null));
 
-        $gameHistory.set(gameStates);
+        gameHistory.set(gameStates);
 
-        gameChat.set(game.chatHistory);
+        gameChat.set(JSON.parse(game.chatHistory));
 
         gamePref.update(state => {
             state = {};
             state.id = game.id;
             state.time = game.time;
             state.timer = game.time;
-            state.pri = game.priPlayer;
-            state.sec = game.secPlayer;
+            state.pri = game.priEmail == $currUser.email ? $currUser.name : null;
+            state.sec = game.secEmail == $currUser.email ? $currUser.name : null;
             state.currPlayer = game.currPlayer;
-            state.numMoves = game.priEmail == $currUser.email ? game.priGameHistory.length : game.secGameHistory.length;
-            state.rangeMoves = game.priEmail == $currUser.email ? game.priGameHistory.length : game.secGameHistory.length;
-            state.paused = false;
-            state.finished = true;
+            state.numMoves = gameStates.length;
+            state.rangeMoves = gameStates.length;
+            state.paused = resume == true ? true : false;
+            state.finished = resume == true ? false : true;
             state.side = game.priEmail == $currUser.email ? "red" : "black";
             state.secondsPlayed = game.minutesPlayed * 60;
             return state;
@@ -91,14 +40,14 @@
     <h5>On-Going Games</h5>
     {#each $userGames as game}
         {#if !game.finished}
-            <button on:click="{() => resumeGame(game)}" class="btn btn-warning">{game.priPlayer} vs. {game.secPlayer} - {game.date}</button>
+            <button on:click="{() => getGame(game, true)}" class="btn btn-warning">{game.priPlayer} vs. {game.secPlayer} - {game.date}</button>
         {/if}
     {/each}
 
     <h5>Finished Games</h5>
     {#each $userGames as game}
         {#if game.finished}
-            <button on:click="{() => reviewGame(game)}" class="btn btn-light">{game.priPlayer} vs. {game.secPlayer} - {game.date}</button>
+            <button on:click="{() => getGame(game, false)}" class="btn btn-light">{game.priPlayer} vs. {game.secPlayer} - {game.date}</button>
         {/if}
     {/each}
 {/if}

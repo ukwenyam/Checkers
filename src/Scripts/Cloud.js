@@ -5,10 +5,14 @@ export function invokeFunction(load) {
         load = new URLSearchParams(load).toString();
 
         fetch(url, {
-            method: 'post',
+            method: 'POST',
             body: load,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            'Access-Control-Allow-Origin' : '*'
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*'
         })
         .then(res => 
             res.json()

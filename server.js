@@ -2,6 +2,35 @@ const express = require('express');
 const path = require('path');
 const socketio = require('socket.io');
 const PORT = process.env.PORT || 4000;
+const fetch = require("node-fetch");
+
+function invokeFunction(load) {
+    return new Promise((resolve, reject) => {
+
+        const url = "https://us-central1-checker-io.cloudfunctions.net/" + load.func;
+        //load = new URLSearchParams(load).toString();
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(load),
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+            },
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*'
+        })
+        .then(res => 
+            res.json()
+        )
+        .then(json => {
+            resolve(json)
+        })
+        .catch(err => 
+            reject(err)
+        );
+    });
+}
 
 const server = express()
   .use(express.static(path.join(__dirname, 'public')))
@@ -36,15 +65,21 @@ io.on('connection', (socket) => {
     socket.on('join-room', (room, username) => {
         if(rooms.has(room)) {
             rooms.set(room, 2);
-            console.log('other player arrived!');
+            console.log('second player arrived!');
             socket.to(room).emit('second-user', username);
         }
         else{
             rooms.set(room, 1);
+            console.log('first player arrived!');
         }
         console.log(`${socket.username} joined the ${room} chat room`);
         socket.join(room);
     });
+
+    socket.on('first-user', (data) => {
+        console.log('send back first player ' + data.name);
+        socket.to(data.room).emit('first-user', data.name);
+    })
 
     socket.on('chat message', (data) => {
         console.log('Somebody sent chat: ' + data.msg);
@@ -76,4 +111,16 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('paused', data.paused);
     });
 
+    socket.on('saveGame', (data) => {
+        //console.log('Request '+ JSON.stringify(data));
+        invokeFunction(data).then((response) => {
+            response.auto = data.auto;
+            if(!data.saved)
+                socket.to(data.gameID).emit('saveGame', response);
+        }).catch((error) => {
+            console.log("Error " + error);
+            if(!data.saved)
+                socket.to(data.gameID).emit('saveGame', error);
+        });
+    });
 });    

@@ -7,7 +7,7 @@
 	import { fly } from 'svelte/transition';
     import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat, page } from '../Scripts/Init.js';
 
-    if($gamePref.pri == $currUser.name && $gamePref.currPlayer == null) {
+    if($gamePref.pri == $currUser.name && $gamePref.currPlayer == null && $gamePref.sec == null) {
         gamePref.update(state => {
             state.currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
             return state;
@@ -27,6 +27,8 @@
 	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
 
 	let squareSize, boardHeight, factor, btnWidth;
+
+	let lastNumMoves = $gamePref.numMoves;
 
 	$currSocket.emit('set-username', $currUser.name);
 
@@ -327,49 +329,45 @@
 
             $currSocket.emit('paused', {paused: $gamePref.paused, room: $gamePref.id});
         }
-    }
+	}
 
     setInterval(function(){
-        if($gamePref.secondsPlayed > $gamePref.timer)
-            saveGame(true);
+        if($gamePref.numMoves > lastNumMoves) {
+			saveGame(true);
+			lastNumMoves = $gamePref.numMoves;
+		}
     }, 300000);
 
     function saveGame(auto) {
 
-        if($gamePref.side == $gamePref.currPlayer) {
+        if($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) {
 
 			clearInterval(timeInterval);
 
             let request = {
                 func: "saveGame",
                 gameID: $gamePref.id,
-                gameHistory: $gameHistory,
-                chatHistory: $gameChat,
+                gameHistory: JSON.stringify($gameHistory),
+                chatHistory: JSON.stringify($gameChat),
                 pri: $gamePref.pri == $currUser.name ? true : false,
                 sec: $gamePref.sec == $currUser.name ? true : false,
 				minutes: Math.floor($gamePref.secondsPlayed / 60),
-				currPlayer: $gamePref.currPlayer
-            }
-            
-            invokeFunction(request).then((response) => {
-                console.log(response);
-
-                if(response.msg != null || response.msg == "SUCCESS") {
-					if(auto == false) page.set(0);
-					
-					if(auto) timeInterval = setInterval(countDown, 1000);
-                } else {
-                    console.log(response.err);
-                }
-
-            }).catch((error) => {
-                console.log(error);
-            });
+				currPlayer: $gamePref.currPlayer,
+				auto: auto,
+				saved: false
+			}
+			
+			if(auto) {
+				timeInterval = setInterval(countDown, 1000);
+			} else {
+				$currSocket.emit('saveGame', request);
+				page.set(0);
+			}
         }
     }
 </script>
 
-{#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800}
+{#if $gamePref.pri == $currUser.name && $gamePref.sec == null && screenWidth < 800 && $gamePref.numMoves == 0}
 	<div id="popUp" class="container-fluid" transition:fly={{ y:-200, duration:1000 }}>
 		<h5 style="text-align:center;margin-top:50%;">Please share Game Password '{$gamePref.id}' with other player</h5>
     </div>
@@ -418,13 +416,13 @@
 	</div>
 {/if}
 
-{#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer} 
+{#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.pri != null && $gamePref.sec != null} 
     <button class="btn btn-success pause" on:click="{startGame}">Start Game</button>\
 {/if}
 
-{#if $gamePref.side == $gamePref.currPlayer}
+{#if $gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0}
 	<button class="btn btn-info switch" on:click="{switchPlayer}">Switch Turn</button>
-	
+
 	<button class="btn btn-primary save" on:click="{() => saveGame(false)}">Save Game</button>
 {/if}
 <style>
