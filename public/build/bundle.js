@@ -14625,13 +14625,88 @@ var app = (function () {
     const { console: console_1$7 } = globals;
     const file$9 = "src/Pages/entry.svelte";
 
-    // (190:4) {:else}
+    // (195:4) {#if popUp}
+    function create_if_block_1$5(ctx) {
+    	let div;
+    	let p;
+    	let t0;
+    	let t1;
+    	let a;
+    	let div_transition;
+    	let current;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			p = element("p");
+    			t0 = text(/*popUpText*/ ctx[8]);
+    			t1 = space();
+    			a = element("a");
+    			a.textContent = "Close";
+    			attr_dev(p, "id", "popUp-p");
+    			attr_dev(p, "class", "svelte-19c79ac");
+    			add_location(p, file$9, 196, 8, 5610);
+    			attr_dev(a, "class", "close svelte-19c79ac");
+    			add_location(a, file$9, 197, 12, 5655);
+    			attr_dev(div, "id", "popUp-box");
+    			attr_dev(div, "class", "svelte-19c79ac");
+    			add_location(div, file$9, 195, 8, 5535);
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, p);
+    			append_dev(p, t0);
+    			append_dev(div, t1);
+    			append_dev(div, a);
+    			current = true;
+    			if (remount) dispose();
+    			dispose = listen_dev(a, "click", /*closePop*/ ctx[12], false, false, false);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (!current || dirty[0] & /*popUpText*/ 256) set_data_dev(t0, /*popUpText*/ ctx[8]);
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+
+    			add_render_callback(() => {
+    				if (!div_transition) div_transition = create_bidirectional_transition(div, fly, { y: 100, duration: 1000 }, true);
+    				div_transition.run(1);
+    			});
+
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			if (!div_transition) div_transition = create_bidirectional_transition(div, fly, { y: 100, duration: 1000 }, false);
+    			div_transition.run(0);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    			if (detaching && div_transition) div_transition.end();
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_1$5.name,
+    		type: "if",
+    		source: "(195:4) {#if popUp}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (217:4) {:else}
     function create_else_block$2(ctx) {
     	let div2;
     	let div1;
     	let div0;
     	let div1_onload_value;
     	let t0;
+    	let form;
     	let input0;
     	let t1;
     	let input1;
@@ -14639,15 +14714,16 @@ var app = (function () {
     	let input2;
     	let t3;
     	let input3;
-    	let t4;
+    	let p;
+    	let t5;
     	let br0;
     	let button0;
-    	let t6;
-    	let hr;
     	let t7;
+    	let hr;
+    	let t8;
     	let div3;
     	let h5;
-    	let t8;
+    	let t9;
     	let br1;
     	let button1;
     	let dispose;
@@ -14658,6 +14734,7 @@ var app = (function () {
     			div1 = element("div");
     			div0 = element("div");
     			t0 = space();
+    			form = element("form");
     			input0 = element("input");
     			t1 = space();
     			input1 = element("input");
@@ -14665,131 +14742,140 @@ var app = (function () {
     			input2 = element("input");
     			t3 = space();
     			input3 = element("input");
-    			t4 = space();
+    			p = element("p");
+    			p.textContent = "Passwords must match";
+    			t5 = space();
     			br0 = element("br");
     			button0 = element("button");
     			button0.textContent = "Sign Up";
-    			t6 = space();
-    			hr = element("hr");
     			t7 = space();
+    			hr = element("hr");
+    			t8 = space();
     			div3 = element("div");
     			h5 = element("h5");
-    			t8 = text("Already have an Account? ");
+    			t9 = text("Already have an Account? ");
     			br1 = element("br");
     			button1 = element("button");
     			button1.textContent = "Sign In";
-    			attr_dev(div0, "class", "loader svelte-isfeg9");
-    			add_location(div0, file$9, 192, 16, 5622);
+    			attr_dev(div0, "class", "loader svelte-19c79ac");
+    			add_location(div0, file$9, 219, 16, 6853);
     			attr_dev(div1, "id", "signup-loader");
     			attr_dev(div1, "onload", div1_onload_value = stopLoading());
-    			attr_dev(div1, "class", "loader-container svelte-isfeg9");
-    			add_location(div1, file$9, 191, 12, 5531);
+    			attr_dev(div1, "class", "loader-container svelte-19c79ac");
+    			add_location(div1, file$9, 218, 12, 6762);
     			attr_dev(input0, "name", "Name");
     			attr_dev(input0, "id", "Name");
     			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Display Name");
     			input0.required = true;
-    			attr_dev(input0, "class", "svelte-isfeg9");
-    			add_location(input0, file$9, 195, 16, 5748);
+    			attr_dev(input0, "class", "svelte-19c79ac");
+    			add_location(input0, file$9, 222, 16, 6958);
     			attr_dev(input1, "name", "Email");
     			attr_dev(input1, "id", "Email");
     			attr_dev(input1, "type", "text");
     			attr_dev(input1, "placeholder", "Email");
     			input1.required = true;
-    			attr_dev(input1, "class", "svelte-isfeg9");
-    			add_location(input1, file$9, 196, 16, 5863);
+    			attr_dev(input1, "class", "svelte-19c79ac");
+    			add_location(input1, file$9, 223, 16, 7073);
     			attr_dev(input2, "name", "Password");
     			attr_dev(input2, "id", "Password");
     			attr_dev(input2, "type", "password");
     			attr_dev(input2, "placeholder", "Password");
     			input2.required = true;
-    			attr_dev(input2, "class", "svelte-isfeg9");
-    			add_location(input2, file$9, 197, 16, 5974);
+    			attr_dev(input2, "class", "svelte-19c79ac");
+    			add_location(input2, file$9, 224, 16, 7184);
     			attr_dev(input3, "name", "confirmPassword");
     			attr_dev(input3, "id", "confirmPassword");
     			attr_dev(input3, "type", "password");
     			attr_dev(input3, "placeholder", "Confirm Password");
     			input3.required = true;
-    			attr_dev(input3, "class", "svelte-isfeg9");
-    			add_location(input3, file$9, 198, 16, 6101);
-    			add_location(br0, file$9, 199, 16, 6287);
+    			attr_dev(input3, "class", "svelte-19c79ac");
+    			add_location(input3, file$9, 225, 16, 7311);
+    			attr_dev(p, "id", "matchPassword");
+    			attr_dev(p, "class", "svelte-19c79ac");
+    			add_location(p, file$9, 225, 185, 7480);
+    			add_location(br0, file$9, 226, 16, 7544);
     			attr_dev(button0, "id", "signup-btn");
-    			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
+    			attr_dev(button0, "class", "btn btn-success svelte-19c79ac");
     			attr_dev(button0, "type", "submit");
-    			add_location(button0, file$9, 199, 21, 6292);
+    			add_location(button0, file$9, 226, 21, 7549);
+    			attr_dev(form, "onsubmit", "return false");
+    			add_location(form, file$9, 221, 12, 6911);
     			attr_dev(div2, "id", "signup-div");
-    			add_location(div2, file$9, 190, 8, 5497);
+    			add_location(div2, file$9, 217, 8, 6728);
     			set_style(hr, "border", "1px solid green");
-    			add_location(hr, file$9, 202, 8, 6444);
-    			add_location(br1, file$9, 204, 41, 6565);
-    			attr_dev(button1, "class", "login-signup svelte-isfeg9");
-    			add_location(button1, file$9, 204, 46, 6570);
-    			attr_dev(h5, "class", "svelte-isfeg9");
-    			add_location(h5, file$9, 204, 12, 6536);
-    			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
-    			add_location(div3, file$9, 203, 8, 6490);
+    			add_location(hr, file$9, 229, 8, 7692);
+    			add_location(br1, file$9, 231, 41, 7813);
+    			attr_dev(button1, "class", "login-signup svelte-19c79ac");
+    			add_location(button1, file$9, 231, 46, 7818);
+    			attr_dev(h5, "class", "svelte-19c79ac");
+    			add_location(h5, file$9, 231, 12, 7784);
+    			attr_dev(div3, "class", "no-cred-sign-signup svelte-19c79ac");
+    			add_location(div3, file$9, 230, 8, 7738);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
     			append_dev(div2, div1);
     			append_dev(div1, div0);
     			append_dev(div2, t0);
-    			append_dev(div2, input0);
+    			append_dev(div2, form);
+    			append_dev(form, input0);
     			set_input_value(input0, /*Name*/ ctx[1]);
-    			append_dev(div2, t1);
-    			append_dev(div2, input1);
+    			append_dev(form, t1);
+    			append_dev(form, input1);
     			set_input_value(input1, /*Email*/ ctx[0]);
-    			append_dev(div2, t2);
-    			append_dev(div2, input2);
+    			append_dev(form, t2);
+    			append_dev(form, input2);
     			set_input_value(input2, /*Password*/ ctx[2]);
-    			append_dev(div2, t3);
-    			append_dev(div2, input3);
+    			append_dev(form, t3);
+    			append_dev(form, input3);
     			set_input_value(input3, /*confirmPassword*/ ctx[3]);
-    			append_dev(div2, t4);
-    			append_dev(div2, br0);
-    			append_dev(div2, button0);
-    			insert_dev(target, t6, anchor);
-    			insert_dev(target, hr, anchor);
+    			append_dev(form, p);
+    			append_dev(form, t5);
+    			append_dev(form, br0);
+    			append_dev(form, button0);
     			insert_dev(target, t7, anchor);
+    			insert_dev(target, hr, anchor);
+    			insert_dev(target, t8, anchor);
     			insert_dev(target, div3, anchor);
     			append_dev(div3, h5);
-    			append_dev(h5, t8);
+    			append_dev(h5, t9);
     			append_dev(h5, br1);
     			append_dev(h5, button1);
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler_1*/ ctx[16]),
-    				listen_dev(input1, "input", /*input1_input_handler_1*/ ctx[17]),
-    				listen_dev(input2, "input", /*input2_input_handler*/ ctx[18]),
-    				listen_dev(input3, "input", /*input3_input_handler*/ ctx[19]),
-    				listen_dev(input3, "change", /*matchesPassword*/ ctx[9], false, false, false),
-    				listen_dev(button0, "click", /*signUp*/ ctx[7], false, false, false),
-    				listen_dev(button1, "click", /*click_handler_1*/ ctx[20], false, false, false)
+    				listen_dev(input0, "input", /*input0_input_handler_1*/ ctx[29]),
+    				listen_dev(input1, "input", /*input1_input_handler_1*/ ctx[30]),
+    				listen_dev(input2, "input", /*input2_input_handler*/ ctx[31]),
+    				listen_dev(input3, "input", /*input3_input_handler*/ ctx[32]),
+    				listen_dev(input3, "change", /*matchesPassword*/ ctx[11], false, false, false),
+    				listen_dev(button0, "click", /*signUp*/ ctx[9], false, false, false),
+    				listen_dev(button1, "click", /*click_handler_1*/ ctx[33], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*Name*/ 2 && input0.value !== /*Name*/ ctx[1]) {
+    			if (dirty[0] & /*Name*/ 2 && input0.value !== /*Name*/ ctx[1]) {
     				set_input_value(input0, /*Name*/ ctx[1]);
     			}
 
-    			if (dirty & /*Email*/ 1 && input1.value !== /*Email*/ ctx[0]) {
+    			if (dirty[0] & /*Email*/ 1 && input1.value !== /*Email*/ ctx[0]) {
     				set_input_value(input1, /*Email*/ ctx[0]);
     			}
 
-    			if (dirty & /*Password*/ 4 && input2.value !== /*Password*/ ctx[2]) {
+    			if (dirty[0] & /*Password*/ 4 && input2.value !== /*Password*/ ctx[2]) {
     				set_input_value(input2, /*Password*/ ctx[2]);
     			}
 
-    			if (dirty & /*confirmPassword*/ 8 && input3.value !== /*confirmPassword*/ ctx[3]) {
+    			if (dirty[0] & /*confirmPassword*/ 8 && input3.value !== /*confirmPassword*/ ctx[3]) {
     				set_input_value(input3, /*confirmPassword*/ ctx[3]);
     			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div2);
-    			if (detaching) detach_dev(t6);
-    			if (detaching) detach_dev(hr);
     			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(hr);
+    			if (detaching) detach_dev(t8);
     			if (detaching) detach_dev(div3);
     			run_all(dispose);
     		}
@@ -14799,14 +14885,14 @@ var app = (function () {
     		block,
     		id: create_else_block$2.name,
     		type: "else",
-    		source: "(190:4) {:else}",
+    		source: "(217:4) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (174:4) {#if logPage}
+    // (201:4) {#if logPage}
     function create_if_block$5(ctx) {
     	let div2;
     	let div1;
@@ -14863,55 +14949,55 @@ var app = (function () {
     			br3 = element("br");
     			button1 = element("button");
     			button1.textContent = "Sign Up";
-    			attr_dev(div0, "class", "loader svelte-isfeg9");
-    			add_location(div0, file$9, 176, 16, 4626);
+    			attr_dev(div0, "class", "loader svelte-19c79ac");
+    			add_location(div0, file$9, 203, 16, 5851);
     			attr_dev(div1, "id", "signin-loader");
-    			attr_dev(div1, "class", "loader-container svelte-isfeg9");
-    			add_location(div1, file$9, 175, 8, 4559);
+    			attr_dev(div1, "class", "loader-container svelte-19c79ac");
+    			add_location(div1, file$9, 202, 8, 5784);
     			attr_dev(input0, "name", "logEmail");
     			attr_dev(input0, "id", "logEmail");
     			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "Email");
     			input0.required = true;
-    			attr_dev(input0, "class", "svelte-isfeg9");
-    			add_location(input0, file$9, 179, 16, 4741);
-    			add_location(br0, file$9, 179, 119, 4844);
+    			attr_dev(input0, "class", "svelte-19c79ac");
+    			add_location(input0, file$9, 206, 16, 5972);
+    			add_location(br0, file$9, 206, 119, 6075);
     			attr_dev(input1, "name", "logPassword");
     			attr_dev(input1, "id", "logPassword");
     			attr_dev(input1, "type", "password");
     			attr_dev(input1, "placeholder", "Password");
     			input1.required = true;
-    			attr_dev(input1, "class", "svelte-isfeg9");
-    			add_location(input1, file$9, 180, 16, 4866);
-    			add_location(br1, file$9, 180, 135, 4985);
-    			add_location(br2, file$9, 181, 16, 5007);
+    			attr_dev(input1, "class", "svelte-19c79ac");
+    			add_location(input1, file$9, 207, 16, 6097);
+    			add_location(br1, file$9, 207, 135, 6216);
+    			add_location(br2, file$9, 208, 16, 6238);
     			attr_dev(a, "id", "forgotPassword");
     			attr_dev(a, "href", "");
-    			attr_dev(a, "class", "svelte-isfeg9");
-    			add_location(a, file$9, 181, 21, 5012);
-    			attr_dev(button0, "class", "btn btn-success svelte-isfeg9");
+    			attr_dev(a, "class", "svelte-19c79ac");
+    			add_location(a, file$9, 208, 21, 6243);
+    			attr_dev(button0, "class", "btn btn-success svelte-19c79ac");
     			attr_dev(button0, "type", "submit");
-    			add_location(button0, file$9, 182, 20, 5085);
-    			attr_dev(h50, "class", "svelte-isfeg9");
-    			add_location(h50, file$9, 182, 16, 5081);
-    			attr_dev(form, "name", "login-form");
+    			add_location(button0, file$9, 209, 20, 6316);
+    			attr_dev(h50, "class", "svelte-19c79ac");
+    			add_location(h50, file$9, 209, 16, 6312);
     			attr_dev(form, "id", "login-form");
-    			attr_dev(form, "class", "svelte-isfeg9");
-    			add_location(form, file$9, 178, 12, 4684);
+    			attr_dev(form, "onsubmit", "return false");
+    			attr_dev(form, "class", "svelte-19c79ac");
+    			add_location(form, file$9, 205, 12, 5909);
     			attr_dev(div2, "id", "login-div");
-    			attr_dev(div2, "class", "svelte-isfeg9");
-    			add_location(div2, file$9, 174, 8, 4530);
+    			attr_dev(div2, "class", "svelte-19c79ac");
+    			add_location(div2, file$9, 201, 8, 5755);
     			set_style(hr, "border", "1px solid green");
-    			add_location(hr, file$9, 185, 8, 5215);
-    			add_location(br3, file$9, 187, 35, 5351);
-    			attr_dev(button1, "class", "login-signup svelte-isfeg9");
+    			add_location(hr, file$9, 212, 8, 6446);
+    			add_location(br3, file$9, 214, 35, 6582);
+    			attr_dev(button1, "class", "login-signup svelte-19c79ac");
     			attr_dev(button1, "id", "signupBtn");
-    			add_location(button1, file$9, 187, 40, 5356);
-    			attr_dev(h51, "class", "svelte-isfeg9");
-    			add_location(h51, file$9, 187, 8, 5324);
-    			attr_dev(div3, "class", "no-cred-sign-signup svelte-isfeg9");
+    			add_location(button1, file$9, 214, 40, 6587);
+    			attr_dev(h51, "class", "svelte-19c79ac");
+    			add_location(h51, file$9, 214, 8, 6555);
+    			attr_dev(div3, "class", "no-cred-sign-signup svelte-19c79ac");
     			attr_dev(div3, "id", "no-Acct-signup");
-    			add_location(div3, file$9, 186, 8, 5261);
+    			add_location(div3, file$9, 213, 8, 6492);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
@@ -14943,18 +15029,18 @@ var app = (function () {
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[13]),
-    				listen_dev(input1, "input", /*input1_input_handler*/ ctx[14]),
-    				listen_dev(button0, "click", /*signIn*/ ctx[8], false, false, false),
-    				listen_dev(button1, "click", /*click_handler*/ ctx[15], false, false, false)
+    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[26]),
+    				listen_dev(input1, "input", /*input1_input_handler*/ ctx[27]),
+    				listen_dev(button0, "click", /*signIn*/ ctx[10], false, false, false),
+    				listen_dev(button1, "click", /*click_handler*/ ctx[28], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*logEmail*/ 16 && input0.value !== /*logEmail*/ ctx[4]) {
+    			if (dirty[0] & /*logEmail*/ 16 && input0.value !== /*logEmail*/ ctx[4]) {
     				set_input_value(input0, /*logEmail*/ ctx[4]);
     			}
 
-    			if (dirty & /*logPassword*/ 32 && input1.value !== /*logPassword*/ ctx[5]) {
+    			if (dirty[0] & /*logPassword*/ 32 && input1.value !== /*logPassword*/ ctx[5]) {
     				set_input_value(input1, /*logPassword*/ ctx[5]);
     			}
     		},
@@ -14972,7 +15058,7 @@ var app = (function () {
     		block,
     		id: create_if_block$5.name,
     		type: "if",
-    		source: "(174:4) {#if logPage}",
+    		source: "(201:4) {#if logPage}",
     		ctx
     	});
 
@@ -14985,8 +15071,11 @@ var app = (function () {
     	let h3;
     	let t1;
     	let t2;
+    	let t3;
     	let img;
     	let img_src_value;
+    	let current;
+    	let if_block0 = /*popUp*/ ctx[7] && create_if_block_1$5(ctx);
 
     	function select_block_type(ctx, dirty) {
     		if (/*logPage*/ ctx[6]) return create_if_block$5;
@@ -14994,7 +15083,7 @@ var app = (function () {
     	}
 
     	let current_block_type = select_block_type(ctx);
-    	let if_block = current_block_type(ctx);
+    	let if_block1 = current_block_type(ctx);
 
     	const block = {
     		c: function create() {
@@ -15003,21 +15092,24 @@ var app = (function () {
     			h3 = element("h3");
     			h3.textContent = "Checkas.io";
     			t1 = space();
-    			if_block.c();
+    			if (if_block0) if_block0.c();
     			t2 = space();
+    			if_block1.c();
+    			t3 = space();
     			img = element("img");
-    			attr_dev(h3, "class", "svelte-isfeg9");
-    			add_location(h3, file$9, 172, 4, 4484);
+    			attr_dev(h3, "class", "svelte-19c79ac");
+    			add_location(h3, file$9, 193, 4, 5490);
     			attr_dev(div0, "id", "entry");
-    			attr_dev(div0, "class", "container svelte-isfeg9");
-    			add_location(div0, file$9, 171, 0, 4445);
+    			attr_dev(div0, "class", "container svelte-19c79ac");
+    			add_location(div0, file$9, 192, 0, 5451);
     			attr_dev(img, "id", "back-image");
     			attr_dev(img, "alt", "checker");
     			if (img.src !== (img_src_value = "./images/checkers.jpg")) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "class", "svelte-isfeg9");
-    			add_location(img, file$9, 208, 0, 6694);
-    			attr_dev(div1, "class", "background svelte-isfeg9");
-    			add_location(div1, file$9, 170, 0, 4420);
+    			attr_dev(img, "class", "svelte-19c79ac");
+    			add_location(img, file$9, 235, 0, 7941);
+    			attr_dev(div1, "id", "background");
+    			attr_dev(div1, "class", "background svelte-19c79ac");
+    			add_location(div1, file$9, 191, 0, 5410);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -15027,28 +15119,62 @@ var app = (function () {
     			append_dev(div1, div0);
     			append_dev(div0, h3);
     			append_dev(div0, t1);
-    			if_block.m(div0, null);
-    			append_dev(div1, t2);
+    			if (if_block0) if_block0.m(div0, null);
+    			append_dev(div0, t2);
+    			if_block1.m(div0, null);
+    			append_dev(div1, t3);
     			append_dev(div1, img);
+    			current = true;
     		},
-    		p: function update(ctx, [dirty]) {
-    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
-    				if_block.p(ctx, dirty);
-    			} else {
-    				if_block.d(1);
-    				if_block = current_block_type(ctx);
+    		p: function update(ctx, dirty) {
+    			if (/*popUp*/ ctx[7]) {
+    				if (if_block0) {
+    					if_block0.p(ctx, dirty);
 
-    				if (if_block) {
-    					if_block.c();
-    					if_block.m(div0, null);
+    					if (dirty[0] & /*popUp*/ 128) {
+    						transition_in(if_block0, 1);
+    					}
+    				} else {
+    					if_block0 = create_if_block_1$5(ctx);
+    					if_block0.c();
+    					transition_in(if_block0, 1);
+    					if_block0.m(div0, t2);
+    				}
+    			} else if (if_block0) {
+    				group_outros();
+
+    				transition_out(if_block0, 1, 1, () => {
+    					if_block0 = null;
+    				});
+
+    				check_outros();
+    			}
+
+    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block1) {
+    				if_block1.p(ctx, dirty);
+    			} else {
+    				if_block1.d(1);
+    				if_block1 = current_block_type(ctx);
+
+    				if (if_block1) {
+    					if_block1.c();
+    					if_block1.m(div0, null);
     				}
     			}
     		},
-    		i: noop,
-    		o: noop,
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(if_block0);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(if_block0);
+    			current = false;
+    		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
-    			if_block.d();
+    			if (if_block0) if_block0.d();
+    			if_block1.d();
     		}
     	};
 
@@ -15063,38 +15189,6 @@ var app = (function () {
     	return block;
     }
 
-    function validateSigin() {
-    	return true;
-    }
-
-    function validateSignUp() {
-    	return true;
-    }
-
-    function validateSignInEmail() {
-    	
-    }
-
-    function validateSignInPassword() {
-    	
-    }
-
-    function validateSignUpName() {
-    	
-    }
-
-    function validateSignUpEmail() {
-    	
-    }
-
-    function validateSignUppassWord() {
-    	
-    }
-
-    function validateSignUpconPassword() {
-    	
-    }
-
     function loading() {
     	window.$(".loader-container").attr("style", "display: flex");
     }
@@ -15104,13 +15198,18 @@ var app = (function () {
     }
 
     function instance$b($$self, $$props, $$invalidate) {
+    	let $currUser;
+    	validate_store(currUser, "currUser");
+    	component_subscribe($$self, currUser, $$value => $$invalidate(14, $currUser = $$value));
     	let Email, Name, Password, confirmPassword;
     	let logEmail, logPassword;
     	let request;
     	let logPage = true;
+    	let popUp = false;
+    	let popUpText;
 
     	function signUp() {
-    		{
+    		if (validateSignUp()) {
     			console.log("In sign up");
     			loading();
 
@@ -15122,8 +15221,6 @@ var app = (function () {
     					password: Password
     				};
 
-    				console.log("Sending sign up request");
-
     				invokeFunction(request).then(response => {
     					console.log(response);
 
@@ -15132,9 +15229,9 @@ var app = (function () {
     						createUser();
     					} else {
     						console.log(response.err);
+    						pop(response.err);
     					}
 
-    					console.log("stoping loading sign");
     					stopLoading();
     				}).catch(err => {
     					console.log(err);
@@ -15159,8 +15256,7 @@ var app = (function () {
     	}
 
     	function signIn() {
-    		{
-    			console.log("In sign in");
+    		if (validateSigin()) {
     			loading();
 
     			if (logEmail != null && logPassword != null) {
@@ -15174,13 +15270,15 @@ var app = (function () {
     					if (response.msg != null && response.msg) {
     						request.func = "retrieveUser";
     						retrieveUser();
+    						console.log($currUser);
     					} else if (response.msg != null && !response.msg) {
     						console.log("Unverified Email");
+    						pop("unverified Email");
     					} else {
     						console.log(response.err);
+    						pop(response.err);
     					}
 
-    					console.log("stoping loading sign");
     					stopLoading();
     				}).catch(err => {
     					console.log(err);
@@ -15196,10 +15294,12 @@ var app = (function () {
     				let data = response.msg;
     				data.email = logEmail;
     				currUser.set(new User(data));
+    				console.log(data);
     				($$invalidate(0, Email = ""), $$invalidate(1, Name = ""), $$invalidate(2, Password = ""), $$invalidate(3, confirmPassword = ""));
     				($$invalidate(4, logEmail = ""), $$invalidate(5, logPassword = ""));
     			} else {
     				console.log(response.err);
+    				pop("Incorrect email address and/or password");
     			}
     		}).catch(err => {
     			console.log(err);
@@ -15207,16 +15307,65 @@ var app = (function () {
     	}
 
     	function matchesPassword() {
+    		var para = document.getElementById("matchPassword");
+
     		if (Password != confirmPassword) {
     			console.log("passwords must match");
+    			para.style.display = "block";
     		} else {
     			console.log("passwords match");
+    			para.style.display = "none";
     		}
     	}
 
     	window.$(document).ready(function () {
     		document.getElementById("signin-loader").addEventListener("load", stopLoading());
     	});
+
+    	function validateSigin() {
+    		return validateSignInEmail() && validateSignInPassword();
+    	}
+
+    	function validateSignUp() {
+    		return validateSignUpName() && validateSignUpEmail() && validateSignUppassWord() && validateSignUpconPassword();
+    	}
+
+    	function validateSignInEmail() {
+    		return logEmail != null && logEmail != "";
+    	}
+
+    	function validateSignInPassword() {
+    		return logPassword != null && logPassword != "";
+    	}
+
+    	function validateSignUpName() {
+    		return Name != null && Name != "";
+    	}
+
+    	function validateSignUpEmail() {
+    		return Email != null && Email != "";
+    	}
+
+    	function validateSignUppassWord() {
+    		return Password != null && Password != "";
+    	}
+
+    	function validateSignUpconPassword() {
+    		return confirmPassword != null && confirmPassword != "" && confirmPassword == Password;
+    	}
+
+    	function pop(value) {
+    		$$invalidate(7, popUp = true);
+    		$$invalidate(8, popUpText = value);
+
+    		if (typeof value != "string") {
+    			$$invalidate(8, popUpText = value.message);
+    		}
+    	}
+
+    	function closePop() {
+    		$$invalidate(7, popUp = false);
+    	}
 
     	const writable_props = [];
 
@@ -15265,6 +15414,7 @@ var app = (function () {
     		currUser,
     		page,
     		invokeFunction,
+    		fly,
     		User,
     		Email,
     		Name,
@@ -15274,6 +15424,8 @@ var app = (function () {
     		logPassword,
     		request,
     		logPage,
+    		popUp,
+    		popUpText,
     		signUp,
     		createUser,
     		signIn,
@@ -15288,7 +15440,10 @@ var app = (function () {
     		validateSignUppassWord,
     		validateSignUpconPassword,
     		loading,
-    		stopLoading
+    		stopLoading,
+    		pop,
+    		closePop,
+    		$currUser
     	});
 
     	$$self.$inject_state = $$props => {
@@ -15300,6 +15455,8 @@ var app = (function () {
     		if ("logPassword" in $$props) $$invalidate(5, logPassword = $$props.logPassword);
     		if ("request" in $$props) request = $$props.request;
     		if ("logPage" in $$props) $$invalidate(6, logPage = $$props.logPage);
+    		if ("popUp" in $$props) $$invalidate(7, popUp = $$props.popUp);
+    		if ("popUpText" in $$props) $$invalidate(8, popUpText = $$props.popUpText);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -15314,12 +15471,25 @@ var app = (function () {
     		logEmail,
     		logPassword,
     		logPage,
+    		popUp,
+    		popUpText,
     		signUp,
     		signIn,
     		matchesPassword,
+    		closePop,
     		request,
+    		$currUser,
     		createUser,
     		retrieveUser,
+    		validateSigin,
+    		validateSignUp,
+    		validateSignInEmail,
+    		validateSignInPassword,
+    		validateSignUpName,
+    		validateSignUpEmail,
+    		validateSignUppassWord,
+    		validateSignUpconPassword,
+    		pop,
     		input0_input_handler,
     		input1_input_handler,
     		click_handler,
@@ -15334,7 +15504,7 @@ var app = (function () {
     class Entry extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$b, create_fragment$b, safe_not_equal, {});
+    		init(this, options, instance$b, create_fragment$b, safe_not_equal, {}, [-1, -1]);
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -15392,7 +15562,7 @@ var app = (function () {
     	let if_block1_anchor;
     	let current;
     	let if_block0 = /*$page*/ ctx[1] == 0 && create_if_block_2$5(ctx);
-    	let if_block1 = /*$page*/ ctx[1] == 1 && create_if_block_1$5(ctx);
+    	let if_block1 = /*$page*/ ctx[1] == 1 && create_if_block_1$6(ctx);
 
     	const block = {
     		c: function create() {
@@ -15436,7 +15606,7 @@ var app = (function () {
     						transition_in(if_block1, 1);
     					}
     				} else {
-    					if_block1 = create_if_block_1$5(ctx);
+    					if_block1 = create_if_block_1$6(ctx);
     					if_block1.c();
     					transition_in(if_block1, 1);
     					if_block1.m(if_block1_anchor.parentNode, if_block1_anchor);
@@ -15520,7 +15690,7 @@ var app = (function () {
     }
 
     // (14:1) {#if $page == 1}
-    function create_if_block_1$5(ctx) {
+    function create_if_block_1$6(ctx) {
     	let current;
     	const play = new GamePlay({ $$inline: true });
 
@@ -15548,7 +15718,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_1$5.name,
+    		id: create_if_block_1$6.name,
     		type: "if",
     		source: "(14:1) {#if $page == 1}",
     		ctx
