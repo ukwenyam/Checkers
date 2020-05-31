@@ -110,7 +110,7 @@
     <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="{Name}" bind:value="{Name}">
 </div>
 
-<input id="authPass" placeholder="Account Password" bind:value="{authPassword}"/>
+<input id="authPass" type="password" placeholder="Account Password" bind:value="{authPassword}"/>
 
 <button class="btn btn-success" on:click="{updateProfile}">Update Profile</button>
 
@@ -120,14 +120,14 @@
     <div class="input-group-prepend">
         <div class="input-group-text">Old Password:</div>
     </div>
-    <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Account Password" bind:value="{oldPassword}">
+    <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Account Password" bind:value="{oldPassword}">
 </div>
 
 <div class="input-group mb-2">
     <div class="input-group-prepend">
         <div class="input-group-text">New Password:</div>
     </div>
-    <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="New Password" bind:value="{newPassword}">
+    <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="New Password" bind:value="{newPassword}">
 </div>
 
 <button class="btn btn-success" on:click="{resetPassword}">Reset</button>

@@ -289,13 +289,12 @@
         right:0;
         position:fixed;
         opacity:0.97;
+        overflow-y:scroll;
     }
 
     h1 {
         text-align: center;
-        top:50px;
-        left:42.5%;
-        position:fixed;
+        margin-top:50px;
     }
 
     #backpurple {
@@ -338,13 +337,12 @@
 
         #rightSlide {
             width:100%;
+            opacity:1;
+            height: 110%;
         }
 
         h1 {
-            text-align: center;
-            top:25px;
-            left:25%;
-            position:fixed;
+            margin-top:25px;
         }
 
 		.circles {
@@ -352,11 +350,12 @@
             height:15%;
             font-size: 95%;
             border-radius: 0.4rem;
-            margin-top:30%;
+            margin-top:15%;
         }
 
-        #rightSlide {
-            opacity:1;
+        #backpurple {
+            height: 110%;
+            overflow-y: scroll;
         }
     }
 </style>

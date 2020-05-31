@@ -22,6 +22,8 @@
 
 <body>
 	<script>
+		screen.orientation.lock("portrait-primary");
+		
 		if('serviceWorker' in navigator) {
 			try {
 				navigator.serviceWorker.register('./sw.js');
