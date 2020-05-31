@@ -64,7 +64,7 @@
 
 <h5>Game Password</h5>
 
-<input bind:value="{gamePassword}" placeholder="Game Password"/>
+<input bind:value="{gamePassword}" placeholder="Game Password" on:keydown="{event => event.which === 13 && joinGame()}" required/>
 
 <button class="btn btn-primary" style="margin-bottom:30px;" on:click="{joinGame}">Join</button>
 

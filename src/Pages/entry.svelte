@@ -75,10 +75,12 @@
             } else {
                 errMsg = response.err;
                 viewError = true;
+                loading = false;
             }
         }).catch((err) => {
             errMsg = err;
             viewError = true;
+            loading = false;
         });
     }
 
@@ -187,7 +189,7 @@
     {#if logPage == true}
         <div id="login-div">
             <input id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
-            <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
+            <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" on:keydown="{event => event.which === 13 && signIn()}" required/><br/>
             <br/><a id="forgotPassword" on:click="{() => (logPage = null)}">Forgot Password?</a>
             {#if !loading}
                 <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
@@ -206,7 +208,7 @@
             <input id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
             <input id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
             <input id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
-            <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:keyup="{checkPasswordMatch}" placeholder="Confirm Password" required/>
+            <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:keyup="{checkPasswordMatch}" placeholder="Confirm Password" on:keydown="{event => event.which === 13 && signUp()}" required/>
             {#if !loading}
                 <br/><button class="btn btn-success" on:click="{signUp}" type="submit">Sign Up</button>
             {:else}

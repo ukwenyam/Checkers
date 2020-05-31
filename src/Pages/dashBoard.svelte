@@ -1,11 +1,18 @@
 <script>
-    import { currUser, page, userGames } from '../Scripts/Init.js';
+    import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { fly } from 'svelte/transition';
+    import { onMount } from 'svelte';
     import List from '../Components/gameList.svelte';
     import Settings from '../Components/settings.svelte';
     import Prefs from '../Components/gamePref.svelte';
     import Pass from '../Components/gamePass.svelte';
+    import LeagueTable from '../Components/leaderBoard.svelte';
+
+    setTimeout(async () => {
+        if($leaderBoard.length == 0)
+            await getLeagueTable();
+    }, 2000);
 
     let request;
 
@@ -17,9 +24,35 @@
 
     let gamePrefView = false, gamePassView = false;
 
+    let leaderBoardView = false, tutorialView = false;
+
     let screenWidth = screen.width;
 
     let loading = true;
+
+    function getLeagueTable() {
+
+        request = {
+            func: "checkersLeague",
+            name: $currUser.name
+        }
+
+        invokeFunction(request).then((response) => {
+            console.log(response);
+            if(response.msg != null) {
+                leaderBoard.set(response.msg.arr);
+
+                currUser.update(state => {
+                    state.position = response.msg.pos;
+                    return state;
+                });
+            } else {
+                console.log(response.err);
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
 
     function closeNav() {
 
@@ -30,6 +63,8 @@
         popUp = false;
 
         gamePrefView = false, gamePassView = false;
+
+        leaderBoardView = false, tutorialView = false;
     }
 
     function popGamePref() {
@@ -60,7 +95,7 @@
         }
 
         invokeFunction(request).then((response) => {
-            console.log(response);
+            //console.log(response);
             if(response.msg != null) {
 
                 let games = response.msg;
@@ -87,8 +122,20 @@
         });
     }
 
+    function viewLeagueBoard() {
+        closeNav();
+
+        loading = false;
+
+        setTimeout(() => { viewRightSlide = true; }, 1);
+
+        setTimeout(() => { leaderBoardView = true; }, 1);
+    }
+
     function viewSettings() {
         closeNav();
+
+        loading = false;
 
         setTimeout(() => { viewRightSlide = true; }, 1);
 
@@ -116,9 +163,10 @@
     </div>
 {/if}
 
+
 <div id="backpurple" on:click="{closeNav}">
 
-    <button id="logout" class="btn btn-danger" on:click="{signOut}">Logout</button>
+    <button id="logout" class="btn btn-danger" on:click="{signOut}">Logout ({$currUser.name})</button>
 
     <h1>Dashboard</h1>
 
@@ -134,7 +182,7 @@
         View Games
     </button>
 
-    <button class="circles btn btn-info">
+    <button class="circles btn btn-info" on:click="{viewLeagueBoard}">
         Leadership Board 
     </button>
 
@@ -149,23 +197,27 @@
 
 {#if viewRightSlide}
     <div id="rightSlide" class="container-fluid" transition:fly={{ x:200, duration:1000 }}>
-    {#if loading}
-        <div id="signin-loader" class="loader-container">
-            <div class="loader"></div>
-        </div>
-    {:else}
         {#if screenWidth < 800}
             <button class="btn btn-danger" on:click="{closeNav}">Back</button>
         {/if}
 
-        {#if gamesView}
-            <List/>
-        {/if}
+        {#if loading}
+            <div id="signin-loader" class="loader-container">
+                <div class="loader"></div>
+            </div>
+        {:else}
+            {#if gamesView}
+                <List/>
+            {/if}
 
-        {#if settingsView}
-            <Settings/>
+            {#if settingsView}
+                <Settings/>
+            {/if}
+
+            {#if leaderBoardView}
+                <LeagueTable/>
+            {/if}
         {/if}
-    {/if}
     </div>
 {/if}
 
@@ -188,7 +240,7 @@
         animation: loader 1.2s linear infinite;
     }
 
-    @keyframes loader{
+    @keyframes loader {
         25%{
             color: #2ecc71;
         }
@@ -216,7 +268,6 @@
     }
 
     #logout {
-        width:100px;
         position:fixed;
         right:20px;
         top:10px;

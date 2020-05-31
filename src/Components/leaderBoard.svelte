@@ -1,0 +1,134 @@
+<script>
+    import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
+
+    let showLeague = true;
+</script>
+
+{#if showLeague}
+    <button class="btn btn-primary" on:click="{() => (showLeague = !showLeague)}">My Stats</button>
+
+    <h5>Checkers League - Top 50</h5>
+    <hr/>
+
+    <h6 style="text-align:center;margin-top:10px;margin-bottom:10px;">League Position - #{$currUser.position}</h6>
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Wins</th>
+            <th>Draws</th>
+            <th>Losses</th>
+            <th>Points</th>
+        </tr>
+        {#each $leaderBoard as user, i}
+            {#if user.name != $currUser.name}
+                <tr>
+                    <td>{i + 1}</td>
+                    <td>{user.name}</td>
+                    <td>{user.wins}</td>
+                    <td>{user.draws}</td>
+                    <td>{user.losses}</td>
+                    <td>{user.totalPoints}</td>
+                </tr>
+            {:else}
+                <tr>
+                    <th>{i + 1}</th>
+                    <th>{user.name}</th>
+                    <th>{user.wins}</th>
+                    <th>{user.draws}</th>
+                    <th>{user.losses}</th>
+                    <th>{user.totalPoints}</th>
+                </tr>
+            {/if}
+        {/each}
+    </table>
+{:else}
+    <button class="btn btn-primary" on:click="{() => (showLeague = !showLeague)}">League Table</button>
+
+    <h5>My Stats</h5>
+    <hr/>
+
+    <table id="stats">
+        <tr>
+            <th style="text-align:left;">League Position</th>
+            <td>{$currUser.position}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Total Points</th>
+            <td>{$currUser.totalPoints}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Wins</th>
+            <td>{$currUser.wins}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Draws</th>
+            <td>{$currUser.draws}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Losses</th>
+            <td>{$currUser.losses}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Games Played</th>
+            <td>{$currUser.gamesPlayed}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Total Moves</th>
+            <td>{$currUser.gamesPlayed}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Avg. Moves Per Game</th>
+            <td>{$currUser.avgMovesPerGame}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Most Moves</th>
+            <td>{$currUser.mostMoves}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Least Moves</th>
+            <td>{$currUser.leastMoves}</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Total Time Played</th>
+            <td>{$currUser.totalTimePlayed} minutes</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Avg. Time Played Per Game</th>
+            <td>{$currUser.avgTimePlayPerGame} minutes</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Least Time Played</th>
+            <td>{$currUser.leastTimePlayed} minutes</td>
+        </tr>
+        <tr>
+            <th style="text-align:left;">Most Time Played</th>
+            <td>{$currUser.mostTimePlayed} minutes</td>
+        </tr>
+    </table>
+{/if}
+
+<style>
+    h5 {
+        text-align:center;
+        margin-top:20px;
+    }
+
+    table {
+        width:100%;
+    }
+
+    td, th {
+        height: 40px;
+        border-bottom: 1px solid black;
+        text-align: center;
+    }
+
+    .btn-primary {
+        float:right;
+        border-radius:0.4rem;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        margin-top:10px;
+    }
+</style>

@@ -10,6 +10,8 @@ window.onload = async function() {
         
         await currUser.set(indexes.user);
 
+        await leaderBoard.set(indexes.league); 
+
         await gameBoard.set(new Board(indexes.board.board, null));
 
         await gameHistory.set(indexes.history);
@@ -38,7 +40,7 @@ export const gameTab = writable(0);
 
 export const userGames = writable([]);
 
-export const leaderBoard = writable(null);
+export const leaderBoard = writable([]);
 
 export const gameBoard = writable(null);
 
@@ -89,6 +91,11 @@ window.onbeforeunload = async function() {
 
     await userGames.update(state => {
         indexes.games = state;
+        return state;
+    });
+
+    await leaderBoard.update(state => {
+        indexes.league = state;
         return state;
     });
 

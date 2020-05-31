@@ -19,5 +19,6 @@ export class User {
         this.totalTimePlayed = data.totalTimePlayed;
         this.avgTimePlayPerGame = data.avgTimePlayPerGame;
         this.totalPoints = data.totalPoints;
+        this.position = null;
     }
 }

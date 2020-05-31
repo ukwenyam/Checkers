@@ -293,14 +293,37 @@ export const saveGame = functions.https.onRequest((request, response) => {
     }
 });
 
-export const resumeGame = functions.https.onRequest((request, response) => {
+export const checkersLeague = functions.https.onRequest((request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const doc:any = db.collection("GAMES").doc(evt.gameID).get();
+    let users:any = [], i:number = 0, position:number = 0;
 
-    res.send({msg: doc.data()});
+    db.collection("USERS").orderBy("totalPoints", "desc")
+    .get()
+    .then(async function(snapshot:any) {
+        await snapshot.forEach(function(doc:any) {
+            i++;
+            if(doc.data().name == evt.name) {
+                position = i; return;
+            }
+        });
+
+        db.collection("USERS").orderBy("totalPoints", "desc").limit(50)
+        .get()
+        .then(async function(querySnapshot:any) {
+            await querySnapshot.forEach(function(doc:any) {
+                users.push(doc.data());
+            });
+
+            res.send({msg: {arr: users, pos: position}});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
 });
 
 export const finishGame = functions.https.onRequest((request, response) => {
@@ -311,9 +334,9 @@ export const finishGame = functions.https.onRequest((request, response) => {
     const docRef:any = db.collection("GAMES").doc(evt.gameID);
 
     docRef.update({
-        gameHistory: JSON.parse(evt.gameHistory),
+        gameHistory: evt.gameHistory,
         minutesPlayed: Number(evt.minutes),
-        chatHistory: JSON.parse(evt.chatHistory),
+        chatHistory: evt.chatHistory,
         finished: true
     }).then(function() {
         res.send({msg: "SUCCESS"});
@@ -368,7 +391,7 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
         });
     })
     .catch(function(error:any) {
-        res.send({err: "Error finding document"});
+        res.send({err: error.message});
     });
 
     db.collection("GAMES").where("secEmail", "==", evt.email)
@@ -384,6 +407,6 @@ export const retrieveUserGames = functions.https.onRequest((request, response) =
         res.send({msg: games});
     })
     .catch(function(error:any) {
-        res.send({err: "Error finding document"});
+        res.send({err: error.message});
     });
 });
