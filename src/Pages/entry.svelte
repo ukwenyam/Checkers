@@ -55,6 +55,16 @@
         }
     }
 
+    function checkPasswordMatch() {
+
+        if(Password != null && confirmPassword.length >= Password.length && confirmPassword != Password) {
+            errMsg = "Passwords Do Not Match!";
+            viewError = true;
+        } else {
+            viewError = false;
+        }
+    }
+
     function createUser() {
 
         invokeFunction(request).then((response) => {
@@ -136,12 +146,34 @@
         });
     }
 
-    function matchesPassword(){
-        if(Password != confirmPassword){
-            console.log("passwords must match");
-        } 
-        else{
-            console.log("passwords match");
+    function forgotPassword() {
+
+        if(logEmail != null || logEmail != '') {
+
+            request = {
+                func: "forgotPassword",
+                email: logEmail
+            }
+
+            invokeFunction(request).then((response) => {
+                if(response.msg == "SUCCESS") {
+                    errMsg = "Please Check Your Email For Password Reset";
+                    viewError = true;
+                    loading = false;
+                } else {
+                    errMsg = response.err;
+                    viewError = true;
+                    loading = false;
+                }
+            }).catch((err) => {
+                errMsg = err;
+                viewError = true;
+                loading = false;
+            });
+        } else {
+            errMsg = "Please Fill All Required Fields!";
+            viewError = true;
+            loading = false;
         }
     }
 </script>
@@ -152,11 +184,11 @@
         <h6 style="text-align:center;color:red;margin-top:20px;">{errMsg}</h6>
     {/if}
 
-    {#if logPage}
+    {#if logPage == true}
         <div id="login-div">
             <input id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
             <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" required/><br/>
-            <br/><a id="forgotPassword">Forgot Password?</a>
+            <br/><a id="forgotPassword" on:click="{() => (logPage = null)}">Forgot Password?</a>
             {#if !loading}
                 <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
             {:else}
@@ -169,12 +201,12 @@
         <div class="no-cred-sign-signup" id="no-Acct-signup">
             <h5>Don't have an Account? <br/><button class="login-signup" id="signupBtn" on:click="{() => (logPage = !logPage)}">Sign Up</button></h5>
         </div>
-    {:else}
+    {:else if logPage == false}
         <div id="signup-div">
             <input id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
             <input id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
             <input id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
-            <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:change="{matchesPassword}" placeholder="Confirm Password" required/>
+            <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:keyup="{checkPasswordMatch}" placeholder="Confirm Password" required/>
             {#if !loading}
                 <br/><button class="btn btn-success" on:click="{signUp}" type="submit">Sign Up</button>
             {:else}
@@ -186,6 +218,18 @@
         <hr style="border: 1px solid green"/>
         <div class="no-cred-sign-signup">
             <h5>Already have an Account? <br/><button class="login-signup" on:click="{() => (logPage = !logPage) }">Sign In</button></h5>
+        </div>
+    {:else if logPage == null}
+        <div id="signup-div">
+            <input id="Email" type="text" bind:value="{logEmail}" placeholder="Email" required/>
+            {#if !loading}
+                <br/><button class="btn btn-success" style="margin-bottom:30px;" on:click="{forgotPassword}" type="submit">Reset Password</button>
+            {:else}
+                <div id="signup-loader" class="loader-container">
+                    <div class="loader"></div>
+                </div>
+            {/if}
+            <br/><a id="forgotPassword" on:click="{() => (logPage = true)}">Back To Login</a>
         </div>
     {/if}
 </div>

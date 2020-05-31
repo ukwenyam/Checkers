@@ -170,6 +170,18 @@ export const retrieveUser = functions.https.onRequest((request, response) => {
     });
 }); */
 
+export const forgotPassword = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    auth.sendPasswordResetEmail(evt.email).then(function() {
+        res.send({msg: "SUCCESS"});
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
+});
+
 export const resetPassword = functions.https.onRequest((request, response) => {
 
     const res:any = respond.setResponse(response);
@@ -188,7 +200,7 @@ export const resetPassword = functions.https.onRequest((request, response) => {
     }).catch(function(error:any) {
         res.send({err: error.message});
     });
-})
+});
 
 export const createGame = functions.https.onRequest((request, response) => {
 
