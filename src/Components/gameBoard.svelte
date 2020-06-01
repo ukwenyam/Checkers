@@ -346,7 +346,7 @@
 
             let request = {
 				func: "saveGame",
-				id: $currUser.email,
+				id: $currUser.name,
                 gameID: $gamePref.id,
                 gameHistory: JSON.stringify($gameHistory),
                 chatHistory: JSON.stringify($gameChat),

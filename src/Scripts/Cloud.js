@@ -5,7 +5,8 @@ export function invokeFunction(load) {
     return new Promise((resolve, reject) => {
 
         currUser.update(state => {
-            load.id = state.email;
+            if(state != null)
+                load.id = state.email;
             return state;
         });
 

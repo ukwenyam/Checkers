@@ -105,12 +105,14 @@
                     viewError = true;
                     loading = false;
                 } else {
+                    console.log(response.err);
                     errMsg = response.err;
                     viewError = true;
                     loading = false;
                 }
             }).catch((err) => {
                 errMsg = err;
+                console.log(err);
                 viewError = true;
                 loading = false;
             });
@@ -138,10 +140,12 @@
                 logEmail = '', logPassword = '';
             } else {
                 errMsg = response.err;
+                console.log(response.err);
                 viewError = true;
                 loading = false;
             }
         }).catch((err) => {
+            console.log(err);
             errMsg = err;
             viewError = true;
             loading = false;
