@@ -1,7 +1,7 @@
 <script>
     import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { fly } from 'svelte/transition';
+    import { fly, fade } from 'svelte/transition';
     import { onMount } from 'svelte';
     import List from '../Components/gameList.svelte';
     import Settings from '../Components/settings.svelte';
@@ -10,9 +10,13 @@
     import LeagueTable from '../Components/leaderBoard.svelte';
 
     setTimeout(async () => {
-        if($leaderBoard.length == 0)
+        if($leaderBoard.length == 0) {
+            await getUserGames();
             await getLeagueTable();
+        }
     }, 2000);
+
+    let screenWidth = screen.width;
 
     let request;
 
@@ -26,8 +30,6 @@
 
     let leaderBoardView = false, tutorialView = false;
 
-    let screenWidth = screen.width;
-
     let loading = true;
 
     function getLeagueTable() {
@@ -38,7 +40,7 @@
         }
 
         invokeFunction(request).then((response) => {
-            console.log(response);
+            //console.log(response);
             if(response.msg != null) {
                 leaderBoard.set(response.msg.arr);
 
@@ -51,6 +53,40 @@
             }
         }).catch((err) => {
             console.log(err);
+        });
+    }
+
+    function getUserGames() {
+
+        request = {
+            func: "retrieveUserGames",
+            email: $currUser.email
+        }
+
+        invokeFunction(request).then((response) => {
+            //console.log(response);
+            if(response.msg != null) {
+
+                let games = response.msg;
+                
+                userGames.update(state => {
+                    state = [];
+                    for(let i = 0; i < games.length; i++) {
+                        if(games[i].finished)
+                            state.push(games[i]);
+                        else
+                            state.unshift(games[i]);
+                    }
+                    return state;
+                });
+                
+            } else {
+                console.log(response.err);
+                loading = false;
+            }
+        }).catch((error) => {
+            console.log(error);
+            loading = false;
         });
     }
 
@@ -85,54 +121,34 @@
 
     function viewGames() {
 
-        closeNav();
+        if($leaderBoard.length > 0) {
 
-        setTimeout(() => { viewRightSlide = true; }, 1);
+            closeNav();
 
-        request = {
-            func: "retrieveUserGames",
-            email: $currUser.email
-        }
-
-        invokeFunction(request).then((response) => {
-            //console.log(response);
-            if(response.msg != null) {
-
-                let games = response.msg;
-                
-                userGames.update(state => {
-                    state = [];
-                    for(let i = 0; i < games.length; i++) {
-                        if(games[i].finished)
-                            state.push(games[i]);
-                        else
-                            state.unshift(games[i]);
-                    }
-                    return state;
-                });
-                loading = false;
-                setTimeout(() => { gamesView = true; }, 1);
-            } else {
-                console.log(response.err);
-                loading = false;
-            }
-        }).catch((error) => {
-            console.log(error);
             loading = false;
-        });
+
+            setTimeout(() => { viewRightSlide = true; }, 1);
+
+            setTimeout(() => { gamesView = true; }, 1);
+        }
     }
 
     function viewLeagueBoard() {
-        closeNav();
 
-        loading = false;
+        if($leaderBoard.length > 0) {
 
-        setTimeout(() => { viewRightSlide = true; }, 1);
+            closeNav();
 
-        setTimeout(() => { leaderBoardView = true; }, 1);
+            loading = false;
+
+            setTimeout(() => { viewRightSlide = true; }, 1);
+
+            setTimeout(() => { leaderBoardView = true; }, 1);
+        }
     }
 
     function viewSettings() {
+
         closeNav();
 
         loading = false;
@@ -163,8 +179,11 @@
     </div>
 {/if}
 
+{#if popUp || viewRightSlide}
+    <div class="container-fluid" on:click="{closeNav}" transition:fade></div>
+{/if}
 
-<div id="backpurple" on:click="{closeNav}">
+<div id="backpurple">
 
     <button id="logout" class="btn btn-danger" on:click="{signOut}">Logout ({$currUser.name})</button>
 
@@ -259,7 +278,6 @@
         width:400px;
         height:400px;
         background-color: pink;
-        opacity:0.97;
         z-index:99; 
         border-radius:0.4rem;
         top:200px;
@@ -288,13 +306,13 @@
         top:0;
         right:0;
         position:fixed;
-        opacity:0.97;
-        overflow-y:scroll;
     }
 
     h1 {
         text-align: center;
-        margin-top:50px;
+        top:50px;
+        z-index:10;
+        position: relative;
     }
 
     #backpurple {
@@ -302,6 +320,17 @@
         width: 100%;
         height: 100%; 
     }
+
+    .container-fluid {
+        width: 100%;
+        height: 100%;
+        z-index:50;
+        position:fixed;
+        box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2);   
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, .15);
+        backdrop-filter: blur(5px);
+    } 
 
     .circles {
         border-radius: 50%;
@@ -338,11 +367,13 @@
         #rightSlide {
             width:100%;
             opacity:1;
-            height: 110%;
+            overflow-y: scroll;
         }
 
         h1 {
             margin-top:25px;
+            top:unset;
+            position:unset;
         }
 
 		.circles {

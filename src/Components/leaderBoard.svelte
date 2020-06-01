@@ -7,7 +7,7 @@
 {#if showLeague}
     <button class="btn btn-primary" on:click="{() => (showLeague = !showLeague)}">My Stats</button>
 
-    <h5>Checkers League - Top 50</h5>
+    <h5>Checkas League - Top 50</h5>
     <hr/>
 
     <h6 style="text-align:center;margin-top:10px;margin-bottom:10px;">League Position - #{$currUser.position}</h6>
