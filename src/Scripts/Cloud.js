@@ -1,7 +1,15 @@
+import env from '../env.json';
+import { currUser } from './Init.js';
+
 export function invokeFunction(load) {
     return new Promise((resolve, reject) => {
 
-        const url = "https://us-central1-checker-io.cloudfunctions.net/" + load.func;
+        currUser.update(state => {
+            load.id = state.email;
+            return state;
+        });
+
+        const url = env.funcs + load.func;
         load = new URLSearchParams(load).toString();
 
         fetch(url, {

@@ -345,7 +345,8 @@
 			clearInterval(timeInterval);
 
             let request = {
-                func: "saveGame",
+				func: "saveGame",
+				id: $currUser.email,
                 gameID: $gamePref.id,
                 gameHistory: JSON.stringify($gameHistory),
                 chatHistory: JSON.stringify($gameChat),
@@ -358,6 +359,7 @@
 			}
 			
 			if(auto) {
+				$currSocket.emit('saveGame', request);
 				timeInterval = setInterval(countDown, 1000);
 			} else {
 				$currSocket.emit('saveGame', request);

@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import io from 'socket.io-client';
 import { Board } from './Board.js';
+import env from '../env.json';
 
 window.onload = async function() {
 
@@ -30,7 +31,7 @@ window.onload = async function() {
     }
 }
 
-export const currSocket = writable(io("https://checkerio-server.herokuapp.com/"));
+export const currSocket = writable(io(env.server));
 
 export const currUser = writable(null);
 
