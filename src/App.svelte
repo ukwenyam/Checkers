@@ -2,6 +2,7 @@
 	import Dash from './Pages/dashBoard.svelte';
 	import Play from './Pages/gamePlay.svelte';
 	import Entry from './Pages/entry.svelte';
+	import NavBar from './Components/NavBar-cross.svelte'
 	import { currUser, page } from './Scripts/Init.js';
 </script>
 

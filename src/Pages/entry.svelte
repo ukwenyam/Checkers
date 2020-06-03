@@ -302,7 +302,7 @@
         max-width:500px;
         /* height:500px; */
         padding: 40px;
-        position:absolute;
+        position: absolute;
         top: 50px;
         left: 30%;
         /* transform: translate(-50%, -50%); */
@@ -357,12 +357,7 @@
 
     #forgotPassword {
         color: white;
-        /* margin: 30px; */
-        /* outline: none; */
         border: 0;
-       
-        /* background: none; */
-        /* display: block; */
         margin: 20px, auto;
         text-align: center;
         padding: 14px 10px;
@@ -385,10 +380,8 @@
         outline: none;
         border: 0;
         background: green;
-        /* display: block; */
         margin: 20px, auto;
         text-align: center;
-        /* border: 2px solid #2ecc71; */
         padding: 14px 40px;
         color: white;
         border-radius: 24px;
@@ -400,10 +393,8 @@
         outline: none;
         border: 0;
         background: #b88830;
-        /* display: block; */
         margin: 20px, auto;
         text-align: center;
-        /* border: 2px solid #d4a82e; */
         padding: 14px 40px;
         color: white;
         border-radius: 24px;
@@ -420,10 +411,8 @@
     }
 
     button {
-        /* width:100%; */
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         margin-top:30px;
-        /* border-radius:0.4rem; */
     }
 
     h3 {
@@ -439,19 +428,19 @@
     @media screen and (max-width: 800px) {
 
 		#entry {
-            width:100%;
-            height:100%;
-            margin-left:unset;
-            margin-top: unset;
-            z-index:99;
-            position:fixed;
+            width:90%;
+            height: max-content;
+            z-index: 99;
+            position: absolute; 
             box-shadow: none;
+            left: unset;
+            top: unset;
             overflow-y: scroll;
-            transform: translate(-30%, -6%);
+            margin-left: 16.8px;
+            margin-right:16.8px;
+            margin-top: 30px;
         }
         
-
-
         /* img {
             display:none;
         } */

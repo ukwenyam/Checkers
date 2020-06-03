@@ -23,7 +23,7 @@ self.addEventListener('fetch', async e => {
     if(url.origin == location.origin) {
         e.respondWith(cacheFirst(req));
     } else {
-        if(!url.origin.includes('execute-api'))
+        if(!url.origin.includes('cloudfunctions'))
             e.respondWith(networkAndCache(req));
     }
 });
