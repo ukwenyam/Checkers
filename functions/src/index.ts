@@ -1,7 +1,6 @@
 require('dotenv').config()
 import * as functions from 'firebase-functions';
 import * as respond from './response';
-
 const generator = require('generate-password');
 const firebase = require('firebase');
 //const storage = require('@google-cloud/storage')
@@ -237,6 +236,7 @@ export const createGame = functions.https.onRequest((request, response) => {
                 priPlayer: evt.name,
                 priEmail: evt.email,
                 secPlayer: null,
+                chatID:null,
                 secEmail: null,
                 priGameHistory: [],
                 secGameHistory: [],
@@ -244,7 +244,6 @@ export const createGame = functions.https.onRequest((request, response) => {
                 date: evt.date,
                 minutesPlayed: 0,
                 finished: false,
-                chatHistory: [],
                 currPlayer: null
             }).then(function() {
                 res.send({msg: gameID});
@@ -264,21 +263,65 @@ export const joinGame = functions.https.onRequest((request, response) => {
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let docRef:any = db.collection("USERS").doc(evt.email);
+    const userRef:any = db.collection("USERS").doc(evt.email);
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            docRef = db.collection("GAMES").doc(evt.gameID);
+    userRef.get().then(function(user:any) {
+        if(user.exists) {
 
-            docRef.update({
+            const gameRef:any = db.collection("GAMES").doc(evt.gameID);
+
+            gameRef.update({
                 secPlayer: evt.name,
                 secEmail: evt.email
             }).then(function() {
 
-                docRef = db.collection("GAMES").doc(evt.gameID);
+                db.collection("GAMES").doc(evt.gameID).get().then(function(gameDoc:any) {
 
-                docRef.get().then(function(docu:any) {
-                    res.send({msg: docu.data()});
+                    const priEmail:string = gameDoc.data().priEmail;
+                    const priName:string = gameDoc.data().priPlayer;
+
+                    db.collection("CHATS").where("priEmail", "==", priEmail).where("secEmail", "==", evt.email)
+                    .get()
+                    .then(async function(querySnapshot:any) {
+
+                        let gameChat:any = null;
+
+                        await querySnapshot.forEach(function(chat:any) {
+                            gameChat = chat.data();
+                            gameChat.id = chat.id;
+                        });
+
+                        if(gameChat == null) {
+
+                            const chatID:any = generator.generate({
+                                length: 10,
+                                numbers: true,
+                                excludeSimilarCharacters: true
+                            });
+
+                            db.collection("CHATS").doc(chatID).set({
+                                priName: priName,
+                                priEmail: priEmail,
+                                secName: evt.name,
+                                secEmail: evt.email,
+                                history: []
+                            }).then(function() {
+                                db.collection("CHATS").doc(chatID).get().then(function(newChat:any) {
+                                    const chatData:any = newChat.data(); chatData.id = chatID;
+                                    res.send({msg: {chat: chatData, game: gameDoc.data()}});
+                                }).catch(function(error:any) {
+                                    res.send({err: error.message});
+                                });
+                            }).catch(function(error:any) {
+                                res.send({err: error.message});
+                            });
+
+                        } else {
+                            res.send({msg: {chat: gameChat, game: gameDoc.data()}});
+                        }
+                    }).catch(function(error:any) {
+                        res.send({err: error.message});
+                    });
                 }).catch(function(error:any) {
                     res.send({err: error.message});
                 });
@@ -292,6 +335,32 @@ export const joinGame = functions.https.onRequest((request, response) => {
         res.send({err: error.message});
     });
 });
+
+export const deleteGame = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    let docRef:any = db.collection("USERS").doc(evt.id);
+
+    docRef.get().then(function(doc:any) {
+        if(doc.exists) {
+            db.collection("GAMES").doc(evt.gameID).delete().then(function() {
+                db.collection("CHATS").doc(evt.chatID).delete().then(function() {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        } else {
+            res.send({err: "Code 007"});
+        }
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
+})
 
 export const saveGame = functions.https.onRequest((request, response) => {
 
@@ -331,6 +400,32 @@ export const saveGame = functions.https.onRequest((request, response) => {
                     res.send({err: error.message});
                 });
             }
+        } else {
+            res.send({err: "Code 007"});
+        }
+    }).catch(function(error:any) {
+        res.send({err: error.message});
+    });
+});
+
+export const saveChat = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    let docRef:any = db.collection("USERS").doc(evt.id);
+
+    docRef.get().then(function(doc:any) {
+        if(doc.exists) {
+            docRef = db.collection("CHATS").doc(evt.chatID);
+
+            docRef.update({
+                history: evt.history
+            }).then(function() {
+                res.send({msg: "SUCCESS"});
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
         } else {
             res.send({err: "Code 007"});
         }
@@ -409,8 +504,6 @@ export const finishGame = functions.https.onRequest((request, response) => {
     }).catch(function(error:any) {
         res.send({err: error.message});
     });
-
-    
 });
 
 export const updateUsersStats = functions.https.onRequest((request, response) => {
@@ -446,6 +539,52 @@ export const updateUsersStats = functions.https.onRequest((request, response) =>
         }
     }).catch(function(error:any) {
         res.send({err: error.message});
+    });
+});
+
+export const retrieveUserChats = functions.https.onRequest((request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    const docRef:any = db.collection("USERS").doc(evt.email);
+
+    docRef.get().then(function(doc:any) {
+        if(doc.exists) {
+            const chats:any = [];
+
+            db.collection("CHATS").where("priEmail", "==", evt.email)
+            .get()
+            .then(async function(querySnapshot:any) {
+
+                await querySnapshot.forEach(function(docu:any) {
+                    const data = docu.data();
+                    data.id = docu.id;
+                    chats.push(data);
+                });
+            })
+            .catch(function(error:any) {
+                res.send({err: error.message});
+            });
+
+            db.collection("CHATS").where("secEmail", "==", evt.email)
+            .get()
+            .then(async function(querySnapshot:any) {
+                
+                await querySnapshot.forEach(function(dou:any) {
+                    const data = dou.data();
+                    data.id = dou.id;
+                    chats.push(data);
+                });
+
+                res.send({msg: chats});
+            })
+            .catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        } else {
+            res.send({err: "Code 007"});
+        }
     });
 });
 

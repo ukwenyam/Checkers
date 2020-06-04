@@ -1,55 +1,12 @@
 <script>
     import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
-
-    let showLeague = true;
 </script>
 
-{#if showLeague}
-    <button class="btn btn-primary" on:click="{() => (showLeague = !showLeague)}">My Stats</button>
-
-    <h5>Checkas League - Top 50</h5>
-    <hr/>
-
-    <h6 style="text-align:center;margin-top:10px;margin-bottom:10px;">League Position - #{$currUser.position}</h6>
-
-    <table>
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Wins</th>
-            <th>Draws</th>
-            <th>Losses</th>
-            <th>Points</th>
-        </tr>
-        {#each $leaderBoard as user, i}
-            {#if user.name != $currUser.name}
-                <tr>
-                    <td>{i + 1}</td>
-                    <td>{user.name}</td>
-                    <td>{user.wins}</td>
-                    <td>{user.draws}</td>
-                    <td>{user.losses}</td>
-                    <td>{user.totalPoints}</td>
-                </tr>
-            {:else}
-                <tr>
-                    <th>{i + 1}</th>
-                    <th>{user.name}</th>
-                    <th>{user.wins}</th>
-                    <th>{user.draws}</th>
-                    <th>{user.losses}</th>
-                    <th>{user.totalPoints}</th>
-                </tr>
-            {/if}
-        {/each}
-    </table>
-{:else}
-    <button class="btn btn-primary" on:click="{() => (showLeague = !showLeague)}">League Table</button>
-
+<div id="stats" class="container-fluid">
     <h5>My Stats</h5>
     <hr/>
 
-    <table id="stats">
+    <table id="statsTable">
         <tr>
             <th style="text-align:left;">League Position</th>
             <td>{$currUser.position}</td>
@@ -107,7 +64,50 @@
             <td>{$currUser.mostTimePlayed} minutes</td>
         </tr>
     </table>
-{/if}
+</div>
+
+<div id="league" class="container-fluid">
+    <h5>Checkas League - Top 50</h5>
+    <hr/>
+
+    <h6 style="text-align:center;margin-top:10px;margin-bottom:10px;">League Position - #{$currUser.position}</h6>
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Games</th>
+            <th>Wins</th>
+            <th>Draws</th>
+            <th>Losses</th>
+            <th>Points</th>
+        </tr>
+        {#each $leaderBoard as user, i}
+            {#if user.name != $currUser.name}
+                <tr>
+                    <td>{i + 1}</td>
+                    <td>{user.name}</td>
+                    <td>{user.gamesPlayed}</td>
+                    <td>{user.wins}</td>
+                    <td>{user.draws}</td>
+                    <td>{user.losses}</td>
+                    <td>{user.totalPoints}</td>
+                </tr>
+            {:else}
+                <tr>
+                    <th>{i + 1}</th>
+                    <th>{user.name}</th>
+                    <th>{user.gamesPlayed}</th>
+                    <th>{user.wins}</th>
+                    <th>{user.draws}</th>
+                    <th>{user.losses}</th>
+                    <th>{user.totalPoints}</th>
+                </tr>
+            {/if}
+        {/each}
+    </table>
+</div>
+
 
 <style>
     h5 {
@@ -121,14 +121,19 @@
 
     td, th {
         height: 40px;
-        border-bottom: 1px solid black;
+        border-bottom: 1px solid white;
         text-align: center;
     }
 
-    .btn-primary {
+    #stats {
+        width:33.33%;
+        float:left;
+        color:white;
+    }
+
+    #league {
+        width:66.66%;
         float:right;
-        border-radius:0.4rem;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        margin-top:10px;
+        color:white;
     }
 </style>

@@ -1,5 +1,5 @@
 <script>
-    import { currSocket, currUser, gamePref, gameChat } from '../Scripts/Init.js';
+    import { currSocket, currUser, gamePref, gameChat, allChats } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { beforeUpdate, afterUpdate } from 'svelte';
     import Indicator from './typeIndicator.svelte';
@@ -7,13 +7,14 @@
     let div, autoscroll;
     let message;
     let isTyping = false;
+    let currMsg;
 
-    if($gamePref.pri == $currUser.name && $gamePref.numMoves == 0 && $gamePref.sec == null && screen.width >= 800)
-        $gameChat.push({name: "System", msg: "Please share Game Password '" + $gamePref.id + "' with other player"});
-    
-    let socket;
-    let room = $gamePref.id;
-    let currMsg = {};
+    let chatIndex = 0;
+    let chatID = $allChats[0].id;
+    let chatMsgs = $allChats[0].history;
+    let chatUser = $allChats[0].priName == $currUser.name ? $allChats[0].secName : $allChats[0].priName;
+
+    $currSocket.emit('join-room', chatID, $currUser.name);
 
     beforeUpdate(() => {
 		autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
@@ -29,17 +30,35 @@
 
     $currSocket.on('no-typing', (room) => {
         isTyping = false;
-    });
+    }); 
+
+    setInterval(function() {
+        viewChat(chatIndex, true);
+    }, 100);
+
+    function viewChat(index, refresh) {
+        chatIndex = index;
+
+        chatID = $allChats[index].id;
+        chatMsgs = $allChats[index].history;
+        chatUser = $allChats[index].priName == $currUser.name ? $allChats[index].secName : $allChats[index].priName;
+        
+        if(!refresh)
+            $currSocket.emit('join-room', chatID, $currUser.name);
+    }
 
     function sendMsg() {
 
         if(message != null || message != '') {
-            currMsg.name = $currUser.name;
-            currMsg.msg = message;
-            currMsg.room = room;
-            $currSocket.emit('chat message', currMsg);
 
-            //msgs.push(currMsg);
+            currMsg = {
+                name: $currUser.name,
+                msg: message,
+                room: chatID,
+                chatID: chatID
+            }
+
+            $currSocket.emit('chat message', currMsg);
 
             message = '';
         }
@@ -48,66 +67,105 @@
     function inputStatus() {
 
         if(message == '') {
-            $currSocket.emit('no-typing', room);
+            $currSocket.emit('no-typing', chatID);
         } else {
-            $currSocket.emit('typing', room);
+            $currSocket.emit('typing', chatID);
         }
     }
 </script>
 
-<div id="chat" class="container-fluid">
-	{#if $gamePref.pri == $currUser.name && $gamePref.sec != null}
-        <h4 style="text-align:center">{$gamePref.sec}</h4>
-    {:else if $gamePref.sec == null || $gamePref.pri == null}
-        <h4 class="blinking" style="text-align:center">Waiting for other player</h4>
-    {:else}
-        <h4 style="text-align:center">{$gamePref.pri}</h4>
-    {/if}
-
-    <div class="scrollable" bind:this={div}>
-        {#each $gameChat as mesage}
-            {#if mesage.name == $currUser.name}
-                <article class="myMsg">
-                    <span class="txtMsg">{mesage.msg}</span>
-                </article>
-            {:else}
-                <article class="odaMsg">
-                    <span class="txtMsg">{mesage.msg}</span>
-                </article>
-            {/if}
+<div id="chatWindow">
+    <div id="allChats">
+        {#each $allChats as chat, i}
+            <div class="user" on:click="{() => viewChat(i, false)}">
+                <img alt="propic" src="https://source.unsplash.com/900x900/"/>
+                <h4 style="margin-left:90px;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}</h4>
+                <p style="margin-left:90px;">{chat.history[chat.history.length - 1].msg}</p>
+            </div>
         {/each}
-        <article class='odaMsg' id="isTyping">
-            {#if isTyping}
-                <span class='txtMsg' id="isTypingSpan"><Indicator/></span>
-            {/if}
-        </article>
     </div>
-
-    <input id="user-msg" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
+    <div id="currChat">
+        <h4 style="text-align:center;color:white">{chatUser.toUpperCase()}</h4>
+        <div class="scrollable container" bind:this={div}>
+            {#each chatMsgs as mesage}
+                {#if mesage.name == $currUser.name}
+                    <article class="myMsg">
+                        <span class="txtMsg">{mesage.msg}</span>
+                    </article>
+                {:else}
+                    <article class="odaMsg">
+                        <span class="txtMsg">{mesage.msg}</span>
+                    </article>
+                {/if}
+            {/each}
+            <article class='odaMsg' id="isTyping">
+                {#if isTyping}
+                    <span class='txtMsg' id="isTypingSpan"><Indicator/></span>
+                {/if}
+            </article>
+        </div>
+        <div id="inputBar">
+            <i class="fa fa-camera fa-2x"></i>
+            <input id="user-msg" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
+            <i class="fa fa-paper-plane-o fa-2x" on:click="{sendMsg}"></i>
+        </div>
+    </div>
 </div>
 
 
 <style>
-    #chat {
-		height:var(--board-height);
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		bottom:5px;
-		right:5px;
-		position:fixed;
-		width:var(--chat-width);
+    #chatWindow {
+        z-index:99;
+        background-color:#343a40;
+        height: 800px;
+        width:1000px;
+        position:fixed;
         border-radius:0.4rem;
+        top: calc((100% - 800px)/2);
+        left: calc((100% - 1000px)/2);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    #allChats {
+        width:33.33%;
+        height:100%;
+        background-color:white;
+        float:left;
+    }
+
+    .user {
+        width:100%;
+        height:100px;
+        padding: 10px;
+    }
+
+    img {
+        height:100%;
+        float:left;
+        border-radius:0.4rem;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    p {
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+
+    #currChat {
+        width:66.66%;
+        height:100%;
+        float:right;
+        position:relative;
         display: flex;
-        flex-direction: column;
-        background: white;
-        opacity: 0.9;
-        max-width:var(--board-height);
+		flex-direction: column;
     }
     
     .scrollable {
 		flex: 1 1 auto;
-		border-top: 1px solid #eee;
 		margin: 0 0 0.5em 0;
-		overflow-y: auto;
+        overflow-y: auto;
+        max-height:87.5%;
     }
 
     #isTypingSpan {
@@ -115,15 +173,37 @@
         background:#eee;
         opacity: 65;
     }
+
+    #inputBar {
+        position:absolute;
+        bottom:0;
+        width:100%;
+        background-color:#343a40;
+        max-height:12.5%;
+    }
+
+    .fa {
+        color:white;
+        bottom:7.5px;
+        position:absolute;
+    }
+
+    .fa-camera {
+        left:20px;
+    }
+
+    .fa-paper-plane-o {
+        right:20px;
+    }
     
     #user-msg {
-		bottom:20px;
-        left:10px;
-        width:100%;
-        border-radius:0.4rem;
-        box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        margin-left:10%;
+        width:80%;
+        border-radius: 1em;
         outline:none;
         border:none;
+        position:absolute;
+        bottom:5px;
 	}
 
     .myMsg {
@@ -165,16 +245,6 @@
     }
 
     @media screen and (max-width: 800px) {
-
-        #chat {
-            width:100%;
-            height:92.5%;
-            box-shadow:unset;
-            bottom:unset;
-            top:0;
-            left:0;
-            right:0;
-        }
 
         #user-msg {
             bottom:0;

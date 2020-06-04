@@ -90,67 +90,86 @@
 
 <h3>Settings</h3>
 
-<h5>Profile</h5>
+<div id="leftSet" class="container-fluid">
+    <h5 style="text-align:center">Profile</h5>
 
-<h6 style="text-align:center;">Account ID: <span>{$currUser.email}</span></h6>
+    <h6 style="text-align:center;">Account ID: <span>{$currUser.email}</span></h6>
 
-<img style="float:left" alt="propic" src="{Picture}"/>
+    <img alt="propic" src="{Picture}"/>
 
-<div id="propic" class="custom-file input-group">
-    <input type="file" accept="image/jpeg" class="custom-file-input" id="customFile" on:change="{upload}">
-    <label class="custom-file-label" for="customFile">{imageLabel}</label>
-</div>
-
-<p style="float:right">Image size should be less than 1MB</p>
-
-<div class="input-group mb-2">
-    <div class="input-group-prepend">
-        <div class="input-group-text">Display Name:</div>
+    <div id="propic" class="custom-file input-group">
+        <input type="file" accept="image/jpeg" class="custom-file-input" id="customFile" on:change="{upload}">
+        <label class="custom-file-label" for="customFile">{imageLabel}</label>
     </div>
-    <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="{Name}" bind:value="{Name}">
-</div>
 
-<input id="authPass" type="password" placeholder="Account Password" bind:value="{authPassword}"/>
+    <p style="text-align:center">Image size should be less than 1MB</p>
 
-<button class="btn btn-success" on:click="{updateProfile}">Update Profile</button>
-
-<h5 style="margin-top:60px;">Reset Password</h5>
-
-<div class="input-group mb-2">
-    <div class="input-group-prepend">
-        <div class="input-group-text">Old Password:</div>
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">Display Name:</div>
+        </div>
+        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="{Name}" bind:value="{Name}">
     </div>
-    <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Account Password" bind:value="{oldPassword}">
-</div>
 
-<div class="input-group mb-2">
-    <div class="input-group-prepend">
-        <div class="input-group-text">New Password:</div>
+    <input id="authPass" type="password" placeholder="Account Password" bind:value="{authPassword}"/>
+
+    <button class="btn btn-success" on:click="{updateProfile}">Update Profile</button>
+
+    <h5 style="margin-top:60px;text-align:center">Reset Password</h5>
+
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">Old Password:</div>
+        </div>
+        <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Account Password" bind:value="{oldPassword}">
     </div>
-    <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="New Password" bind:value="{newPassword}">
+
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">New Password:</div>
+        </div>
+        <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="New Password" bind:value="{newPassword}">
+    </div>
+
+    <button class="btn btn-success" on:click="{resetPassword}">Reset</button>
 </div>
 
-<button class="btn btn-success" on:click="{resetPassword}">Reset</button>
+<div id="rightSet" class="container-fluid">
+
+</div>
 
 <style>
+    #leftSet {
+        width:33.33%;
+        float:left;
+        color:white;
+        border-right: 1px solid white;
+    }
+
+    #rightSet {
+        width:66.66%;
+        float:right;
+        color:white;
+        border-left: 1px solid white;
+    }
+
     img {
         width:100px;
         height:100px;
         border-radius:0.4rem;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         margin-bottom:10px;
+        margin-left: calc((100% - 100px) / 2);
     }
 
     h3 {
-        margin-top:20px;
+        margin-top:10px;
         text-align: center;
-        opacity: 1;
+        color:white;
     }
 
     #propic {
-        opacity: 1;
-        float:right;
-        width:66%;
+        width:100%;
     }
 
     .mb-2, #propic {

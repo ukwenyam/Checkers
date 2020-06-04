@@ -1,14 +1,35 @@
 <script>
-    import { gamePref, gameBoard, currSocket, gameHistory, gameChat, gameTab, page, currUser } from '../Scripts/Init.js';
+    import { gamePref, gameBoard, currSocket, gameHistory, gameChat, gameTab, page, currUser, allChats } from '../Scripts/Init.js';
 
     $currSocket.on('chat message', (data) => {
 
-        console.log('Received: '+data.msg);
+        console.log('Received: ' + data.msg);
 
-        gameChat.update(state => {
-            state.push(data);
-            return state;
-        });
+        let i, index;
+
+        for(i = 0; i < $allChats.length; i++) {
+            if($allChats[i].id == data.chatID) {
+                allChats.update(state => {
+                    state[i].history.push(data);
+                    return state;
+                });
+                index = i;
+                break;
+            }
+        }
+
+        console.log($allChats);
+
+        let request = {
+            func: "saveChat",
+            id: $currUser.email,
+            chatID: $allChats[index].id,
+            history: $allChats[index].history
+        }
+
+        //console.log(request);
+
+        $currSocket.emit('save-chat', request);
     });
 
     $currSocket.on('second-user', (data) => {
@@ -22,19 +43,14 @@
                 return state;
             });
 
-            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
+            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.gameID});
 
-            $currSocket.emit('first-user', { room: $gamePref.id, name: $currUser.name });
+            $currSocket.emit('first-user', { room: $gamePref.gameID, name: $currUser.name });
 
             if(screen.width < 800) 
                 gameTab.set(0);
-            else
-                if($gameChat[0].msg.includes($gamePref.id))
-                    gameChat.set([]);
-
         }
     });
-
 
     $currSocket.on('first-user', (data) => {
 
@@ -47,13 +63,10 @@
                 return state;
             });
 
-            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
+            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.gameID});
 
             if(screen.width < 800) 
                 gameTab.set(0);
-            else
-                if($gameChat[0].msg.includes($gamePref.id))
-                    gameChat.set([]);
         }
     });
 
@@ -84,8 +97,7 @@
             func: "saveGame",
             id: $currUser.email,
             gameID: $gamePref.id,
-            gameHistory: JSON.stringify($gameHistory),
-            chatHistory: JSON.stringify($gameChat),
+            gameHistory: $gameHistory,
             pri: $gamePref.pri == $currUser.name ? true : false,
             sec: $gamePref.sec == $currUser.name ? true : false,
             minutes: Math.floor($gamePref.secondsPlayed / 60),
@@ -94,7 +106,7 @@
             saved: true
         }
 
-        $currSocket.emit('saveGame', request);
+        $currSocket.emit('save-game', request);
 
         if(!data.auto) page.set(0);
     });

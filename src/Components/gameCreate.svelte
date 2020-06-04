@@ -1,33 +1,22 @@
 <script>
-    import { currUser, gameBoard, gameHistory, gamePref, page, gameTab } from '../Scripts/Init.js';
+    import { currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { Board } from '../Scripts/Board.js';
+    import Loader from './loader.svelte';
 
     let Time = 15;
 
     let request;
 
+    let loading = false;
+
     function createGame() {
+
+        loading = true;
 
         gameBoard.set(new Board(null, false));
 
         $gameHistory.push($gameBoard.saveBoardState());
-
-        gamePref.update(state => {
-            state = {};
-            state.time = Time;
-            state.timer = Time;
-            state.pri = $currUser.name;
-            state.sec = null;
-            state.currPlayer = null;
-            state.numMoves = 0;
-            state.rangeMoves = 0;
-            state.paused = true;
-            state.finished = false;
-            state.side = "red";
-            state.secondsPlayed = 0;
-            return state;
-        });
 
         request = {
             func: "createGame",
@@ -44,19 +33,38 @@
             console.log(response);
             
             if(response.msg != null) {
+
                 console.log(response.msg);
 
                 gamePref.update(state => {
-                    state.id = response.msg;
+                    state = {};
+                    state.gameID = response.msg;
+                    state.time = Time;
+                    state.timer = Time;
+                    state.pri = $currUser.name;
+                    state.sec = null;
+                    state.chatID = null;
+                    state.currPlayer = null;
+                    state.numMoves = 0;
+                    state.rangeMoves = 0;
+                    state.paused = true;
+                    state.finished = false;
+                    state.side = "red";
+                    state.secondsPlayed = 0;
                     return state;
                 });
 
-                page.set(1); gameTab.set(0);
+                loading = false;
+                smallPopUp.set(false);
+                viewCreateGame.set(false);
+                gameTab.set(0);
             } else {
+                loading = false;
                 console.log(response.err);
             }
 
         }).catch((error) => {
+            loading = false;
             console.log(error);
         });
     }
@@ -67,23 +75,29 @@
 <h6>Time Per Turn: {Time} seconds</h6>
 <input class="custom-range" bind:value="{Time}" type="range" min="15" max="60" step="1">
 
-<button class="btn btn-primary" on:click="{createGame}">Create</button>
+{#if loading}
+    <Loader/>
+{:else}
+    <button class="btn btn-primary" on:click="{createGame}">Create</button>
+{/if}
 
 <style>
     h5 {
         text-align: center;
         margin-top:20px;
+        color: white;
     }
 
     h6 {
-        margin-top:20px;
+        margin-top:25%;
+        color:white;
     }
 
     button {
         border-radius:0.4rem;
         width:50%;
         margin-left:25%;
-        margin-top:80px;
+        margin-top:20px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 </style>

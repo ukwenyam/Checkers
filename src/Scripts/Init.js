@@ -3,35 +3,12 @@ import io from 'socket.io-client';
 import { Board } from './Board.js';
 import env from '../env.json';
 
-window.onload = async function() {
+export const currSocket = writable(null);
 
-    if (sessionStorage.getItem('idx') != null) {
-
-        const indexes = await JSON.parse(sessionStorage.getItem('idx'));
-        
-        await currUser.set(indexes.user);
-
-        await leaderBoard.set(indexes.league); 
-
-        await gameBoard.set(new Board(indexes.board.board, null));
-
-        await gameHistory.set(indexes.history);
-
-        await gamePref.set(indexes.pref);
-
-        await gameChat.set(indexes.chat);
-
-        await gameTab.set(indexes.tab);
-
-        await userGames.set(indexes.games);
-
-        await page.set(indexes.page);
-
-        sessionStorage.removeItem('idx');
-    }
-}
-
-export const currSocket = writable(io(env.server));
+if(window.location.hostname.includes('localhost'))
+    currSocket.set(io(env.local));
+else
+    currSocket.set(io(env.server));
 
 export const currUser = writable(null);
 
@@ -50,6 +27,14 @@ export const gameHistory = writable([]);
 export const gamePref = writable(null);
 
 export const gameChat = writable([]);
+
+export const allChats = writable([]);
+
+export const smallPopUp = writable(false);
+
+export const viewCreateGame = writable(false);
+
+export const viewJoinGame = writable(false);
 
 window.onbeforeunload = async function() {
 
@@ -90,6 +75,11 @@ window.onbeforeunload = async function() {
         return state;
     });
 
+    await allChats.update(state => {
+        indexes.chats = state;
+        return state;
+    })
+
     await userGames.update(state => {
         indexes.games = state;
         return state;
@@ -103,3 +93,32 @@ window.onbeforeunload = async function() {
     await sessionStorage.setItem('idx', JSON.stringify(indexes));
 }
 
+window.onload = async function() {
+
+    if (sessionStorage.getItem('idx') != null) {
+
+        const indexes = await JSON.parse(sessionStorage.getItem('idx'));
+        
+        await currUser.set(indexes.user);
+
+        await leaderBoard.set(indexes.league); 
+
+        await gameBoard.set(new Board(indexes.board.board, null));
+
+        await gameHistory.set(indexes.history);
+
+        await gamePref.set(indexes.pref);
+
+        await gameChat.set(indexes.chat);
+
+        await allChats.set(indexes.chats);
+
+        await gameTab.set(indexes.tab);
+
+        await userGames.set(indexes.games);
+
+        await page.set(indexes.page);
+
+        sessionStorage.removeItem('idx');
+    }
+}

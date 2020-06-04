@@ -10,8 +10,6 @@
 
         gameHistory.set(gameStates);
 
-        gameChat.set(JSON.parse(game.chatHistory));
-
         gamePref.update(state => {
             state = {};
             state.id = game.id;
@@ -34,25 +32,44 @@
 </script>
 
 {#if $userGames.length == 0}
-    <h5 id="empty">There are no games to view</h5>
-    <h5>Create or Join a Game</h5>
+    <h5 class="empty" style="margin-top:25%;">There are no games to view</h5>
+    <h5 class="empty">Create or Join a Game</h5>
 {:else}
-    <h5>On-Going Games</h5>
-    {#each $userGames as game}
-        {#if !game.finished}
-            <button on:click="{() => getGame(game, true)}" class="btn btn-warning">{game.priPlayer == $currUser.name ? "You" : game.priPlayer} vs. {game.secPlayer == $currUser.name ? "You" : game.secPlayer} - {game.date}</button>
-        {/if}
-    {/each}
+    <div id="gameList">
+         <h5>On-Going Games</h5>
+        {#each $userGames as game}
+            {#if !game.finished}
+                <button on:click="{() => getGame(game, true)}" class="btn btn-warning">{game.priPlayer == $currUser.name ? "You" : game.priPlayer} vs. {game.secPlayer == $currUser.name ? "You" : game.secPlayer} - {game.date}</button>
+            {/if}
+        {/each}
 
-    <h5>Finished Games</h5>
-    {#each $userGames as game}
-        {#if game.finished}
-            <button on:click="{() => getGame(game, false)}" class="btn btn-light">{game.priPlayer == $currUser.name ? "You" : game.priPlayer} vs. {game.secPlayer == $currUser.name ? "You" : game.secPlayer} - {game.date}</button>
-        {/if}
-    {/each}
+        <h5>Finished Games</h5>
+        {#each $userGames as game}
+            {#if game.finished}
+                <button on:click="{() => getGame(game, false)}" class="btn btn-light">{game.priPlayer == $currUser.name ? "You" : game.priPlayer} vs. {game.secPlayer == $currUser.name ? "You" : game.secPlayer} - {game.date}</button>
+            {/if}
+        {/each}
+    </div>
+    <div id="gameDetails">
+
+    </div>
 {/if}
 
 <style>
+    #gameList {
+        width:33.33%;
+        float:left;
+        color:white;
+        border-right: 1px solid white;
+    }
+
+    #gameDetails {
+        width:66.66%;
+        float: right;
+        color:white;
+        border-left: 1px solid white;
+    }
+
     h5 {
         text-align: center;
         margin-top:20px;
@@ -64,7 +81,7 @@
         margin-bottom: 10px;
     }
 
-    #empty {
-        margin-top: 45%;
+    .empty {
+        color:white;
     }
 </style>

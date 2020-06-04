@@ -2,6 +2,7 @@
     import { currUser, page } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { User } from '../Scripts/User.js';
+    import Loader from '../Components/loader.svelte';
 
     let Email, Name, Password, confirmPassword;
 
@@ -198,9 +199,7 @@
             {#if !loading}
                 <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
             {:else}
-                <div id="signin-loader" class="loader-container">
-                    <div class="loader"></div>
-                </div>
+                <Loader/>
             {/if}
         </div>
         <hr style="border: 1px solid green"/>
@@ -216,9 +215,7 @@
             {#if !loading}
                 <br/><button class="btn btn-success" on:click="{signUp}" type="submit">Sign Up</button>
             {:else}
-                <div id="signup-loader" class="loader-container">
-                    <div class="loader"></div>
-                </div>
+                <Loader/>
             {/if}
         </div>
         <hr style="border: 1px solid green"/>
@@ -231,9 +228,7 @@
             {#if !loading}
                 <br/><button class="btn btn-success" style="margin-bottom:30px;" on:click="{forgotPassword}" type="submit">Reset Password</button>
             {:else}
-                <div id="signup-loader" class="loader-container">
-                    <div class="loader"></div>
-                </div>
+                <Loader/>
             {/if}
             <br/><a id="forgotPassword" on:click="{() => (logPage = true)}">Back To Login</a>
         </div>
@@ -242,38 +237,6 @@
 <img id="back-image" alt="checker" src="./images/checkers.jpg"/>
 
 <style>
-    .loader-container {
-        width: 100%;
-        align-items: center;
-        justify-content: center;
-        display: flex;
-        margin-top:20px;
-    }
-
-    .loader {
-        width: 50px;
-        height: 50px;
-        border: 5px solid;
-        color: #3498db;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: loader 1.2s linear infinite;
-    }
-
-    @keyframes loader{
-        25%{
-            color: #2ecc71;
-        }
-        50%{
-            color: #f1c40f;
-        }
-        75%{
-            color: #e74c3c;
-        }
-        to{
-            transform: rotate(360deg);
-        }
-    }
 
     #entry label {
         color: #212529;
@@ -301,23 +264,17 @@
     }
 
     #entry {
-        width:40%;
-        opacity: .95;
-        max-width:500px;
-        /* height:500px; */
+        opacity: 0.95;
+        width:500px;
         padding: 40px;
         position:absolute;
         top: 50px;
-        left: 30%;
-        /* transform: translate(-50%, -50%); */
+        left: calc((100% - 500px) / 2);
         background: #191919;
         text-align: center;
-        /* margin-left:35%; */
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius:0.4rem;
-        /* margin-top: 100px; */
         z-index:99;
-       
         overflow-y: auto;
     }
 

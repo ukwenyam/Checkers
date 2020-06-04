@@ -42,7 +42,7 @@ const io = socketio(server);
 
 const MAX_ROOM_USER = 2;
 
-var rooms = new Map();
+let rooms = new Map();
 
 var userCount = 0;
 
@@ -63,23 +63,22 @@ io.on('connection', (socket) => {
     });
 
     socket.on('join-room', (room, username) => {
-        if(rooms.has(room)) {
+        if(rooms.has(room) && rooms.get(room) < MAX_ROOM_USER) {
             rooms.set(room, 2);
-            console.log('second player arrived!');
+            console.log(username + ' has arrived!');
             socket.to(room).emit('second-user', username);
-        }
-        else{
+        } 
+        if(!rooms.has(room)) {
             rooms.set(room, 1);
-            console.log('first player arrived!');
+            console.log(username + ' has arrived!');
         }
-        console.log(`${socket.username} joined the ${room} chat room`);
         socket.join(room);
     });
 
     socket.on('first-user', (data) => {
         console.log('send back first player ' + data.name);
         socket.to(data.room).emit('first-user', data.name);
-    })
+    });
 
     socket.on('chat message', (data) => {
         console.log('Somebody sent chat: ' + data.msg);
@@ -111,8 +110,7 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('paused', data.paused);
     });
 
-    socket.on('saveGame', (data) => {
-        //console.log('Request '+ JSON.stringify(data));
+    socket.on('save-game', (data) => {
         invokeFunction(data).then((response) => {
             response.auto = data.auto;
             if(!data.saved)
@@ -121,6 +119,14 @@ io.on('connection', (socket) => {
             console.log("Error " + error);
             if(!data.saved)
                 socket.to(data.gameID).emit('saveGame', error);
+        });
+    });
+
+    socket.on('save-chat', (data) => {
+        invokeFunction(data).then((response) => {
+            console.log(response);
+        }).catch((error) => {
+            console.log("Error " + error);
         });
     });
 });    
