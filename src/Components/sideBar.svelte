@@ -1,5 +1,6 @@
 <script>
-    import { currUser, page, userGames, leaderBoard, allChats, gamePref, viewCreateGame, viewJoinGame, smallPopUp } from '../Scripts/Init.js';
+    import { currUser, page, userGames, leaderBoard, allChats, gamePref, 
+             viewCreateGame, viewJoinGame, viewGameList, smallPopUp, bigPopUp } from '../Scripts/Init.js';
     import { fly, fade } from 'svelte/transition';
     import Create from './gameCreate.svelte';
     import Join from './gameJoin.svelte';
@@ -23,9 +24,7 @@
 
     let viewRightSlide = false, viewLeftSlide = false;
 
-    let gamesView = false, settingsView = false;
-
-    let bigPopUp = false;
+    let settingsView = false;
 
     let leaderBoardView = false, tutorialView = false;
 
@@ -112,9 +111,9 @@
 
         viewRightSlide = false, viewLeftSlide = false;
 
-        gamesView = false, settingsView = false;
+        viewGameList.set(false), settingsView = false;
 
-        smallPopUp.set(false), bigPopUp = false;
+        smallPopUp.set(false), bigPopUp.set(false);
 
         viewCreateGame.set(false); viewJoinGame.set(false);
 
@@ -145,9 +144,9 @@
 
             closeNav();
 
-            setTimeout(() => { bigPopUp = true; }, 1);
+            setTimeout(() => { bigPopUp.set(true); }, 1);
 
-            setTimeout(() => { gamesView = true; }, 1);
+            setTimeout(() => { viewGameList.set(true); }, 1);
         }
     }
 
@@ -157,7 +156,7 @@
 
             closeNav();
 
-            setTimeout(() => { bigPopUp = true; }, 1);
+            setTimeout(() => { bigPopUp.set(true); }, 1);
 
             setTimeout(() => { leaderBoardView = true; }, 1);
         }
@@ -167,7 +166,7 @@
 
         closeNav();
 
-        setTimeout(() => { bigPopUp = true; }, 1);
+        setTimeout(() => { bigPopUp.set(true); }, 1);
 
         setTimeout(() => { settingsView = true; }, 1);
     }
@@ -179,7 +178,7 @@
 
 <div class="sidebar">
     <div class="menu-item">
-        <button class="btn btn-lg btn-dark">Checkas.io <i class="fa fa-angle-double-right"></i></button>
+        <button id="home" class="btn btn-lg btn-dark"><img alt="logo" src="./images/LOGO-192.png"/> Checkas.io <i class="fa fa-angle-double-right"></i></button>
     </div>
    
     <div class="menu-item create">
@@ -224,7 +223,7 @@
             <Join/>
         {/if}
     </div>
-{:else if bigPopUp}
+{:else if $bigPopUp}
     <div on:click="{closeNav}">
         <Blur/>
     </div>
@@ -233,7 +232,7 @@
             <button class="btn btn-danger" on:click="{closeNav}">Close</button>
         {/if}
 
-        {#if gamesView}
+        {#if $viewGameList}
             <List/>
         {/if}
 
@@ -248,6 +247,11 @@
 {/if}
 
 <style>
+    #home img {
+        float:left;
+        height:30px;
+    }
+
     button {
         width:100%;
     }

@@ -54,6 +54,7 @@
             currMsg = {
                 name: $currUser.name,
                 msg: message,
+                date: moment().format("YYYYMMDD, HH:mm"),
                 room: chatID,
                 chatID: chatID
             }
@@ -65,36 +66,62 @@
     }
 
     function inputStatus() {
-
         if(message == '') {
             $currSocket.emit('no-typing', chatID);
         } else {
             $currSocket.emit('typing', chatID);
         }
     }
+
+    function getTimeSpan(date) {
+        return moment(date, "YYYYMMDD, HH:mm").fromNow();
+    }
 </script>
 
 <div id="chatWindow">
     <div id="allChats">
         {#each $allChats as chat, i}
-            <div class="user" on:click="{() => viewChat(i, false)}">
+            <button class="user btn btn-lg btn-dark" on:click="{() => viewChat(i, false)}">
                 <img alt="propic" src="https://source.unsplash.com/900x900/"/>
-                <h4 style="margin-left:90px;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}</h4>
-                <p style="margin-left:90px;">{chat.history[chat.history.length - 1].msg}</p>
-            </div>
+                <div style="float:right;height:100%;width:70%;">
+                    <h5 style="text-align:left;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}</h5>
+                    {#if chat.history.length > 0}
+                        <p style="font-weight:lighter;font-size:15px;text-align:left;">{chat.history[chat.history.length - 1].msg}</p>
+                        <p style="font-weight:lighter;font-size:15px;margin-top:-15px;text-align:right;">{getTimeSpan(chat.history[chat.history.length - 1].date)}</p>
+                    {/if}
+                </div>
+            </button>
         {/each}
     </div>
     <div id="currChat">
-        <h4 style="text-align:center;color:white">{chatUser.toUpperCase()}</h4>
+        <h4 style="text-align:center;color:white;">
+            <button class="btn btn-light" style="float:left;border-radius:0;">Versus Stats</button> 
+                {chatUser.toUpperCase()} 
+            <button class="btn btn-light" style="float:right;border-radius:0 0.4rem 0 0;" disabled="{$gamePref != null}">Request Game</button>
+        </h4>
         <div class="scrollable container" bind:this={div}>
-            {#each chatMsgs as mesage}
+            {#each chatMsgs as mesage, i}
                 {#if mesage.name == $currUser.name}
                     <article class="myMsg">
                         <span class="txtMsg">{mesage.msg}</span>
+                        {#if i < chatMsgs.length - 1}
+                            {#if chatMsgs[i + 1].date != chatMsgs[i].date}
+                                <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                            {/if}
+                        {:else}
+                            <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                        {/if}
                     </article>
                 {:else}
                     <article class="odaMsg">
                         <span class="txtMsg">{mesage.msg}</span>
+                        {#if i < chatMsgs.length - 1}
+                            {#if chatMsgs[i + 1].date != chatMsgs[i].date}
+                                <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                            {/if}
+                        {:else}
+                            <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                        {/if}
                     </article>
                 {/if}
             {/each}
@@ -129,8 +156,8 @@
     #allChats {
         width:33.33%;
         height:100%;
-        background-color:white;
         float:left;
+        color:white;
     }
 
     .user {
@@ -158,7 +185,8 @@
         float:right;
         position:relative;
         display: flex;
-		flex-direction: column;
+        flex-direction: column;
+        border-left:white 1px solid;
     }
     
     .scrollable {

@@ -1,6 +1,7 @@
 <script>
     import { currUser } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
+    import Loader from './loader.svelte';
 
     let Name = $currUser.name;
     let Picture = $currUser.picture;
@@ -9,6 +10,7 @@
     let imageLabel = 'Choose Profile Photo';
 
     let request;
+    let loading = false;
 
     function upload() {
         if(e.target.files[0].size <= 1000000 && e.target.files[0].type == 'image/jpeg') {
@@ -33,6 +35,8 @@
 
         if(Name != null && authPassword != null) {
 
+            loading = true;
+
             request = {
                 func: "updateProfile",
                 name: Name,
@@ -52,11 +56,15 @@
                         state.name = Name;
                         return state;
                     });
+
+                    loading = false;
                 } else {
+                    loading = false;
                     console.log(response.err)
                 }
                    
             }).catch((error) => {
+                loading = false;
                 console.log(error);
             });
         }
@@ -65,6 +73,8 @@
     function resetPassword() {
 
         if(oldPassword != null && newPassword != null && oldPassword != newPassword) {
+
+            loading = true;
 
             request = {
                 func: "resetPassword",
@@ -76,12 +86,14 @@
             invokeFunction(request).then((response) => {
                 if(response.msg != null) {
                     console.log(response.msg);
-
+                    loading = false;
                     oldPassword = '', newPassword = '';
                 } else {
+                    loading = false;
                     console.log(response.err);
                 }
             }).catch((error) => {
+                loading = false;
                 console.log(error);
             });
         }
@@ -104,34 +116,27 @@
 
     <p style="text-align:center">Image size should be less than 1MB</p>
 
-    <div class="input-group mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">Display Name:</div>
-        </div>
-        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="{Name}" bind:value="{Name}">
-    </div>
+    <input type="text" id="inlineFormInputGroup" placeholder="Display Name" bind:value="{Name}">
 
     <input id="authPass" type="password" placeholder="Account Password" bind:value="{authPassword}"/>
 
-    <button class="btn btn-success" on:click="{updateProfile}">Update Profile</button>
+    {#if !loading}
+        <button class="btn btn-success" on:click="{updateProfile}">Update Profile</button>
+    {:else}
+        <Loader/>
+    {/if}
 
     <h5 style="margin-top:60px;text-align:center">Reset Password</h5>
 
-    <div class="input-group mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">Old Password:</div>
-        </div>
-        <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="Account Password" bind:value="{oldPassword}">
-    </div>
+    <input type="password" placeholder="Account Password" bind:value="{oldPassword}">
 
-    <div class="input-group mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">New Password:</div>
-        </div>
-        <input type="password" class="form-control" id="inlineFormInputGroup" placeholder="New Password" bind:value="{newPassword}">
-    </div>
+    <input type="password" placeholder="New Password" bind:value="{newPassword}">
 
-    <button class="btn btn-success" on:click="{resetPassword}">Reset</button>
+    {#if !loading}
+        <button class="btn btn-success" on:click="{resetPassword}">Reset</button>
+    {:else}
+        <Loader/>
+    {/if}
 </div>
 
 <div id="rightSet" class="container-fluid">
@@ -172,15 +177,23 @@
         width:100%;
     }
 
-    .mb-2, #propic {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    input {
+        color: white;
+        background: black;
+        outline:none;
+        border:none;
+        margin-bottom:10px;
+        width:100%;
+        border-radius:0.4rem;
+    }
+
+    #propic {
         opacity: 1;
         border-radius:0.4rem;
     }
 
     button {
         margin-top:10px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         opacity: 1;
         width:50%;
         margin-left:25%;

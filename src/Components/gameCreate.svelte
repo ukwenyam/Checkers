@@ -10,6 +10,10 @@
 
     let loading = false;
 
+    function selectTime(time) {
+        Time = time;
+    }
+
     function createGame() {
 
         loading = true;
@@ -23,10 +27,8 @@
             email: $currUser.email,
             name: $currUser.name,
             time: Time,
-            date: new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() 
+            date: moment().format("YYYY-MM-DD")
         }
-
-        console.log(request);
 
         invokeFunction(request).then((response) => {
 
@@ -72,7 +74,31 @@
 
 <h5>Game Preferences</h5>
 
-<h6>Time Per Turn: {Time} seconds</h6>
+<div id="suggest">
+    <h6>Time Per Turn (seconds)</h6>
+
+    <div class="form-check form-check-inline">
+        <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
+        <label class="form-check-label" for="inlineRadio1">15</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
+        <label class="form-check-label" for="inlineRadio2">30</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+        <label class="form-check-label" for="inlineRadio3">45</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+        <label class="form-check-label" for="inlineRadio3">60</label>
+    </div>
+</div>
+
+<h6>{Time} seconds</h6>
 <input class="custom-range" bind:value="{Time}" type="range" min="15" max="60" step="1">
 
 {#if loading}
@@ -82,6 +108,17 @@
 {/if}
 
 <style>
+    #suggest {
+        color:white;
+        margin-top:12.5%;
+        width:100%;
+        margin-bottom:12.5%;
+    }
+
+    .form-check {
+        margin-left:10%;
+    }
+
     h5 {
         text-align: center;
         margin-top:20px;
@@ -89,8 +126,8 @@
     }
 
     h6 {
-        margin-top:25%;
         color:white;
+        text-align:center;
     }
 
     button {

@@ -32,9 +32,13 @@ export const allChats = writable([]);
 
 export const smallPopUp = writable(false);
 
+export const bigPopUp = writable(false);
+
 export const viewCreateGame = writable(false);
 
 export const viewJoinGame = writable(false);
+
+export const viewGameList = writable(false);
 
 window.onbeforeunload = async function() {
 
