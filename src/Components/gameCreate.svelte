@@ -40,14 +40,16 @@
 
                 gamePref.update(state => {
                     state = {};
-                    state.gameID = response.msg;
+                    state.gameID = response.msg.gameID;
                     state.time = Time;
                     state.timer = Time;
                     state.pri = $currUser.name;
                     state.sec = null;
                     state.chatID = null;
-                    state.currPlayer = null;
+                    state.currPlayer = response.msg.currPlayer;
                     state.numMoves = 0;
+                    state.priMoves = 0;
+                    state.secMoves = 0;
                     state.rangeMoves = 0;
                     state.paused = true;
                     state.finished = false;
@@ -57,9 +59,6 @@
                 });
 
                 loading = false;
-                smallPopUp.set(false);
-                viewCreateGame.set(false);
-                gameTab.set(0);
             } else {
                 loading = false;
                 console.log(response.err);
@@ -72,39 +71,43 @@
     }
 </script>
 
-<h5>Game Preferences</h5>
+{#if $gamePref == null}
+    <h5>Game Preferences</h5>
 
-<div id="suggest">
-    <h6>Time Per Turn (seconds)</h6>
+    <div id="suggest">
+        <h6>Time Per Turn (seconds)</h6>
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
-        <label class="form-check-label" for="inlineRadio1">15</label>
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
+            <label class="form-check-label" for="inlineRadio1">15</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
+            <label class="form-check-label" for="inlineRadio2">30</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <label class="form-check-label" for="inlineRadio3">45</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <label class="form-check-label" for="inlineRadio3">60</label>
+        </div>
     </div>
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
-        <label class="form-check-label" for="inlineRadio2">30</label>
-    </div>
+    <h6>{Time} seconds</h6>
+    <input class="custom-range" bind:value="{Time}" type="range" min="15" max="60" step="1">
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-        <label class="form-check-label" for="inlineRadio3">45</label>
-    </div>
-
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-        <label class="form-check-label" for="inlineRadio3">60</label>
-    </div>
-</div>
-
-<h6>{Time} seconds</h6>
-<input class="custom-range" bind:value="{Time}" type="range" min="15" max="60" step="1">
-
-{#if loading}
-    <Loader/>
+    {#if loading}
+        <Loader/>
+    {:else}
+        <button class="btn btn-primary" on:click="{createGame}">Create</button>
+    {/if}
 {:else}
-    <button class="btn btn-primary" on:click="{createGame}">Create</button>
+    <h5 style="text-align:center;margin-top:50%;">Please share Game Password '{$gamePref.gameID}' with other player</h5>
 {/if}
 
 <style>
@@ -136,5 +139,17 @@
         margin-left:25%;
         margin-top:20px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    @media screen and (max-width: 800px) {
+
+        .custom-range {
+            width:90%;
+            margin-left:5%;
+        }
+
+        button {
+            margin-top:40px;
+        }
     }
 </style>

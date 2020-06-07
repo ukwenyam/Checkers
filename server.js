@@ -43,6 +43,7 @@ const io = socketio(server);
 const MAX_ROOM_USER = 2;
 
 let rooms = new Map();
+let stats = new Map();
 
 var userCount = 0;
 
@@ -50,12 +51,24 @@ io.on('connection', (socket) => {
     ++userCount;
     console.log("New Client connected!");
 
+    socket.on('go-online', (userID) => {
+        stats.set(userID, true);
+    });
+
+    socket.on('go-offline', (userID) => {
+        stats.set(userID, false);
+    });
+
+    socket.on('check-status', (userID) => {
+        socket.emit('get-status', stats.get(userID));
+    });
+
     socket.on('disconnect', () => {
         if(userCount > 0){
             --userCount;
         }
         console.log("Client has left");
-    })
+    });
 
     socket.on('set-username', (name) => {
         console.log('Setting username to '+name);
@@ -66,7 +79,7 @@ io.on('connection', (socket) => {
         if(rooms.has(room) && rooms.get(room) < MAX_ROOM_USER) {
             rooms.set(room, 2);
             console.log(username + ' has arrived!');
-            socket.to(room).emit('second-user', username);
+            socket.to(room).emit('get-second-user', username);
         } 
         if(!rooms.has(room)) {
             rooms.set(room, 1);
@@ -75,9 +88,9 @@ io.on('connection', (socket) => {
         socket.join(room);
     });
 
-    socket.on('first-user', (data) => {
+    socket.on('send-first-user', (data) => {
         console.log('send back first player ' + data.name);
-        socket.to(data.room).emit('first-user', data.name);
+        socket.to(data.room).emit('get-first-user', data.name);
     });
 
     socket.on('chat message', (data) => {
@@ -100,30 +113,29 @@ io.on('connection', (socket) => {
         socket.to(room).emit('no-typing', room);
     });
 
-    socket.on('current-player', (data) => {
-        console.log('sending currplayer '+ data.player);
-        socket.to(data.room).emit('current-player', data.player);
+    socket.on('switch-player', (room) => {
+        console.log('switching player');
+        socket.to(room).emit('switch-player');
     });
 
-    socket.on('paused', (data) => {
-        console.log('Game Paused: ' + data.paused);
-        socket.to(data.room).emit('paused', data.paused);
+    socket.on('start-game', (room) => {
+        console.log(room);
+        console.log('Game has Started');
+        socket.to(room).emit('start-game');
     });
 
-    socket.on('save-game', (data) => {
-        invokeFunction(data).then((response) => {
-            response.auto = data.auto;
-            if(!data.saved)
-                socket.to(data.gameID).emit('saveGame', response);
+    socket.on('save-game', (request) => {
+        invokeFunction(request).then((response) => {
+            console.log(response);
+            if(!request.saved)
+                socket.to(request.gameID).emit('save-game', response);
         }).catch((error) => {
             console.log("Error " + error);
-            if(!data.saved)
-                socket.to(data.gameID).emit('saveGame', error);
         });
     });
 
-    socket.on('save-chat', (data) => {
-        invokeFunction(data).then((response) => {
+    socket.on('save-chat', (request) => {
+        invokeFunction(request).then((response) => {
             console.log(response);
         }).catch((error) => {
             console.log("Error " + error);

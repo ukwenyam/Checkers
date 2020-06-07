@@ -6,7 +6,7 @@ export class Position {
 
         if(empty == 'E')
             this.isEmpty = true;
-        else 
+        else
             this.isEmpty = false;
     }
 }

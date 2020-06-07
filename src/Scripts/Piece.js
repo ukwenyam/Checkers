@@ -19,7 +19,7 @@ export class Piece {
     }
 
     setPosition(xPos, yPos) {
-        this.positon = new Position(xPos, yPos, null);
+        this.positon = new Position(xPos, yPos);
     }
 
     incrementStack() {

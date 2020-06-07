@@ -291,7 +291,7 @@
 	<h2 id="time">Timer: {time}</h2>
 </div>
 
-<h4 class="players" style="top:0;%">Computer</h4>
+<h4 id="comp" class="players" style="top:0;%">Computer</h4>
 
 <div id="board">
 	<svg id="hover">
@@ -311,7 +311,7 @@
 	<svg>
 </div>
 
-<h4 class="players" style="bottom:0;">{$currUser.name}</h4>
+<h4 id="me" class="players" style="bottom:0;">{$currUser != null ? $currUser.name : "ME"}</h4>
 
 <div id="gameBtn" class="container">
     {#if paused}
@@ -326,21 +326,11 @@
 
         <button class="btn btn-primary btn-lg switch" on:click="{switchPlayer}">Switch Turn</button>
 
-        <button class="btn btn-danger btn-lg forfeit" on:click="{() => saveGame(false)}">Forfeit Game</button>
+        <button class="btn btn-secondary btn-lg forfeit" on:click="{() => saveGame(false)}">Save Game</button>
     {/if}
 </div>
 
-<style> 
-	#popUp {
-		width:25%;
-		height:25%;
-		background-color: pink;
-		z-index:99; 
-		border-radius:0.4rem;
-		top:37.5%;
-		left:37.5%;
-		position:fixed;
-	}
+<style>
 
 	.players {
 		left:47.5%;
@@ -476,76 +466,107 @@
 
 	@media screen and (max-width: 800px) {
 
-		#popUp {
-			width:100%;
-			height:100%;
-			background-color: pink;
-			z-index:99; 
-			border-radius:0.4rem;
-			top:0;
-			left:0;
-			position:fixed;
-		}
-
-        .pause {
-            width:50%;
-            margin-top:40px;
-            margin-left: 25%;
+        #gameStatus {
+            width: 100%;
+            height:unset;
+            top:unset;
             position:unset;
+            left:unset;
         }
 
-        .switch {
-            width:50%;
-            margin-top:30px;
-            margin-left: 25%;
-            position:unset;
+        #player {
+            font-size:20px;
+            margin-top:0px;
+            margin-bottom:unset;
+            text-align:center;
+            width:33.33%;
+            float:left;
         }
-
-        .save {
-            width:50%;
-            margin-top:30px;
-            margin-left: 25%;
-            position:unset;
-        }
-
-		#state {
-			float:unset;
-			width:100%;
-			text-align: center;
-			margin-top:20px;
-			margin-left:unset;
-			float:unset;
-		}
         
+        #time {
+			font-size:20px;
+            margin-top:0px;
+            width:33.33%;
+            margin-left:33.33%;
+        }
+
+        #moves {
+            float:right;
+			font-size:20px;
+            margin-top:0px;
+            margin-bottom:unset;
+            text-align:center;
+            width:33.33%;
+        }
+        
+        #comp {
+            margin-top:10px;
+        }
+        
+        .players {
+            left:unset;
+            position:unset;
+            top:unset;
+            bottom:unset;
+            text-align:center;
+        }
+
         #board {
 			width:100%;
 			bottom:unset;
 			position:unset;
-			margin-top:30px;
 			left:unset
-		}
+        }
+
+        #me {
+            margin-top:10px;
+        }
+        
+        #gameBtn {
+            width: 100%;
+            height:unset;
+            top:unset;
+            position:unset;
+            right:unset;
+        }
+
+        .start {
+            margin-top:10px;
+        }
+
+        #state {
+			width:100%;
+			text-align: center;
+			margin-top:-37.5%;
+        }
+
+        .pause {
+            margin-top:10px;
+            position:unset;
+            float:left;
+            margin-left:0px;
+            width:35%;
+        }
+
+        .switch {
+            margin-top:10px;
+            margin-left: 0px;
+            position:unset;
+            float:right;
+            width:35%;
+        }
+
+        .forfeit {
+            margin-top:20px;
+            margin-left:0px;
+            float:right;
+            position:unset;
+            width:35%;
+        }
 
 		.checker {
 			height:25px;
 			width:25px;
-		}
-
-		#player {
-			font-size:20px;
-		}
-
-		#moves {
-			margin-left:unset;
-			font-size:20px;
-			float:right;
-		}
-
-		#time {
-			float:unset;
-			font-size:20px;
-			margin-top:20px;
-			margin-left:unset;
-			text-align:center;
 		}
     }
 </style>

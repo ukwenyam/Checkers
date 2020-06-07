@@ -2,31 +2,59 @@
     import { userGames, gamePref, page, gameTab, currUser, 
             gameBoard, gameHistory, gameChat, viewGameList, bigPopUp } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
+    import { getUserGames } from '../Scripts/Functions.js';
 
-    let currGame = $userGames[0];
+    //getUserGames();
+
+    let currGame;
+
+    let screenWidth = screen.width;
+    
+    if($userGames.length > 0)
+        currGame = $userGames[0];
 
     function viewGameDetails(index) {
+        if(screen.width <= 800) {
+            let list = document.getElementById("gameList");
+            let detail = document.getElementById("gameDetails");
+
+            list.setAttribute("style", "display:none");
+            detail.setAttribute("style", "display:block");
+        }
+
         currGame = $userGames[index];
+    }
+
+    function goBack() {
+        let list = document.getElementById("gameList");
+        let detail = document.getElementById("gameDetails");
+
+        list.setAttribute("style", "display:block");
+        detail.setAttribute("style", "display:none");
     }
 
     function getGame() {
 
-        let gameStates = game.priEmail == $currUser.email ? currGame.priGameHistory : currGame.secGameHistory;
+        if(currGame.finished) {
+            gameBoard.set(new Board(currGame.gameHistory[currGame.gameHistory.length - 1], null));
+        } else {
+            gameBoard.set(new Board(currGame.gameHistory, null));
+        }
 
-        gameBoard.set(new Board(gameStates[gameStates.length - 1], null));
-
-        gameHistory.set(gameStates);
+        gameHistory.set(currGame.gameHistory);
 
         gamePref.update(state => {
             state = {};
-            state.id = currGame.id;
+            state.id = currGame._id;
             state.time = currGame.time;
             state.timer = currGame.time;
             state.pri = currGame.priEmail == $currUser.email ? $currUser.name : null;
             state.sec = currGame.secEmail == $currUser.email ? $currUser.name : null;
             state.currPlayer = currGame.currPlayer;
-            state.numMoves = gameStates.length;
-            state.rangeMoves = gameStates.length;
+            state.numMoves = currGame.finished == true ? currGame.gameHistory.length - 1 : currGame.numMoves;
+            state.rangeMoves = currGame.finished == true ? currGame.gameHistory.length - 1 : currGame.numMoves;
+            state.priMoves = currGame.priMoves,
+            state.secMoves = currGame.secMoves,
             state.paused = resume == true ? true : false;
             state.finished = currGame.finished;
             state.side = currGame.priEmail == $currUser.email ? "red" : "black";
@@ -60,11 +88,15 @@
         {/each}
     </div>
     <div id="gameDetails">
+        {#if screenWidth <= 800}
+            <button class="btn btn-dark" style="width:25%;" on:click="{goBack}"><i class="fa fa-arrow-left"></i> Back</button>
+        {/if}
         <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : currGame.secPlayer.toUpperCase()}</h3>
         <h4 class="detail">Date Started: <span>{currGame.date}</span></h4>
-        <h4 class="detail">Status: <span>{currGame.finished == false ? "On-Going" : "Finished"}</span></h4>
+        <h4 class="detail">Status: <span>{currGame.finished == true ? "Finished" : "On-Going"}</span></h4>
         <h4 class="detail">Turn Time: <span>{currGame.time} seconds</span></h4>
-        <h4 class="detail">Total Moves: <span>{currGame.priEmail == $currUser.email ? currGame.priGameHistory.length : currGame.secGameHistory.length}</span></h4>
+        <h4 class="detail">Total Moves: <span>{currGame.finished == true ? currGame.gameHistory.length - 1 : currGame.numMoves}</span></h4>
+        <h4 class="detail">My Moves: <span>{currGame.priPlayer == $currUser.name ? currGame.priMoves : currGame.secMoves}</span></h4>
         <h4 class="detail">Minutes Played: <span>{currGame.minutesPlayed} minutes</span></h4>
         <h4 class="detail">Current Player: <span>{currGame.currPlayer == "red" && currGame.priEmail == $currUser.email ? "You" : currGame.secPlayer.toUpperCase()} </span></h4>
 
@@ -80,7 +112,7 @@
     }
 
     .detail {
-        margin-top: 10%;
+        margin-top: 8%;
     }
 
     span {
@@ -125,5 +157,35 @@
 
     .empty {
         color:white;
+    }
+
+    @media screen and (max-width: 800px) {
+
+        #gameList {
+            width:101%;
+            float:unset;
+            color:white;
+            display:block;
+        }
+
+        #gameDetails {
+            width:101%;
+            float: unset;
+            border-left: none;
+            display:none;
+        }
+
+        #getGame {
+            width: 50%;
+            border-radius:0px;
+            margin-left:25%;
+            margin-top:20px;
+            position: unset;
+            bottom:unset;
+        }
+
+        .detail {
+            font-size:20px;
+        }
     }
 </style>

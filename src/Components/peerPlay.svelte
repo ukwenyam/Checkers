@@ -12,13 +12,6 @@
 
     $currSocket.emit('join-room', $gamePref.gameID, $currUser.name);
 
-    if($gamePref.pri == $currUser.name && $gamePref.currPlayer == null && $gamePref.sec == null) {
-        gamePref.update(state => {
-            state.currPlayer = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
-            return state;
-        });
-    }
-
     let clockTime = $gamePref.time;
 
     let lastNumMoves = $gamePref.numMoves;
@@ -88,6 +81,13 @@
         await gamePref.update(state => {
             state.numMoves = data.num;
             state.rangeMoves = data.range;
+
+            if(state.pri == $currUser.name)
+                state.secMoves += 1;
+
+            if(state.sec == $currUser.name)
+                state.priMoves += 1;
+
             return state;
         });
     });
@@ -107,7 +107,7 @@
 		if(currPos != null)
 			highlightCircle(currPos);
 
-		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
+		if($gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
 
 			//console.log($gamePref.timer);
 
@@ -124,7 +124,7 @@
 				gamePref.update(state => {
 					state.currPlayer = state.currPlayer == "red" ? "black" : "red";
 					state.timer = state.time;
-					state.secondsPlayed += 1;
+                    state.secondsPlayed += 1;
 					return state;
 				});
 
@@ -230,6 +230,13 @@
                 gamePref.update(state => {
                     state.numMoves += 1;
                     state.rangeMoves += 1;
+
+                    if(state.pri == $currUser.name)
+                        state.priMoves += 1;
+
+                    if(state.sec == $currUser.name)
+                        state.secMoves += 1;
+
                     return state;
                 });
 
@@ -242,10 +249,10 @@
                     remove : res.id,
                     num: $gamePref.numMoves,
                     range: $gamePref.rangeMoves,
-					room: $gamePref.ganeID
+					room: $gamePref.gameID
 				}
 
-				$currSocket.emit('piece-move',  pieceInfo)
+				$currSocket.emit('piece-move', pieceInfo)
 
 				updateCirclePositions(nextPos);
                 
@@ -298,15 +305,15 @@
 
                 for (index = 0; index < allCircles.length; ++index) 
                     allCircles[index].setAttribute("style", "fill:red");
-			}
+            }
+            
+            $currSocket.emit('switch-player', $gamePref.gameID);
 			
 			gamePref.update(state => {
 				state.currPlayer = state.currPlayer == "red" ? "black" : "red";
 				state.timer = clockTime;
                 return state;
             });
-
-            $currSocket.emit('current-player', {player: $gamePref.currPlayer, room: $gamePref.id});
 
             currPos = null, nextPos = null;
 			lockedPiece = false;
@@ -320,11 +327,11 @@
         if($gamePref.side == $gamePref.currPlayer) {
 
             gamePref.update(state => {
-                state.paused = !state.paused;
+                state.paused = false;
                 return state;
             });
 
-            $currSocket.emit('paused', {paused: $gamePref.paused, room: $gamePref.id});
+            $currSocket.emit('start-game', $gamePref.gameID);
         }
 	}
 
@@ -343,11 +350,11 @@
 
             let request = {
 				func: "saveGame",
-				id: $currUser.name,
+				id: $currUser.email,
                 gameID: $gamePref.gameID,
                 gameHistory: $gameHistory,
-                pri: $gamePref.pri == $currUser.name ? true : false,
-                sec: $gamePref.sec == $currUser.name ? true : false,
+                priMoves: $gamePref.priMoves,
+                secMoves: $gamePref.secMoves,
 				minutes: Math.floor($gamePref.secondsPlayed / 60),
 				currPlayer: $gamePref.currPlayer,
 				auto: auto,
@@ -355,29 +362,23 @@
 			}
 			
 			if(auto) {
-				$currSocket.emit('saveGame', request);
+				$currSocket.emit('save-game', request);
 				timeInterval = setInterval(countDown, 1000);
 			} else {
-				$currSocket.emit('saveGame', request);
-				page.set(0);
+                $currSocket.emit('save-game', request);
+                //gameBoard.set(null);
+				gamePref.set(null);
 			}
         }
     }
 </script>
-
-{#if $gamePref.pri == $currUser.name && $gamePref.sec == null && $gamePref.numMoves == 0}
-    <Blur/>
-    <div id="popUp" class="container" transition:fly={{ y:-200, duration:1000 }}>
-        <h5 style="text-align:center;margin-top:50%;">Please share Game Password '{$gamePref.gameID}' with other player</h5>
-    </div>
-{/if}
 
 <div id="gameStatus">
 	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};"></i></h2>
 
 	<h2 id="moves">Moves: {$gamePref.numMoves}</h2>
 
-	<h2 id="time">Timer: {$gamePref.time}</h2>
+	<h2 id="time">Timer: {$gamePref.timer}</h2>
 </div>
 
 <h4 class="players" style="top:0;%">{$gamePref.pri == $currUser.name ? $gamePref.sec : $gamePref.pri}</h4>
@@ -424,18 +425,6 @@
 {/if}
 
 <style> 
-	#popUp {
-		width:400px;
-		height:400px;
-		background-color: #343a40;
-		z-index:99; 
-		border-radius:0.4rem;
-		top:calc((100% - 400px) / 2);
-		left:calc((100% - 400px) / 2);
-        position:fixed;
-        color: white;
-	}
-
 	.players {
 		left:47.5%;
 		position:fixed;
@@ -459,11 +448,18 @@
 		top:calc((100% - 800px)/2);
 		position:fixed;
 		right:0;
+    }
+    
+    .start {
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		margin-top: 50%;
+		margin-left:25%;
+		width: 50%;
 	}
 
     .pause {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 100%;
+		margin-top: 50%;
 		margin-left:25%;
 		width: 50%;
 	}
@@ -563,76 +559,107 @@
 
 	@media screen and (max-width: 800px) {
 
-		#popUp {
-			width:100%;
-			height:100%;
-			background-color: pink;
-			z-index:99; 
-			border-radius:0.4rem;
-			top:0;
-			left:0;
-			position:fixed;
-		}
-
-        .pause {
-            width:50%;
-            margin-top:40px;
-            margin-left: 25%;
+        #gameStatus {
+            width: 100%;
+            height:unset;
+            top:unset;
             position:unset;
+            left:unset;
         }
 
-        .switch {
-            width:50%;
-            margin-top:30px;
-            margin-left: 25%;
-            position:unset;
+        #player {
+            font-size:20px;
+            margin-top:0px;
+            margin-bottom:unset;
+            text-align:center;
+            width:33.33%;
+            float:left;
         }
-
-        .save {
-            width:50%;
-            margin-top:30px;
-            margin-left: 25%;
-            position:unset;
-        }
-
-		#state {
-			float:unset;
-			width:100%;
-			text-align: center;
-			margin-top:20px;
-			margin-left:unset;
-			float:unset;
-		}
         
+        #time {
+			font-size:20px;
+            margin-top:0px;
+            width:33.33%;
+            margin-left:33.33%;
+        }
+
+        #moves {
+            float:right;
+			font-size:20px;
+            margin-top:0px;
+            margin-bottom:unset;
+            text-align:center;
+            width:33.33%;
+        }
+        
+        #comp {
+            margin-top:10px;
+        }
+        
+        .players {
+            left:unset;
+            position:unset;
+            top:unset;
+            bottom:unset;
+            text-align:center;
+        }
+
         #board {
 			width:100%;
 			bottom:unset;
 			position:unset;
-			margin-top:30px;
 			left:unset
-		}
+        }
+
+        #me {
+            margin-top:10px;
+        }
+        
+        #gameBtn {
+            width: 100%;
+            height:unset;
+            top:unset;
+            position:unset;
+            right:unset;
+        }
+
+        .start {
+            margin-top:10px;
+        }
+
+        #state {
+			width:100%;
+			text-align: center;
+			margin-top:-37.5%;
+        }
+
+        .pause {
+            margin-top:10px;
+            position:unset;
+            float:left;
+            margin-left:0px;
+            width:35%;
+        }
+
+        .switch {
+            margin-top:10px;
+            margin-left: 0px;
+            position:unset;
+            float:right;
+            width:35%;
+        }
+
+        .forfeit {
+            margin-top:20px;
+            margin-left:0px;
+            float:right;
+            position:unset;
+            width:35%;
+        }
 
 		.checker {
 			height:25px;
 			width:25px;
-		}
-
-		#player {
-			font-size:20px;
-		}
-
-		#moves {
-			margin-left:unset;
-			font-size:20px;
-			float:right;
-		}
-
-		#time {
-			float:unset;
-			font-size:20px;
-			margin-top:20px;
-			margin-left:unset;
-			text-align:center;
 		}
     }
 </style>

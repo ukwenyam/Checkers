@@ -12,9 +12,11 @@ else
 
 export const currUser = writable(null);
 
+export const showNavBar = writable(true);
+
 export const page = writable(0);
 
-export const gameTab = writable(0);
+export const gameTab = writable(1);
 
 export const userGames = writable([]);
 
@@ -39,6 +41,8 @@ export const viewCreateGame = writable(false);
 export const viewJoinGame = writable(false);
 
 export const viewGameList = writable(false);
+
+export const showLogin = writable(false);
 
 window.onbeforeunload = async function() {
 

@@ -47,8 +47,10 @@
                             state.chatID = response.msg.chat.id;
                             state.pri = null;
                             state.sec = game.secPlayer;
-                            state.currPlayer = null;
+                            state.currPlayer = game.currPlayer;
                             state.numMoves = 0;
+                            state.priMoves = 0;
+                            state.secMoves = 0;
                             state.rangeMoves = 0;
                             state.paused = true;
                             state.finished = false;
@@ -59,8 +61,8 @@
 
                         loading = false;
                         smallPopUp.set(false);
-                        viewJoinGame.set(false)
-                        gameTab.set(0);
+                        viewJoinGame.set(false);
+                        gameTab.set(2);
                     } else {
                         loading = false;
                         errMsg = "Cannot Join A Game You Created";

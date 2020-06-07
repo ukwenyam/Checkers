@@ -2,7 +2,7 @@
     import { fly, fade } from 'svelte/transition';
 </script>
 
-<div class="container-fluid" transition:fade></div>
+<div class="container-fluid"></div>
 
 <style>
     .container-fluid {

@@ -9,6 +9,8 @@
     let oldPassword, newPassword;
     let imageLabel = 'Choose Profile Photo';
 
+    let screenWidth = screen.width;
+
     let request;
     let loading = false;
 
@@ -137,6 +139,10 @@
     {:else}
         <Loader/>
     {/if}
+
+    {#if screenWidth < 800}
+        <button class="btn btn-danger">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
+    {/if}
 </div>
 
 <div id="rightSet" class="container-fluid">
@@ -201,7 +207,27 @@
 
     #authPass {
         width:100%;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius:0.4rem;
+    }
+
+    @media screen and (max-width: 800px) {
+
+        #leftSet {
+            width:100%;
+            float:unset;
+            border-right: none;
+        }
+
+        #rightSet {
+            width:100%;
+            float:unset;
+            border-left:none;
+        }
+
+        .btn-danger {
+            width: 50%;
+            margin-left:25%;
+            margin-top:20px;
+        }
     }
 </style>

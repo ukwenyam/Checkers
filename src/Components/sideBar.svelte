@@ -1,5 +1,5 @@
 <script>
-    import { currUser, page, userGames, leaderBoard, allChats, gamePref, 
+    import { currUser, page, userGames, leaderBoard, allChats, gamePref, currSocket,
              viewCreateGame, viewJoinGame, viewGameList, smallPopUp, bigPopUp } from '../Scripts/Init.js';
     import { fly, fade } from 'svelte/transition';
     import Create from './gameCreate.svelte';
@@ -9,15 +9,7 @@
     import Settings from './settings.svelte';
     import LeagueTable from './leaderBoard.svelte';
     import { invokeFunction } from '../Scripts/Cloud.js';
-
-    setTimeout(async () => {
-        if($leaderBoard.length == 0) {
-            await getUserGames();
-            await getLeagueTable();
-            await getAllChats();
-        }
-    }, 2000);
-
+    
     let screenWidth = screen.width;
 
     let request;
@@ -27,85 +19,6 @@
     let settingsView = false;
 
     let leaderBoardView = false, tutorialView = false;
-
-    function getLeagueTable() {
-
-        request = {
-            func: "checkersLeague",
-            name: $currUser.name
-        }
-
-        invokeFunction(request).then((response) => {
-            //console.log(response);
-            if(response.msg != null) {
-                leaderBoard.set(response.msg.arr);
-
-                currUser.update(state => {
-                    state.position = response.msg.pos;
-                    return state;
-                });
-            } else {
-                console.log(response.err);
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-
-    function getUserGames() {
-
-        request = {
-            func: "retrieveUserGames",
-            email: $currUser.email
-        }
-
-        invokeFunction(request).then((response) => {
-            //console.log(response);
-            if(response.msg != null) {
-
-                let games = response.msg;
-                
-                userGames.update(state => {
-                    state = [];
-                    for(let i = 0; i < games.length; i++) {
-                        if(games[i].finished)
-                            state.push(games[i]);
-                        else
-                            state.unshift(games[i]);
-                    }
-                    return state;
-                });
-                
-            } else {
-                console.log(response.err);
-                loading = false;
-            }
-        }).catch((error) => {
-            console.log(error);
-            loading = false;
-        });
-    }
-
-    function getAllChats() {
-
-        request = {
-            func: "retrieveUserChats",
-            email: $currUser.email
-        }
-
-        invokeFunction(request).then((response) => {
-            console.log(response);
-            if(response.msg != null) {
-                allChats.set(response.msg);
-            } else {
-                console.log(response.err);
-                loading = false;
-            }
-        }).catch((error) => {
-            console.log(error);
-            loading = false;
-        });
-    }
 
     function closeNav() {
 
@@ -172,6 +85,7 @@
     }
 
     function signOut() {
+        $currSocket.emit('go-offline', $currUser.email);
         currUser.set(null);
     }
 </script>

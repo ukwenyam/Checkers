@@ -1,8 +1,34 @@
 <script>
     import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
+    import { getLeagueTable } from '../Scripts/Functions.js';
+
+    getLeagueTable();
+
+    let screenWidth = screen.width;
+
+    function viewMyStats() {
+        let myStats = document.getElementById("stats");
+        let league = document.getElementById("league");
+
+        league.setAttribute("style", "display:none");
+        myStats.setAttribute("style", "display:block");
+    }
+
+    function viewLeagueTable() {
+        let myStats = document.getElementById("stats");
+        let league = document.getElementById("league");
+
+        league.setAttribute("style", "display:block");
+        myStats.setAttribute("style", "display:none");
+    }
 </script>
 
 <div id="stats" class="container-fluid">
+
+    {#if screenWidth <= 800}
+        <button class="btn btn-primary" style="float:left;margin-top:12.5px;" on:click="{viewLeagueTable}">League</button>
+    {/if}
+
     <h5>My Stats</h5>
     <hr/>
 
@@ -67,6 +93,11 @@
 </div>
 
 <div id="league" class="container-fluid">
+
+    {#if screenWidth <= 800}
+        <button class="btn btn-primary" style="float:right;margin-top:12.5px;" on:click="{viewMyStats}">My Stats</button>
+    {/if}
+
     <h5>Checkas League - Top 50</h5>
     <hr/>
 
@@ -76,7 +107,9 @@
         <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Games</th>
+            {#if screenWidth > 800}
+                <th>Games</th>
+            {/if}
             <th>Wins</th>
             <th>Draws</th>
             <th>Losses</th>
@@ -87,7 +120,9 @@
                 <tr>
                     <td>{i + 1}</td>
                     <td>{user.name}</td>
-                    <td>{user.gamesPlayed}</td>
+                    {#if screenWidth > 800}
+                        <td>{user.gamesPlayed}</td>
+                    {/if}
                     <td>{user.wins}</td>
                     <td>{user.draws}</td>
                     <td>{user.losses}</td>
@@ -97,7 +132,9 @@
                 <tr>
                     <th>{i + 1}</th>
                     <th>{user.name}</th>
-                    <th>{user.gamesPlayed}</th>
+                    {#if screenWidth > 800}
+                        <th>{user.gamesPlayed}</th>
+                    {/if}
                     <th>{user.wins}</th>
                     <th>{user.draws}</th>
                     <th>{user.losses}</th>
@@ -113,6 +150,7 @@
     h5 {
         text-align:center;
         margin-top:20px;
+        width:100%;
     }
 
     table {
@@ -135,5 +173,26 @@
         width:66.66%;
         float:right;
         color:white;
+    }
+
+    @media screen and (max-width: 800px) {
+
+        #stats {
+            width:100%;
+            position:fixed;
+            top:0;
+            left:0;
+            float:unset;
+            display: none;
+        }
+
+        #league {
+            width:100%;
+            position:fixed;
+            top:0;
+            left:0;
+            float:unset;
+            display: block;
+        }
     }
 </style>

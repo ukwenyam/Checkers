@@ -1,8 +1,9 @@
 <script>
-    import { currUser, page } from '../Scripts/Init.js';
+    import { currUser, page, showLogin, gameTab } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { User } from '../Scripts/User.js';
     import Loader from '../Components/loader.svelte';
+    import { getUserGames, getLeagueTable, getAllChats } from '../Scripts/Functions.js';
 
     let Email, Name, Password, confirmPassword;
 
@@ -35,6 +36,7 @@
                     request.func = "createUser";
                     createUser();
                     loading = false;
+                    showLogin.set(false);
                 } else if(response.msg == "EXIST") {
                     errMsg = "Display Name Already Exist";
                     viewError = true;
@@ -100,7 +102,7 @@
             invokeFunction(request).then((response) => {
                 if(response.msg != null && response.msg) {
                     request.func = "retrieveUser";
-                    retrieveUser();
+                    retrieveUser(); 
                 } else if(response.msg != null && !response.msg) {
                     errMsg = "Please Verify Your Email";
                     viewError = true;
@@ -126,7 +128,7 @@
 
     function retrieveUser() {
 
-        invokeFunction(request).then((response) => {
+        invokeFunction(request).then(async (response) => {
             //console.log(response);
             if(response.msg != null) {
                 let data = response.msg;
@@ -135,10 +137,16 @@
 
                 currUser.set(new User(data));
 
-                loading = false;
+                await getAllChats(); 
+                await getUserGames(); 
+                await getLeagueTable();
 
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
+                
+                loading = false;
+                showLogin.set(false);
+                gameTab.set(1);
             } else {
                 errMsg = response.err;
                 console.log(response.err);
@@ -186,6 +194,7 @@
 </script>
 
 <div id="entry" class="container">
+    <img src="images/LOGO-192.png" alt="Logo" style="height:80px;"/>
     <h3>Checkas.io</h3>
     {#if viewError}
         <h6 style="text-align:center;color:red;margin-top:20px;">{errMsg}</h6>
@@ -193,8 +202,8 @@
 
     {#if logPage == true}
         <div id="login-div">
-            <input id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required/><br/>
-            <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" on:keydown="{event => event.which === 13 && signIn()}" required/><br/>
+            <input id="logEmail" type="text" bind:value="{logEmail}" placeholder="Email" required autocomplete="off"/><br/>
+            <input id="logPassword" type="password" bind:value="{logPassword}" placeholder="Password" on:keydown="{event => event.which === 13 && signIn()}" required autocomplete="off"/><br/>
             <br/><a id="forgotPassword" on:click="{() => (logPage = null)}">Forgot Password?</a>
             {#if !loading}
                 <h5><button class="btn btn-success" on:click="{signIn}" type="submit">Log In</button></h5>
@@ -208,8 +217,8 @@
         </div>
     {:else if logPage == false}
         <div id="signup-div">
-            <input id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required/>
-            <input id="Email" type="text" bind:value="{Email}" placeholder="Email" required/>
+            <input id="Name" type="text" bind:value="{Name}" placeholder="Display Name" required autocomplete="off"/>
+            <input id="Email" type="text" bind:value="{Email}" placeholder="Email" required autocomplete="off"/>
             <input id="Password" type="password" bind:value="{Password}" placeholder="Password" required/>
             <input id="confirmPassword" type="password" bind:value="{confirmPassword}" on:keyup="{checkPasswordMatch}" placeholder="Confirm Password" on:keydown="{event => event.which === 13 && signUp()}" required/>
             {#if !loading}
@@ -224,7 +233,7 @@
         </div>
     {:else if logPage == null}
         <div id="signup-div">
-            <input id="Email" type="text" bind:value="{logEmail}" placeholder="Email" required/>
+            <input id="Email" type="text" bind:value="{logEmail}" placeholder="Email" required autocomplete="off"/>
             {#if !loading}
                 <br/><button class="btn btn-success" style="margin-bottom:30px;" on:click="{forgotPassword}" type="submit">Reset Password</button>
             {:else}
@@ -234,10 +243,8 @@
         </div>
     {/if}
 </div>
-<img id="back-image" alt="checker" src="./images/checkers.jpg"/>
 
 <style>
-
     #entry label {
         color: #212529;
         display: inline-block;
@@ -264,18 +271,22 @@
     }
 
     #entry {
-        opacity: 0.95;
         width:500px;
+        height:800px;
         padding: 40px;
         position:absolute;
-        top: 50px;
+        top: calc((100% - 800px) / 2);;
         left: calc((100% - 500px) / 2);
-        background: #191919;
+        background: #343a40;
         text-align: center;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius:0.4rem;
         z-index:99;
         overflow-y: auto;
+    }
+
+    ::-webkit-scrollbar {
+        width:0px;
     }
 
     #entry h3{
@@ -307,13 +318,11 @@
         /* display: block; */
         margin: 20px, auto;
         text-align: center;
-        border: 2px solid white;
+        border-bottom: 2px solid white;
         padding: 14px 10px;
-        width: 50%;
+        width: 70%;
         color: white;
-        border-radius: 24px;
         transition: .25s;
-    
     }
 
     #forgotPassword {
@@ -340,6 +349,7 @@
     #entry input[type = "text"]:focus, #entry input[type = "password"]:focus{
         width: 100%;
         border-color: #2ecc71;
+        background: black;
     }
 
     #entry button[type = "submit"]{
@@ -352,7 +362,6 @@
         /* border: 2px solid #2ecc71; */
         padding: 14px 40px;
         color: white;
-        border-radius: 24px;
         transition: .25s;
         cursor: pointer;
     } 
@@ -367,7 +376,6 @@
         /* border: 2px solid #d4a82e; */
         padding: 14px 40px;
         color: white;
-        border-radius: 24px;
         transition: .25s;
         cursor: pointer;
     }
@@ -402,19 +410,18 @@
 		#entry {
             width:100%;
             height:100%;
-            margin-left:unset;
-            margin-top: unset;
-            z-index:99;
-            position:fixed;
+            top:0;
+            left:0;
+            z-index:89;
             box-shadow: none;
             overflow-y: scroll;
-            transform: translate(-30%, -6%);
+            border-radius:0px;
+            padding:10px;
         }
-        
 
+        #entry input[type = "text"], #entry input[type = "password"] {
+            width: 90%;
+        }
 
-        /* img {
-            display:none;
-        } */
     }
 </style>
