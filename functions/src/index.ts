@@ -24,88 +24,78 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 //const storeRef = firebase.storage().ref();
 
-export const signUp = functions.https.onRequest((request, response) => {
+export const signUp = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
     let names:any = [];
 
-    db.collection("USERS").where("name", "==", evt.name)
-    .get()
-    .then(async function(snapshot:any) {
+    const snapshot:any = await db.collection("USERS").where("name", "==", evt.name).get();
         
-        await snapshot.forEach(function(doc:any) {
-            names.push(doc);
-        });
+    await snapshot.forEach(function(doc:any) {
+        names.push(doc);
+    });
 
-        if(names.length > 0) {
-            res.send({msg: "EXIST"});
-        } else {
-            auth.createUserWithEmailAndPassword(evt.email, evt.password).then(() => {
-        
-                const user:any = auth.currentUser;
-        
-                user.updateProfile({
-                    displayName: evt.name
-                }).then(function() {
-                    user.sendEmailVerification().then(function() {
-                        res.send({msg: "SUCCESS"});
-                    }).catch(function(error:any) {
-                        res.send({err: error.message});
-                    });
+    if(names.length > 0) {
+        res.send({msg: "EXIST"});
+    } else {
+        auth.createUserWithEmailAndPassword(evt.email, evt.password).then(() => {
+    
+            const user:any = auth.currentUser;
+    
+            user.updateProfile({
+                displayName: evt.name
+            }).then(function() {
+                user.sendEmailVerification().then(function() {
+                    res.send({msg: "SUCCESS"});
                 }).catch(function(error:any) {
                     res.send({err: error.message});
                 });
-        
             }).catch(function(error:any) {
                 res.send({err: error.message});
             });
-        }
-    })
-    .catch(function(error:any) {
-        res.send({err: "Error finding document"});
-    });
+    
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    }
 });
 
-export const createUser = functions.https.onRequest((request, response) => {
+export const createUser = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
     const docRef:any = db.collection("USERS").doc(evt.email);
 
-    docRef.get().then(function(doc:any) {
-        if(!doc.exists) {
-            docRef.set({
-                name: evt.name,
-                picture: null,
-                wins: 0,
-                draws: 0,
-                losses: 0,
-                gamesPlayed: 0,
-                leastMoves: 0,
-                mostMoves: 0,
-                totalMoves: 0,
-                avgMovesPerGame: 0,
-                leastTimePlayed: 0,
-                mostTimePlayed: 0,
-                totalTimePlayed: 0,
-                avgTimePlayPerGame: 0,
-                totalPoints: 0
-            }).then(function() {
-                res.send({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+    const user:any = await docRef.get();
 
-    
+    if(!user.exists) {
+        docRef.set({
+            name: evt.name,
+            picture: null,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            gamesPlayed: 0,
+            leastMoves: 0,
+            mostMoves: 0,
+            totalMoves: 0,
+            avgMovesPerGame: 0,
+            leastTimePlayed: 0,
+            mostTimePlayed: 0,
+            totalTimePlayed: 0,
+            avgTimePlayPerGame: 0,
+            totalPoints: 0
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
 export const signIn = functions.https.onRequest((request, response) => {
@@ -121,22 +111,18 @@ export const signIn = functions.https.onRequest((request, response) => {
     });
 });
 
-export const retrieveUser = functions.https.onRequest((request, response) => {
+export const retrieveUser = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const docRef:any = db.collection("USERS").doc(evt.email);
+    const user:any = await db.collection("USERS").doc(evt.email).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            res.send({msg: doc.data()});
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+    if(user.exists) {
+        res.send({msg: user.data()});
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
 /* export const updateProfile = functions.https.onRequest((request, response) => {
@@ -351,30 +337,22 @@ export const joinGame = functions.https.onRequest(async (request, response) => {
     }
 });
 
-export const deleteGame = functions.https.onRequest((request, response) => {
+export const deleteGame = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let docRef:any = db.collection("USERS").doc(evt.id);
+    const user:any = await db.collection("USERS").doc(evt.id).get();
+    const game:any = await db.collection("GAMES").doc(evt.gameID).get();
+    const chat:any = await db.collection("CHATS").doc(evt.chatID).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            db.collection("GAMES").doc(evt.gameID).delete().then(function() {
-                db.collection("CHATS").doc(evt.chatID).delete().then(function() {
-                    res.send({msg: "SUCCESS"});
-                }).catch(function(error:any) {
-                    res.send({err: error.message});
-                });
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+    if(user.exists && game.exists && chat.exists) {
+        await db.collection("GAMES").doc(evt.gameID).delete();
+        await db.collection("CHATS").doc(evt.chatID).delete();
+        res.send({msg: "SUCCESS"});
+    } else {
+        res.send({err: "Code 007"});
+    }
 })
 
 export const saveGame = functions.https.onRequest(async (request, response) => {
@@ -414,184 +392,145 @@ export const saveGame = functions.https.onRequest(async (request, response) => {
     }
 });
 
-export const saveChat = functions.https.onRequest((request, response) => {
+export const saveChat = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let docRef:any = db.collection("USERS").doc(evt.id);
+    const user:any = await db.collection("USERS").doc(evt.id).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            docRef = db.collection("CHATS").doc(evt.chatID);
+    if(user.exists) {
 
-            docRef.update({
-                history: evt.history
-            }).then(function() {
-                res.send({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+        db.collection("CHATS").doc(evt.chatID).update({
+            history: evt.history
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
-export const checkersLeague = functions.https.onRequest((request, response) => {
+export const checkersLeague = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const docRef:any = db.collection("USERS").doc(evt.id);
+    const user:any = await db.collection("USERS").doc(evt.id).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            let users:any = [], i:number = 0, position:number = 0;
+    if(user.exists) {
+        let users:any = [], i:number = 0, position:number = 0;
 
-            db.collection("USERS").orderBy("totalPoints", "desc")
-            .get()
-            .then(async function(snapshot:any) {
-                await snapshot.forEach(function(docu:any) {
-                    i++;
-                    if(docu.data().name == evt.name) {
-                        position = i; return;
-                    }
-                });
+        let snapShot:any = await db.collection("USERS").orderBy("totalPoints", "desc").get();
 
-                db.collection("USERS").orderBy("totalPoints", "desc").limit(50)
-                .get()
-                .then(async function(querySnapshot:any) {
-                    await querySnapshot.forEach(function(dou:any) {
-                        users.push(dou.data());
-                    });
+        await snapShot.forEach(function(docu:any) {
+            i++;
+            if(docu.data().name == evt.name) {
+                position = i; return;
+            }
+        });
 
-                    res.send({msg: {arr: users, pos: position}});
-                }).catch(function(error:any) {
-                    res.send({err: error.message});
-                });
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+        snapShot = await db.collection("USERS").orderBy("totalPoints", "desc").limit(50).get();
+
+        await snapShot.forEach(function(dou:any) {
+            users.push(dou.data());
+        });
+
+        res.send({msg: {arr: users, pos: position}});
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
-export const finishGame = functions.https.onRequest((request, response) => {
+export const finishGame = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let docRef:any = db.collection("USERS").doc(evt.id);
+    const user:any = await db.collection("USERS").doc(evt.id).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            docRef = db.collection("GAMES").doc(evt.gameID);
-
-            docRef.update({
-                gameHistory: evt.gameHistory,
-                minutesPlayed: Number(evt.minutes),
-                chatHistory: evt.chatHistory,
-                finished: true
-            }).then(function() {
-                res.send({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+    if(user.exists) {
+        db.collection("GAMES").doc(evt.gameID).update({
+            gameHistory: evt.gameHistory,
+            minutesPlayed: Number(evt.minutes),
+            chatHistory: evt.chatHistory,
+            finished: true
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
-export const updateUsersStats = functions.https.onRequest((request, response) => {
+export const updateUsersStats = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const docRef:any = db.collection("USERS").doc(evt.email);
+    const user:any = await db.collection("USERS").doc(evt.email).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            docRef.update({
-                wins: evt.wins,
-                draws: evt.draws,
-                losses: evt.losses,
-                gamesPlayed: evt.gamesPlayed,
-                leastMoves: evt.leastMoves,
-                mostMoves: evt.mostMoves,
-                totalMoves: evt.totalMoves,
-                avgMovesPerGame: evt.avgMovesPerGame,
-                leastTimePlayed: evt.leastTimePlayed,
-                mostTimePlayed: evt.mostTimePlayed,
-                totalTimePlayed: evt.totalTimePlayed,
-                avgTimePlayPerGame: evt.avgMovesPerGame,
-                totalPoints: evt.totalPoints
-            }).then(function() {
-                res({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    }).catch(function(error:any) {
-        res.send({err: error.message});
-    });
+    if(user.exists) {
+
+        db.collection("USERS").doc(evt.email).update({
+            wins: evt.wins,
+            draws: evt.draws,
+            losses: evt.losses,
+            gamesPlayed: evt.gamesPlayed,
+            leastMoves: evt.leastMoves,
+            mostMoves: evt.mostMoves,
+            totalMoves: evt.totalMoves,
+            avgMovesPerGame: evt.avgMovesPerGame,
+            leastTimePlayed: evt.leastTimePlayed,
+            mostTimePlayed: evt.mostTimePlayed,
+            totalTimePlayed: evt.totalTimePlayed,
+            avgTimePlayPerGame: evt.avgMovesPerGame,
+            totalPoints: evt.totalPoints
+        }).then(function() {
+            res({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
-export const retrieveUserChats = functions.https.onRequest((request, response) => {
+export const retrieveUserChats = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    const docRef:any = db.collection("USERS").doc(evt.email);
+    const user:any = await db.collection("USERS").doc(evt.email).get();
 
-    docRef.get().then(function(doc:any) {
-        if(doc.exists) {
-            const chats:any = [];
+    if(user.exists) {
+        const chats:any = [];
 
-            db.collection("CHATS").where("priEmail", "==", evt.email)
-            .get()
-            .then(async function(querySnapshot:any) {
+        let snapShot:any = await db.collection("CHATS").where("priEmail", "==", evt.email).get();
+        
+        await snapShot.forEach(function(docu:any) {
+            const data = docu.data();
+            data.id = docu.id;
+            chats.push(data);
+        });
 
-                await querySnapshot.forEach(function(docu:any) {
-                    const data = docu.data();
-                    data.id = docu.id;
-                    chats.push(data);
-                });
-            })
-            .catch(function(error:any) {
-                res.send({err: error.message});
-            });
+        snapShot = await db.collection("CHATS").where("secEmail", "==", evt.email).get();
+        
+        await snapShot.forEach(function(dou:any) {
+            const data = dou.data();
+            data.id = dou.id;
+            chats.push(data);
+        });
 
-            db.collection("CHATS").where("secEmail", "==", evt.email)
-            .get()
-            .then(async function(querySnapshot:any) {
-                
-                await querySnapshot.forEach(function(dou:any) {
-                    const data = dou.data();
-                    data.id = dou.id;
-                    chats.push(data);
-                });
-
-                res.send({msg: chats});
-            })
-            .catch(function(error:any) {
-                res.send({err: error.message});
-            });
-        } else {
-            res.send({err: "Code 007"});
-        }
-    });
+        res.send({msg: chats});
+    } else {
+        res.send({err: "Code 007"});
+    }
 });
 
 export const retrieveUserGames = functions.https.onRequest(async (request, response) => {
