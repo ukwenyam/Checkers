@@ -121,9 +121,9 @@ window.onload = async function() {
 
         await allChats.set(indexes.chats);
 
-        await gameTab.set(indexes.tab);
-
         await userGames.set(indexes.games);
+
+        await gameTab.set(indexes.tab);
 
         await page.set(indexes.page);
 

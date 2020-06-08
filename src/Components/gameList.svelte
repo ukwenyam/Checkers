@@ -109,6 +109,7 @@
         width:33.33%;
         float:left;
         color:white;
+        overflow-y: auto;
     }
 
     .detail {
@@ -134,6 +135,7 @@
         position:relative;
         height:100%;
         border-left: 1px solid white;
+        overflow-y: auto;
     }
 
     h4 {

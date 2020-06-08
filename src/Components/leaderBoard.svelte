@@ -155,6 +155,7 @@
 
     table {
         width:100%;
+        margin-bottom:200px;
     }
 
     td, th {
@@ -167,30 +168,26 @@
         width:33.33%;
         float:left;
         color:white;
+        overflow-y: auto;
     }
 
     #league {
         width:66.66%;
         float:right;
         color:white;
+        overflow-y: auto;
     }
 
     @media screen and (max-width: 800px) {
 
         #stats {
             width:100%;
-            position:fixed;
-            top:0;
-            left:0;
             float:unset;
             display: none;
         }
 
         #league {
             width:100%;
-            position:fixed;
-            top:0;
-            left:0;
             float:unset;
             display: block;
         }

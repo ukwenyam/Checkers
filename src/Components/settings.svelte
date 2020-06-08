@@ -140,7 +140,7 @@
         <Loader/>
     {/if}
 
-    {#if screenWidth < 800}
+    {#if screenWidth <= 800}
         <button class="btn btn-danger">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
     {/if}
 </div>
@@ -155,6 +155,8 @@
         float:left;
         color:white;
         border-right: 1px solid white;
+        flex: 1 1 auto;
+        overflow-y: auto;
     }
 
     #rightSet {
@@ -162,6 +164,8 @@
         float:right;
         color:white;
         border-left: 1px solid white;
+        flex: 1 1 auto;
+        overflow-y: auto;
     }
 
     img {
@@ -228,6 +232,7 @@
             width: 50%;
             margin-left:25%;
             margin-top:20px;
+            margin-bottom:100px;
         }
     }
 </style>

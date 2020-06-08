@@ -69,11 +69,11 @@
 				<button class="btn btn-primary btn-lg" on:click="{() => (gameTab.set(8))}">Login/Register <i class="fa fa-sign-in"></i></button>
 			{/if}
 		</div>
-	{:else if $gameTab == 2}
+	{:else if $gameTab == 2 && $currUser != null && $currUser.isAuth}
 		<div class="backcolor"> 
 			<Create/>
 		</div>
-	{:else if $gameTab == 3}
+	{:else if $gameTab == 3 && $currUser != null && $currUser.isAuth}
 		<div class="backcolor">
 			<Join/>
 		</div>
@@ -110,40 +110,49 @@
 	}
 
 	img {
-		height:100px;
-		margin-left:calc((100% - 100px) / 2);
+		height:80px;
+		width:80px;
+		margin-left:calc((100% - 80px) / 2);
 		margin-top:10px;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 	
 	#home {
-		margin-top:20px;
+		margin-top:30px;
 		text-align:center;
-		color:white;
+		text-transform: uppercase;
 	}
 
 	.backcolor {
+		color:white;
 		background-color:#343a40;
-		position:fixed;
 		top:0;
 		left:0;
 		width:101%;
 		height:100%;
+		position:fixed;
+        display: flex;
+        flex-direction: column;
 	}
 
 	.btn-secondary {
 		width:50%;
 		margin-left:25%;
 		margin-top:20%;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
 	hr {
 		margin-top:10%;
-		background:white;
+		background:black;
+		width:80%;
+		margin-left:10%;
 	}
 
 	.btn-primary {
 		width:50%;
 		margin-left:25%;
 		margin-top:10%;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 </style>

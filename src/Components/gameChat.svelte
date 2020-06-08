@@ -136,12 +136,18 @@
         </div>
         <div id="currChat">
             <h4 style="text-align:center;color:white;">
-                <button class="btn btn-dark" style="float:left;border-radius:0;" on:click="{viewStatsOrChats}">{screenWidth <= 800 ? "Back" : "Versus Stats"}</button> 
+                <button class="btn btn-dark chatHead" style="float:left;border-radius:0;" on:click="{viewStatsOrChats}">
+                    {#if screenWidth <= 800}
+                        Back To Chats
+                    {:else}
+                        Versus Stats
+                    {/if}
+                </button> 
                     {chatUser.toUpperCase()}
                     {#if online}
                         <span class="indicator online"></span>
                     {/if}
-                <button class="btn btn-dark" style="float:right;border-radius:0 0.4rem 0 0;" disabled="{$gamePref != null}">Request Game</button>
+                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" disabled="{$gamePref != null}">Request Game</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
                 {#each chatMsgs as mesage, i}
@@ -211,13 +217,16 @@
         width:33.33%;
         height:100%;
         float:left;
-        color:white;
+        color:black;
+        overflow-y:auto;
     }
 
     .user {
         width:100%;
         height:100px;
         padding: 10px;
+        border-radius:0px;
+        border-bottom:1px solid white;
     }
 
     .indicator.online {
@@ -329,6 +338,10 @@
     .myMsg {
         background: transparent;
         color: white;
+    }
+
+    .chatHead {
+        width:33.33%;
     }
 
     .odaMsg {
