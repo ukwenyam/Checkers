@@ -1,6 +1,7 @@
 <script>
     import { gamePref, gameBoard, currSocket, gameHistory, 
             gameChat, gameTab, page, currUser, allChats, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
+    import { getAllChats } from '../Scripts/Functions.js';
 
     $currSocket.on('chat message', (data) => {
 
@@ -29,7 +30,7 @@
         $currSocket.emit('save-chat', request);
     });
 
-    $currSocket.on('get-second-user', (data) => {
+    $currSocket.on('get-second-user', async (data) => {
 
         if($gamePref.sec == null && $gamePref.currPlayer != null) {
 
@@ -39,6 +40,8 @@
                 state.sec = data;
                 return state;
             });
+
+            await getAllChats();
 
             $currSocket.emit('send-first-user', { room: $gamePref.gameID, name: $currUser.name });
 

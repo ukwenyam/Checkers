@@ -29,7 +29,7 @@ export const signUp = functions.https.onRequest(async (request, response) => {
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
 
-    let names:any = [];
+    const names:any = [];
 
     const snapshot:any = await db.collection("USERS").where("name", "==", evt.name).get();
         
@@ -227,7 +227,7 @@ export const createGame = functions.https.onRequest(async (request, response) =>
 
             const collection:any = client.db("CheckasIO").collection("GAMES");
 
-            const currPlayer:string = Math.floor(Math.random() * 2) == 0 ? "red" : "black";
+            const currPlayer:string = Math.floor(Math.random() * 2) === 0 ? "red" : "black";
             
             collection.insertOne({ 
                 _id: gameID,
@@ -299,7 +299,7 @@ export const joinGame = functions.https.onRequest(async (request, response) => {
                     gameChat.id = chat.id;
                 });
 
-                if(gameChat == null) {
+                if(gameChat === null) {
 
                     const chatID:any = generator.generate({
                         length: 10,
@@ -421,13 +421,15 @@ export const checkersLeague = functions.https.onRequest(async (request, response
     const user:any = await db.collection("USERS").doc(evt.id).get();
 
     if(user.exists) {
-        let users:any = [], i:number = 0, position:number = 0;
+        const users:any = []; 
+        
+        let i:number = 0, position:number = 0;
 
         let snapShot:any = await db.collection("USERS").orderBy("totalPoints", "desc").get();
 
         await snapShot.forEach(function(docu:any) {
             i++;
-            if(docu.data().name == evt.name) {
+            if(docu.data().name === evt.name) {
                 position = i; return;
             }
         });

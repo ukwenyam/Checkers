@@ -2,8 +2,6 @@
     import { currUser, page, userGames, leaderBoard } from '../Scripts/Init.js';
     import { getLeagueTable } from '../Scripts/Functions.js';
 
-    getLeagueTable();
-
     let screenWidth = screen.width;
 
     function viewMyStats() {

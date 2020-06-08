@@ -1,22 +1,43 @@
 <script>
     import { gameTab } from '../Scripts/Init.js';
 
-    let buttonId = "play";
+    let buttonId = null;
 
     let btnArr = ["play", "eye", "list", "comet", "user"];
 
+    setTimeout(function() {
+        switch($gameTab) {
+            case 1:
+                buttonId = btnArr[0];
+                break;
+            case 5:
+                buttonId = btnArr[1];
+                break;
+            case 6:
+                buttonId = btnArr[2];
+                break;
+            case 7:
+                buttonId = btnArr[3];
+                break;
+            case 8:
+                buttonId = btnArr[4];
+        }
+    }, 500);
+
     setInterval(function() {
-        let i;
-        for(i = 0; i < btnArr.length; i++) {
-            if(btnArr[i] == buttonId) {
-                let button = document.getElementById(btnArr[i]);
-                button.setAttribute("style", "background-color:#23272b");
-            } else {
-                let button = document.getElementById(btnArr[i]);
-                button.setAttribute("style", "background-color:#343a40");
+        if(buttonId != null) {
+            let i;
+            for(i = 0; i < btnArr.length; i++) {
+                if(btnArr[i] == buttonId) {
+                    let button = document.getElementById(btnArr[i]);
+                    button.setAttribute("style", "background-color:#23272b");
+                } else {
+                    let button = document.getElementById(btnArr[i]);
+                    button.setAttribute("style", "background-color:#343a40");
+                }
             }
         }
-    });
+    }, 500);
     
     function switchTabs(tab, id) {
         buttonId = id;
@@ -68,6 +89,10 @@
         width:20%;
         border-radius:0;
         border-color:transparent;
+    }
+
+    .btn-dark:focus {
+        box-shadow:unset;
     }
 
     .fa {

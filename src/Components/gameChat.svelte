@@ -16,21 +16,21 @@
 
     let chatID, chatMsgs, chatUser, userID, online = false;
 
-    let chatIndex = $allChats.length > 0 ? 0 : null;
+    let currChat = $allChats.length > 0 ? $allChats[0] : null;
 
-    if(chatIndex != null) {
-        chatID = $allChats[chatIndex].id;
-        chatMsgs = $allChats[chatIndex].history;
-        chatUser = $allChats[chatIndex].priName == $currUser.name ? $allChats[chatIndex].secName : $allChats[chatIndex].priName;
-        userID = $allChats[chatIndex].priName == $currUser.name ? $allChats[chatIndex].secEmail : $allChats[chatIndex].priEmail;
+    if(currChat != null) {
+        chatID = currChat.id;
+        chatMsgs = currChat.history;
+        chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
+        userID = currChat.priName == $currUser.name ? currChat.secEmail : currChat.priEmail;
         
         $currSocket.emit('join-room', chatID, $currUser.name);
     }
 
     setInterval(function() {
         if($allChats.length > 0) {
+            viewChat(currChat, true);
             $currSocket.emit('check-status', userID, chatID);
-            viewChat(chatIndex, true);
         }
     }, 1000);
 
@@ -54,9 +54,9 @@
         isTyping = false;
     }); 
 
-    function viewChat(index, refresh) {
+    function viewChat(chat, refresh) {
 
-        if(index != null && index >= 0) {
+        if(chat != null) {
 
             if(screen.width <= 800 && !refresh) {
                 showNavBar.set(false);
@@ -64,12 +64,12 @@
                 allChats.setAttribute("style", "display:none");
             }
 
-            chatIndex = index;
+            currChat = chat;
 
-            chatID = $allChats[index].id;
-            chatMsgs = $allChats[index].history;
-            chatUser = $allChats[index].priName == $currUser.name ? $allChats[index].secName : $allChats[index].priName;
-            userID = $allChats[index].priName == $currUser.name ? $allChats[index].secEmail : $allChats[index].priEmail;
+            chatID = chat.id;
+            chatMsgs = chat.history;
+            chatUser = chat.priName == $currUser.name ? chat.secName : chat.priName;
+            userID = chat.priName == chat.name ? chat.secEmail : chat.priEmail;
 
             $currSocket.emit('check-status', userID, chatID);
 
@@ -121,8 +121,8 @@
 <div id="chatWindow">
     {#if $allChats.length > 0}
         <div id="allChats">
-            {#each $allChats as chat, i}
-                <button class="user btn btn-lg btn-dark" on:click="{() => viewChat(i, false)}">
+            {#each $allChats as chat}
+                <button class="user btn btn-lg btn-dark" on:click="{() => viewChat(chat, false)}">
                     <img alt="propic" src="https://source.unsplash.com/900x900/"/>
                     <div style="float:right;height:100%;width:70%;">
                         <h5 style="text-align:left;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}</h5>

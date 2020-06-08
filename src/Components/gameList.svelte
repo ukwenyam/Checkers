@@ -4,16 +4,11 @@
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
 
-    //getUserGames();
-
-    let currGame;
+    let currGame = $userGames.length > 0 ? $userGames[0] : null;
 
     let screenWidth = screen.width;
-    
-    if($userGames.length > 0)
-        currGame = $userGames[0];
 
-    function viewGameDetails(index) {
+    function viewGameDetails(game) {
         if(screen.width <= 800) {
             let list = document.getElementById("gameList");
             let detail = document.getElementById("gameDetails");
@@ -22,7 +17,7 @@
             detail.setAttribute("style", "display:block");
         }
 
-        currGame = $userGames[index];
+        currGame = game;
     }
 
     function goBack() {
@@ -74,16 +69,20 @@
 {:else}
     <div id="gameList" class="container-fluid">
          <h5>On-Going Games</h5>
-        {#each $userGames as game, i}
+        {#each $userGames as game}
             {#if !game.finished}
-                <button on:click="{() => viewGameDetails(i)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : game.secPlayer.toUpperCase()}</button>
+                {#if game.secPlayer != null}
+                    <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</button>
+                {:else}
+                    <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</button>
+                {/if}
             {/if}
         {/each}
 
         <h5>Finished Games</h5>
-        {#each $userGames as game, i}
+        {#each $userGames as game}
             {#if game.finished}
-                <button on:click="{() => viewGameDetails(i)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : game.secPlayer.toUpperCase()}</button>
+                <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : game.secPlayer.toUpperCase()}</button>
             {/if}
         {/each}
     </div>
@@ -91,7 +90,11 @@
         {#if screenWidth <= 800}
             <button class="btn btn-dark" style="width:25%;" on:click="{goBack}"><i class="fa fa-arrow-left"></i> Back</button>
         {/if}
-        <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : currGame.secPlayer.toUpperCase()}</h3>
+        {#if currGame.secPlayer != null}
+            <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</h3>
+        {:else}
+            <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</h3>
+        {/if}
         <h4 class="detail">Date Started: <span>{currGame.date}</span></h4>
         <h4 class="detail">Status: <span>{currGame.finished == true ? "Finished" : "On-Going"}</span></h4>
         <h4 class="detail">Turn Time: <span>{currGame.time} seconds</span></h4>
