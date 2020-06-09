@@ -7,16 +7,16 @@
 
     setTimeout(function() {
         switch($gameTab) {
-            case 5:
+            case 1:
                 buttonId = btnArr[1];
                 break;
-            case 6:
+            case 2:
                 buttonId = btnArr[2];
                 break;
-            case 7:
+            case 3:
                 buttonId = btnArr[3];
                 break;
-            case 8:
+            case 4:
                 buttonId = btnArr[4];
                 break;
             default:
@@ -44,27 +44,27 @@
 </script>
 
 <div class="navbar">
-    <button id="play" class="btn btn-dark" on:click="{() => switchTabs(1, "play")}" disabled="{$gamePref != null}">
+    <button id="play" class="btn btn-dark" on:click="{() => switchTabs(0, "play")}" disabled="{$gamePref != null}">
         <i class="fa fa-play"></i>
         <span class="label">Play</span>
     </button>
 
-    <button id="eye" class="btn btn-dark" on:click="{() => switchTabs(5, "eye")}" disabled="{$userGames == null}">
+    <button id="eye" class="btn btn-dark" on:click="{() => switchTabs(1, "eye")}" disabled="{$userGames == null}">
         <i class="fa fa-eye"></i>
         <span class="label">Games</span>
     </button>
 
-    <button id="list" class="btn btn-dark" on:click="{() => switchTabs(6, "list")}" disabled="{$leaderBoard == null}">
+    <button id="list" class="btn btn-dark" on:click="{() => switchTabs(2, "list")}" disabled="{$leaderBoard == null}">
         <i class="fa fa-list-ol"></i>
         <span class="label">League</span>
     </button>
 
-    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(7, "comet")}"disabled="{$allChats == null}">
+    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(3, "comet")}"disabled="{$allChats == null}">
         <i class="fa fa-comments"></i>
         <span class="label">Chat</span>
     </button>
 
-    <button id="user" class="btn btn-dark" on:click="{() => switchTabs(8, "user")}">
+    <button id="user" class="btn btn-dark" on:click="{() => switchTabs(4, "user")}">
         <i class="fa fa-user"></i>
         <span class="label">Account</span>
     </button>

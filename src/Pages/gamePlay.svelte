@@ -29,6 +29,22 @@
 			$currSocket.emit('go-online', $currUser.email);
 	}, 10000);
 
+	function viewCreateGame() {
+		let index = document.getElementById("index");
+		index.setAttribute("style", "left:-100%");
+
+		let create = document.getElementById("create");
+		create.setAttribute("style", "left:0;");
+	}
+
+	function viewJoinGame() {
+		let index = document.getElementById("index");
+		index.setAttribute("style", "left:100%");
+
+		let join = document.getElementById("join");
+		join.setAttribute("style", "left:0;");
+	}
+
 	function closeAll() {
 		showChat = false;
 		showLogin.set(false);
@@ -58,39 +74,37 @@
 
 	<Game/>
 {:else}
-	{#if $gameTab == 1}
-		<div class="backcolor">
+	{#if $gameTab == 0}
+		<div id="index" class="backcolor" out:fade>
 			<img alt="logo" src="./images/LOGO-192.png"/> 
 			<h3 id="home">Checkas.io</h3>
-			<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(4))}">vs Computer <i class="fa fa-desktop"></i></button>
+			<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(5))}">vs Computer <i class="fa fa-desktop"></i></button>
 			<hr/>
 			{#if $currUser != null && $currUser.isAuth}
-				<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(2))}">Create Game <i class="fa fa-plus"></i></button>
-				<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(3))}">Join Game <i class="fa fa-user-plus"></i></button>
+				<button class="btn btn-secondary btn-lg" on:click="{viewCreateGame}">Create Game <i class="fa fa-plus"></i></button>
+				<button class="btn btn-secondary btn-lg" on:click="{viewJoinGame}">Join Game <i class="fa fa-user-plus"></i></button>
 			{:else}
-				<button class="btn btn-primary btn-lg" on:click="{() => (gameTab.set(8))}">Login/Register <i class="fa fa-sign-in"></i></button>
+				<button class="btn btn-primary btn-lg" on:click="{() => (gameTab.set(4))}">Login/Register <i class="fa fa-sign-in"></i></button>
 			{/if}
 		</div>
-	{:else if $gameTab == 2 && $currUser != null && $currUser.isAuth}
-		<div class="backcolor">
+		<div id="create" class="backcolor">
 			<Create/>
 		</div>
-	{:else if $gameTab == 3 && $currUser != null && $currUser.isAuth}
-		<div class="backcolor">
+		<div id="join" class="backcolor">
 			<Join/>
 		</div>
-	{:else if $gameTab == 4}
+	{:else if $gameTab == 5}
 		<Game/>
-	{:else if $gameTab > 4}
+	{:else if $gameTab > 0 && $gameTab < 5}
 		{#if $currUser != null && $currUser.isAuth}
 			<div class="backcolor">
-				{#if $gameTab == 5}
+				{#if $gameTab ==1}
 					<List/>
-				{:else if $gameTab == 6}
+				{:else if $gameTab == 2}
 					<League/>
-				{:else if $gameTab == 7}
+				{:else if $gameTab == 3}
 					<Chat/>
-				{:else if $gameTab == 8}
+				{:else if $gameTab == 4}
 					<Account/>
 				{/if}
 			</div>
@@ -134,7 +148,23 @@
 		height:100%;
 		position:fixed;
         display: flex;
-        flex-direction: column;
+		flex-direction: column;
+		transition: ease-in-out 1s; 
+	}
+
+	#index {
+		top:0;
+		left:0;
+	}
+
+	#create {
+		top:0;
+		left:100%;
+	}
+
+	#join {
+		top:0;
+		left:-100%;
 	}
 
 	.btn-secondary {

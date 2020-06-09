@@ -8,26 +8,26 @@
         let myStats = document.getElementById("stats");
         let league = document.getElementById("league");
 
-        league.setAttribute("style", "display:none");
-        myStats.setAttribute("style", "display:block");
+        league.setAttribute("style", "left:-100%");
+        myStats.setAttribute("style", "left:0");
     }
 
     function viewLeagueTable() {
         let myStats = document.getElementById("stats");
         let league = document.getElementById("league");
 
-        league.setAttribute("style", "display:block");
-        myStats.setAttribute("style", "display:none");
+        league.setAttribute("style", "left:0");
+        myStats.setAttribute("style", "left:100%");
     }
 </script>
 
 <div id="stats" class="container-fluid">
 
     {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:left;margin-top:12.5px;" on:click="{viewLeagueTable}">League</button>
+        <button class="btn btn-primary" style="float:left;margin-top:12.5px;" on:click="{viewLeagueTable}"><i class="fa fa-arrow-left"></i> League</button>
     {/if}
 
-    <h5>My Stats</h5>
+    <h5 id="titleStats">My Stats</h5>
     <hr/>
 
     <table id="statsTable">
@@ -93,10 +93,10 @@
 <div id="league" class="container-fluid">
 
     {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:right;margin-top:12.5px;" on:click="{viewMyStats}">My Stats</button>
+        <button class="btn btn-primary" style="float:right;margin-top:12.5px;" on:click="{viewMyStats}">My Stats <i class="fa fa-arrow-right"></i></button>
     {/if}
 
-    <h5>Checkas League - Top 50</h5>
+    <h5 id="titleLeague">Checkas League - Top 50</h5>
     <hr/>
 
     <h6 style="text-align:center;margin-top:10px;margin-bottom:10px;">League Position - #{$currUser.position}</h6>
@@ -178,16 +178,30 @@
 
     @media screen and (max-width: 800px) {
 
+        #titleLeague {
+            text-align:left;
+        }
+
+        #titleStats {
+            text-align:right;
+        }
+
         #stats {
             width:100%;
             float:unset;
-            display: none;
+            position:fixed;
+            top:0;
+            left:100%;
+            transition: ease-in-out 1s;
         }
 
         #league {
             width:100%;
             float:unset;
-            display: block;
+            top:0;
+            left:0;
+            position: fixed;
+            transition: ease-in-out 1s;
         }
     }
 </style>

@@ -26,7 +26,7 @@
 
 	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
 
-	let squareSize, boardHeight, factor, btnWidth;
+	let squareSize, boardHeight, factor, btnWidth, leftWidth;
 
 	if(screen.width <= 800) {
 		factor = 800 / (screen.width - 12.5); 
@@ -38,7 +38,8 @@
 			size = spring(12.5);
 
 		boardHeight = squareSize * 8;
-		remWidth = screen.width;
+        remWidth = screen.width;
+        leftWidth = (screen.width - boardHeight) / 2;
 	} else {
 		if(screen.height >= 800) {
 			factor = 1;
@@ -53,6 +54,7 @@
 		boardHeight = squareSize * 8;
         remWidth = 0.8 * (screen.width - 800);
         btnWidth = (0.2 * (screen.width - 800)) - 40;
+        leftWidth = (screen.width - boardHeight) / 2;
 	}
 
 	$currSocket.on('piece-move', async (data) => {
@@ -95,6 +97,8 @@
     document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
     
     document.documentElement.style.setProperty('--btn-width', btnWidth + 'px');
+
+    document.documentElement.style.setProperty('--left-width', leftWidth + 'px');
 
 	setCirclePositions();
 
@@ -603,7 +607,7 @@
         }
 
         #board {
-			width:100%;
+			width:var(--board-height);
 			bottom:unset;
 			position:unset;
 			left:unset

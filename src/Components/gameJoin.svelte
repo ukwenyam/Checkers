@@ -103,10 +103,18 @@
             console.log(error);
         });
     }
+
+    function goBack() {
+        let index = document.getElementById("index");
+		index.setAttribute("style", "left:0");
+
+		let join = document.getElementById("join");
+		join.setAttribute("style", "left:-100%;");
+    }
 </script>
 
 {#if screenWidth <= 800}
-    <button id="backBtn" class="btn btn-dark" on:click="{() => (gameTab.set(1))}"><i class="fa fa-arrow-left"></i> Back</button>
+    <button id="backBtn" class="btn btn-dark" on:click="{goBack}">Back <i class="fa fa-arrow-right"></i></button>
 {/if}
 
 <h5>Game Password</h5>
@@ -158,9 +166,9 @@
 
         #backBtn {
             margin-top:0;
-            float:left;
+            float:right;
             box-shadow:none;
-            margin-left:0;
+            margin-left:75%;
             width:25%;
         }
     }

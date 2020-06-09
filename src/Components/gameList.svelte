@@ -13,8 +13,8 @@
             let list = document.getElementById("gameList");
             let detail = document.getElementById("gameDetails");
 
-            list.setAttribute("style", "display:none");
-            detail.setAttribute("style", "display:block");
+            list.setAttribute("style", "left:-100%");
+            detail.setAttribute("style", "left:0");
         }
 
         currGame = game;
@@ -24,8 +24,8 @@
         let list = document.getElementById("gameList");
         let detail = document.getElementById("gameDetails");
 
-        list.setAttribute("style", "display:block");
-        detail.setAttribute("style", "display:none");
+        list.setAttribute("style", "left:0");
+        detail.setAttribute("style", "left:100%");
     }
 
     function getGame() {
@@ -167,17 +167,25 @@
     @media screen and (max-width: 800px) {
 
         #gameList {
-            width:101%;
+            width:100%;
+            height:100%;
             float:unset;
             color:white;
-            display:block;
+            position:fixed;
+            left:0;
+            top:0;
+            transition: ease-in-out 1s;
         }
 
         #gameDetails {
-            width:101%;
+            width:100%;
+            height:100%;
             float: unset;
             border-left: none;
-            display:none;
+            left:100%;
+            top:0;
+            position:fixed;
+            transition: ease-in-out 1s;
         }
 
         #getGame {

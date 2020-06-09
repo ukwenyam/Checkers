@@ -16,7 +16,7 @@ export const showNavBar = writable(true);
 
 export const page = writable(0);
 
-export const gameTab = writable(1);
+export const gameTab = writable(0);
 
 export const userGames = writable(null);
 

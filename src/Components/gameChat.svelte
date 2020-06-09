@@ -61,7 +61,10 @@
             if(screen.width <= 800 && !refresh) {
                 showNavBar.set(false);
                 let allChats = document.getElementById("allChats");
-                allChats.setAttribute("style", "display:none");
+                allChats.setAttribute("style", "left:-100%");
+
+                let currChat = document.getElementById("currChat");
+                currChat.setAttribute("style", "left:0;");
             }
 
             currChat = chat;
@@ -83,7 +86,10 @@
         if(screen.width <= 800) {
             showNavBar.set(true);
             let allChats = document.getElementById("allChats");
-            allChats.setAttribute("style", "display:block");
+            allChats.setAttribute("style", "left:0%");
+
+            let currChat = document.getElementById("currChat");
+            currChat.setAttribute("style", "left:100%;");
         }
     }
 
@@ -380,14 +386,20 @@
         #allChats {
             width:100%;
             float:unset;
-            display:block;
+            transition: ease-in-out 1s; 
+            position:fixed;
+            left:0;
+            top:0;
         }
 
         #currChat {
             width:100%;
             float:unset;
-            display:block;
             border-left:none;
+            transition: ease-in-out 1s;
+            position:fixed;
+            left:100%;
+            top:0;
         }
 
         .scrollable {

@@ -71,11 +71,19 @@
             console.log(error);
         });
     }
+
+    function goBack() {
+        let index = document.getElementById("index");
+		index.setAttribute("style", "left:0");
+
+		let create = document.getElementById("create");
+		create.setAttribute("style", "left:100%;");
+    }
 </script>
 
 {#if $gamePref == null}
     {#if screenWidth <= 800}
-        <button id="backBtn" class="btn btn-dark" on:click="{() => (gameTab.set(1))}"><i class="fa fa-arrow-left"></i>  Back</button>
+        <button id="backBtn" class="btn btn-dark" on:click="{goBack}"><i class="fa fa-arrow-left"></i>  Back</button>
     {/if}
     <h5>Game Preferences</h5>
 
