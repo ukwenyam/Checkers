@@ -1,12 +1,14 @@
 <script>
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { currSocket, currUser, gameBoard, gameHistory, gamePref, page, gameTab, gameChat, viewJoinGame, smallPopUp } from '../Scripts/Init.js';
+    import { currSocket, currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewJoinGame, smallPopUp } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import Loader from './loader.svelte';
 
     let gamePassword;
 
     let request;
+
+    let screenWidth = screen.width;
 
     let viewError = false, errMsg;
 
@@ -103,6 +105,10 @@
     }
 </script>
 
+{#if screenWidth <= 800}
+    <button id="backBtn" class="btn btn-dark" on:click="{() => (gameTab.set(1))}"><i class="fa fa-arrow-left"></i> Back</button>
+{/if}
+
 <h5>Game Password</h5>
 
 {#if viewError}
@@ -148,6 +154,14 @@
         input {
             width:80%;
             margin-left:10%;
+        }
+
+        #backBtn {
+            margin-top:0;
+            float:left;
+            box-shadow:none;
+            margin-left:0;
+            width:25%;
         }
     }
 </style>

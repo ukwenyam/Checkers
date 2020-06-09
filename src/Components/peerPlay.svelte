@@ -6,9 +6,7 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import Blur from './blurScreen.svelte';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat, page } from '../Scripts/Init.js';
-
-	$currSocket.emit('set-username', $currUser.name);
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
 
     $currSocket.emit('join-room', $gamePref.gameID, $currUser.name);
 

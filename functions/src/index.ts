@@ -422,7 +422,7 @@ export const checkersLeague = functions.https.onRequest(async (request, response
 
     if(user.exists) {
         const users:any = []; 
-        
+
         let i:number = 0, position:number = 0;
 
         let snapShot:any = await db.collection("USERS").orderBy("totalPoints", "desc").get();
@@ -517,6 +517,7 @@ export const retrieveUserChats = functions.https.onRequest(async (request, respo
         
         await snapShot.forEach(function(docu:any) {
             const data = docu.data();
+            data.online = false;
             data.id = docu.id;
             chats.push(data);
         });
@@ -525,6 +526,7 @@ export const retrieveUserChats = functions.https.onRequest(async (request, respo
         
         await snapShot.forEach(function(dou:any) {
             const data = dou.data();
+            data.online = false;
             data.id = dou.id;
             chats.push(data);
         });

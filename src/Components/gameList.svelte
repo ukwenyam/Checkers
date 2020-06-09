@@ -1,6 +1,6 @@
 <script>
     import { userGames, gamePref, page, gameTab, currUser, 
-            gameBoard, gameHistory, gameChat, viewGameList, bigPopUp } from '../Scripts/Init.js';
+            gameBoard, gameHistory, viewGameList, bigPopUp } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
 

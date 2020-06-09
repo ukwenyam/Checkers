@@ -16,7 +16,7 @@ export function getAllChats() {
     }
 
     invokeFunction(request).then((response) => {
-        //console.log(response);
+        console.log(response);
         if(response.msg != null) {
             allChats.set(response.msg);
         } else {
@@ -71,7 +71,7 @@ export function getUserGames() {
     }
 
     invokeFunction(request).then((response) => {
-        console.log(response);
+        //console.log(response);
         if(response.msg != null) {
 
             let games = response.msg;

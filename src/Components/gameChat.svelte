@@ -1,11 +1,9 @@
 <script>
-    import { currSocket, currUser, gamePref, gameChat, allChats, showNavBar } from '../Scripts/Init.js';
+    import { currSocket, currUser, gamePref, allChats, showNavBar } from '../Scripts/Init.js';
     import { getAllChats } from '../Scripts/Functions.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { beforeUpdate, afterUpdate } from 'svelte';
     import Indicator from './typeIndicator.svelte';
-
-    getAllChats();
 
     let div, autoscroll;
     let message;
@@ -29,13 +27,15 @@
 
     setInterval(function() {
         if($allChats.length > 0) {
-            viewChat(currChat, true);
-            $currSocket.emit('check-status', userID, chatID);
+            $currSocket.emit('check-status', $allChats);
         }
-    }, 1000);
+    }, 5000);
 
-    $currSocket.on('get-status', (status) => {
-        online = status;
+    $currSocket.on('get-status', (chats) => {
+        if(Array.isArray(chats)) {
+            allChats.set(chats);
+            viewChat(currChat, true);
+        }
     });
 
     beforeUpdate(() => {
@@ -123,12 +123,16 @@
         <div id="allChats">
             {#each $allChats as chat}
                 <button class="user btn btn-lg btn-dark" on:click="{() => viewChat(chat, false)}">
-                    <img alt="propic" src="https://source.unsplash.com/900x900/"/>
-                    <div style="float:right;height:100%;width:70%;">
-                        <h5 style="text-align:left;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}</h5>
+                    <img alt="propic" src="{chat.priName == $currUser.name ? 'https://api.adorable.io/avatars/285/' + chat.secEmail + '.png' : 'https://api.adorable.io/avatars/285/' + chat.priEmail + '.png'}"/>
+                    <div class="chatPrev">
+                        <h5 style="text-align:left;margin-bottom:0px;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}
+                            {#if chat.online}
+                                <span class="indicator online"></span>
+                            {/if}
+                        </h5>
                         {#if chat.history.length > 0}
                             <p style="font-weight:lighter;font-size:15px;text-align:left;">{chat.history[chat.history.length - 1].msg}</p>
-                            <p style="font-weight:lighter;font-size:15px;margin-top:-15px;text-align:right;">{getTimeSpan(chat.history[chat.history.length - 1].date)}</p>
+                            <p style="font-weight:lighter;font-size:15px;text-align:right;">{getTimeSpan(chat.history[chat.history.length - 1].date)}</p>
                         {/if}
                     </div>
                 </button>
@@ -144,9 +148,6 @@
                     {/if}
                 </button> 
                     {chatUser.toUpperCase()}
-                    {#if online}
-                        <span class="indicator online"></span>
-                    {/if}
                 <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" disabled="{$gamePref != null}">Request Game</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
@@ -229,6 +230,12 @@
         border-bottom:1px solid white;
     }
 
+    .chatPrev {
+        float:right;
+        height:100%;
+        width:70%;
+    }
+
     .indicator.online {
         background: #28B62C;
         display: inline-block;
@@ -258,6 +265,7 @@
         white-space: nowrap; 
         overflow: hidden;
         text-overflow: ellipsis; 
+        margin-bottom:0px;
     }
 
     #currChat {
@@ -326,13 +334,14 @@
     }
 
     .myMsg .txtMsg {
-        background: blue;
+        background: slateblue;
         border-radius: 1em 1em 0 1em;
     }
 
     .odaMsg .txtMsg {
-        background: green;
+        background: skyblue;
         border-radius: 1em 1em 1em 0;
+        color:black;
     }
 
     .myMsg {
@@ -388,6 +397,10 @@
         #user-msg {
             margin-left:5%;
             width:90%;
+        }
+
+        .chatPrev {
+            width:75%;
         }
     }
 </style>

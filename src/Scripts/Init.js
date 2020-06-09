@@ -18,19 +18,17 @@ export const page = writable(0);
 
 export const gameTab = writable(1);
 
-export const userGames = writable([]);
+export const userGames = writable(null);
 
-export const leaderBoard = writable([]);
+export const leaderBoard = writable(null);
 
 export const gameBoard = writable(null);
 
-export const gameHistory = writable([]);
+export const gameHistory = writable(null);
 
 export const gamePref = writable(null);
 
-export const gameChat = writable([]);
-
-export const allChats = writable([]);
+export const allChats = writable(null);
 
 export const smallPopUp = writable(false);
 
@@ -78,11 +76,6 @@ window.onbeforeunload = async function() {
         return state;
     });
 
-    await gameChat.update(state => {
-        indexes.chat = state;
-        return state;
-    });
-
     await allChats.update(state => {
         indexes.chats = state;
         return state;
@@ -116,8 +109,6 @@ window.onload = async function() {
         await gameHistory.set(indexes.history);
 
         await gamePref.set(indexes.pref);
-
-        await gameChat.set(indexes.chat);
 
         await allChats.set(indexes.chats);
 

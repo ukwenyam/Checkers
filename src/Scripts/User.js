@@ -5,7 +5,7 @@ export class User {
         
         this.name = data.name;
         this.email = data.email;
-        this.picture = data.picture == null ? 'https://source.unsplash.com/900x900/' : data.picture;
+        this.picture = data.picture == null ? 'https://api.adorable.io/avatars/285/' + data.email + '.png' : data.picture;
         this.wins = data.wins;
         this.draws = data.draws;
         this.losses = data.losses;

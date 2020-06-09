@@ -6,7 +6,7 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import { gameBoard, gameHistory, gamePref, currSocket, currUser, 
-			gameChat, gameTab, allChats, showLogin, showNavBar } from '../Scripts/Init.js';
+			 gameTab, allChats, showLogin, showNavBar } from '../Scripts/Init.js';
     import Chat from '../Components/gameChat.svelte';
 	import Game from '../Components/gameBoard.svelte';
 	import Nav from '../Components/navBar.svelte';
@@ -24,13 +24,15 @@
 	let screenHeight = screen.height;
 	let showChat = false;
 
+	setInterval(function() {
+		if($currUser != null && $currUser.isAuth)
+			$currSocket.emit('go-online', $currUser.email);
+	}, 10000);
+
 	function closeAll() {
 		showChat = false;
 		showLogin.set(false);
 	}
-
-	if($currUser != null && $currUser.isAuth)
-		$currSocket.emit('go-online', $currUser.email);
 </script>
 
 <Socket/>
@@ -61,16 +63,16 @@
 			<img alt="logo" src="./images/LOGO-192.png"/> 
 			<h3 id="home">Checkas.io</h3>
 			<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(4))}">vs Computer <i class="fa fa-desktop"></i></button>
+			<hr/>
 			{#if $currUser != null && $currUser.isAuth}
 				<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(2))}">Create Game <i class="fa fa-plus"></i></button>
 				<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(3))}">Join Game <i class="fa fa-user-plus"></i></button>
 			{:else}
-				<hr/>
 				<button class="btn btn-primary btn-lg" on:click="{() => (gameTab.set(8))}">Login/Register <i class="fa fa-sign-in"></i></button>
 			{/if}
 		</div>
 	{:else if $gameTab == 2 && $currUser != null && $currUser.isAuth}
-		<div class="backcolor"> 
+		<div class="backcolor">
 			<Create/>
 		</div>
 	{:else if $gameTab == 3 && $currUser != null && $currUser.isAuth}
@@ -138,7 +140,7 @@
 	.btn-secondary {
 		width:50%;
 		margin-left:25%;
-		margin-top:20%;
+		margin-top:10%;
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 

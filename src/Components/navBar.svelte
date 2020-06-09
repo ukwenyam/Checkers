@@ -1,5 +1,5 @@
 <script>
-    import { gameTab } from '../Scripts/Init.js';
+    import { gameTab, gamePref, userGames, leaderBoard, allChats } from '../Scripts/Init.js';
 
     let buttonId = null;
 
@@ -7,9 +7,6 @@
 
     setTimeout(function() {
         switch($gameTab) {
-            case 1:
-                buttonId = btnArr[0];
-                break;
             case 5:
                 buttonId = btnArr[1];
                 break;
@@ -21,47 +18,48 @@
                 break;
             case 8:
                 buttonId = btnArr[4];
+                break;
+            default:
+                buttonId = btnArr[0];
         }
-    }, 500);
+        
+        let button = document.getElementById(buttonId);
+        button.setAttribute("style", "background-color:#23272b");
+    }, 1000);
 
-    setInterval(function() {
-        if(buttonId != null) {
-            let i;
-            for(i = 0; i < btnArr.length; i++) {
-                if(btnArr[i] == buttonId) {
-                    let button = document.getElementById(btnArr[i]);
-                    button.setAttribute("style", "background-color:#23272b");
-                } else {
-                    let button = document.getElementById(btnArr[i]);
-                    button.setAttribute("style", "background-color:#343a40");
-                }
+    function switchTabs(tab, id) {
+        gameTab.set(tab);
+        buttonId = id;
+        let i;
+        for(i = 0; i < btnArr.length; i++) {
+            if(btnArr[i] == id) {
+                let button = document.getElementById(btnArr[i]);
+                button.setAttribute("style", "background-color:#23272b");
+            } else {
+                let button = document.getElementById(btnArr[i]);
+                button.setAttribute("style", "background-color:#343a40");
             }
         }
-    }, 500);
-    
-    function switchTabs(tab, id) {
-        buttonId = id;
-		gameTab.set(tab);
 	}
 </script>
 
 <div class="navbar">
-    <button id="play" class="btn btn-dark" on:click="{() => switchTabs(1, "play")}">
+    <button id="play" class="btn btn-dark" on:click="{() => switchTabs(1, "play")}" disabled="{$gamePref != null}">
         <i class="fa fa-play"></i>
         <span class="label">Play</span>
     </button>
 
-    <button id="eye" class="btn btn-dark" on:click="{() => switchTabs(5, "eye")}">
+    <button id="eye" class="btn btn-dark" on:click="{() => switchTabs(5, "eye")}" disabled="{$userGames == null}">
         <i class="fa fa-eye"></i>
         <span class="label">Games</span>
     </button>
 
-    <button id="list" class="btn btn-dark" on:click="{() => switchTabs(6, "list")}">
+    <button id="list" class="btn btn-dark" on:click="{() => switchTabs(6, "list")}" disabled="{$leaderBoard == null}">
         <i class="fa fa-list-ol"></i>
         <span class="label">League</span>
     </button>
 
-    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(7, "comet")}">
+    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(7, "comet")}"disabled="{$allChats == null}">
         <i class="fa fa-comments"></i>
         <span class="label">Chat</span>
     </button>

@@ -1,6 +1,6 @@
 <script>
     import { gamePref, gameBoard, currSocket, gameHistory, 
-            gameChat, gameTab, page, currUser, allChats, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
+            gameTab, page, currUser, allChats, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
     import { getAllChats } from '../Scripts/Functions.js';
 
     $currSocket.on('chat message', (data) => {

@@ -6,7 +6,7 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import Blur from './blurScreen.svelte';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, gameChat, page } from '../Scripts/Init.js';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
 
     gameBoard.set(new Board(null, false));
 

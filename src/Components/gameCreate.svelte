@@ -10,6 +10,8 @@
 
     let loading = false;
 
+    let screenWidth = screen.width;
+
     function selectTime(time) {
         Time = time;
     }
@@ -72,6 +74,9 @@
 </script>
 
 {#if $gamePref == null}
+    {#if screenWidth <= 800}
+        <button id="backBtn" class="btn btn-dark" on:click="{() => (gameTab.set(1))}"><i class="fa fa-arrow-left"></i>  Back</button>
+    {/if}
     <h5>Game Preferences</h5>
 
     <div id="suggest">
@@ -150,6 +155,14 @@
 
         button {
             margin-top:40px;
+        }
+
+        #backBtn {
+            margin-top:0;
+            float:left;
+            box-shadow:none;
+            margin-left:0;
+            width:25%;
         }
     }
 </style>

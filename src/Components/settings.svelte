@@ -1,5 +1,5 @@
 <script>
-    import { currUser } from '../Scripts/Init.js';
+    import { currUser, currSocket } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
@@ -100,6 +100,11 @@
             });
         }
     }
+
+    function signOut() {
+        $currSocket.emit('go-offline', $currUser.email);
+        currUser.set(null);
+    }
 </script>
 
 <h3>Settings</h3>
@@ -141,7 +146,7 @@
     {/if}
 
     {#if screenWidth <= 800}
-        <button class="btn btn-danger">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
+        <button class="btn btn-danger" on:click="{signOut}">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
     {/if}
 </div>
 
