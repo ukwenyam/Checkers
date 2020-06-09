@@ -1,5 +1,5 @@
 <script>
-    import { currUser, currSocket } from '../Scripts/Init.js';
+    import { currUser, currSocket, gameTab } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
@@ -104,6 +104,7 @@
     function signOut() {
         $currSocket.emit('go-offline', $currUser.email);
         currUser.set(null);
+        gameTab.set(0);
     }
 </script>
 

@@ -1,5 +1,6 @@
 <script>
-    import { gameTab, gamePref, userGames, leaderBoard, allChats } from '../Scripts/Init.js';
+    import { gameTab, gamePref, userGames, leaderBoard, allChats, currUser } from '../Scripts/Init.js';
+    import { fly, fade } from 'svelte/transition';
 
     let buttonId = null;
 
@@ -43,7 +44,7 @@
 	}
 </script>
 
-<div class="navbar">
+<div class="navbar" transition:fly="{{ y:200, duration: 1000 }}">
     <button id="play" class="btn btn-dark" on:click="{() => switchTabs(0, "play")}" disabled="{$gamePref != null}">
         <i class="fa fa-play"></i>
         <span class="label">Play</span>
@@ -59,12 +60,12 @@
         <span class="label">League</span>
     </button>
 
-    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(3, "comet")}"disabled="{$allChats == null}">
+    <button id="comet" class="btn btn-dark" on:click="{() => switchTabs(3, "comet")}" disabled="{$allChats == null}">
         <i class="fa fa-comments"></i>
         <span class="label">Chat</span>
     </button>
 
-    <button id="user" class="btn btn-dark" on:click="{() => switchTabs(4, "user")}">
+    <button id="user" class="btn btn-dark" on:click="{() => switchTabs(4, "user")}" disabled="{$currUser == null}">
         <i class="fa fa-user"></i>
         <span class="label">Account</span>
     </button>

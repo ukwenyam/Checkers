@@ -42,7 +42,7 @@ export function getLeagueTable() {
     }
 
     invokeFunction(request).then((response) => {
-        //console.log(response);
+        console.log(response);
         if(response.msg != null) {
             leaderBoard.set(response.msg.arr);
 
@@ -71,7 +71,7 @@ export function getUserGames() {
     }
 
     invokeFunction(request).then((response) => {
-        //console.log(response);
+        console.log(response);
         if(response.msg != null) {
 
             let games = response.msg;

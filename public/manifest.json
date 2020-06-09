@@ -1,9 +1,9 @@
 {
-  "name": "CHECKASIO",
+  "name": "CHECKAS.IO",
   "short_name": "CHECKAS",
   "description": "Checkers Game",
-  "background_color": "#303030",
-  "theme_color": "#303030",
+  "background_color": "#343A40",
+  "theme_color": "#343A40",
   "icons": [
     {
       "src": "/images/LOGO-192.png",

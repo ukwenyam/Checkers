@@ -45,6 +45,14 @@
 		join.setAttribute("style", "left:0;");
 	}
 
+	function viewEntry() {
+		let index = document.getElementById("index");
+		index.setAttribute("style", "top:100%;");
+
+		let enter = document.getElementById("enter");
+		enter.setAttribute("style", "top:0;");
+	}
+
 	function closeAll() {
 		showChat = false;
 		showLogin.set(false);
@@ -75,6 +83,12 @@
 	<Game/>
 {:else}
 	{#if $gameTab == 0}
+		<div id="enter">
+			<Entry/>
+		</div>
+		<div id="join" class="backcolor">
+			<Join/>
+		</div>
 		<div id="index" class="backcolor" out:fade>
 			<img alt="logo" src="./images/LOGO-192.png"/> 
 			<h3 id="home">Checkas.io</h3>
@@ -84,36 +98,29 @@
 				<button class="btn btn-secondary btn-lg" on:click="{viewCreateGame}">Create Game <i class="fa fa-plus"></i></button>
 				<button class="btn btn-secondary btn-lg" on:click="{viewJoinGame}">Join Game <i class="fa fa-user-plus"></i></button>
 			{:else}
-				<button class="btn btn-primary btn-lg" on:click="{() => (gameTab.set(4))}">Login/Register <i class="fa fa-sign-in"></i></button>
+				<button class="btn btn-primary btn-lg" on:click="{viewEntry}">Login/Register <i class="fa fa-sign-in"></i></button>
 			{/if}
 		</div>
 		<div id="create" class="backcolor">
 			<Create/>
 		</div>
-		<div id="join" class="backcolor">
-			<Join/>
+	{:else if $gameTab > 0 && $gameTab < 5}
+		<div class="backcolor">
+			{#if $gameTab ==1}
+				<List/>
+			{:else if $gameTab == 2}
+				<League/>
+			{:else if $gameTab == 3}
+				<Chat/>
+			{:else if $gameTab == 4}
+				<Account/>
+			{/if}
 		</div>
 	{:else if $gameTab == 5}
 		<Game/>
-	{:else if $gameTab > 0 && $gameTab < 5}
-		{#if $currUser != null && $currUser.isAuth}
-			<div class="backcolor">
-				{#if $gameTab ==1}
-					<List/>
-				{:else if $gameTab == 2}
-					<League/>
-				{:else if $gameTab == 3}
-					<Chat/>
-				{:else if $gameTab == 4}
-					<Account/>
-				{/if}
-			</div>
-		{:else}
-			<Entry/>
-		{/if}
 	{/if}
 
-	{#if $showNavBar}
+	{#if $showNavBar && $currUser != null && $currUser.isAuth}
 		<Nav/>
 	{/if}
 {/if}
@@ -149,6 +156,15 @@
 		position:fixed;
         display: flex;
 		flex-direction: column;
+		transition: ease-in-out 1s; 
+	}
+
+	#enter {
+		top:-100%;
+		position:fixed;
+		left:0;
+		width:100%;
+		height:100%;
 		transition: ease-in-out 1s; 
 	}
 

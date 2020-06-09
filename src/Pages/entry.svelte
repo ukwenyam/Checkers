@@ -15,6 +15,8 @@
 
     let errMsg;
 
+    let screenWidth = screen.width;
+
     function signUp() {
 
         if(Email != null && Name != null && Password != null && confirmPassword != null && Password == confirmPassword) {
@@ -128,7 +130,7 @@
 
     function retrieveUser() {
 
-        invokeFunction(request).then(async (response) => {
+        invokeFunction(request).then((response) => {
             //console.log(response);
             if(response.msg != null) {
                 let data = response.msg;
@@ -137,16 +139,21 @@
 
                 currUser.set(new User(data));
 
-                await getAllChats(); 
-                await getUserGames(); 
-                await getLeagueTable();
+                getAllChats(); 
+                getUserGames(); 
+                getLeagueTable();
 
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
                 
                 loading = false;
                 showLogin.set(false);
-                gameTab.set(1);
+
+                let index = document.getElementById("index");
+                index.setAttribute("style", "top:0;");
+
+                let enter = document.getElementById("enter");
+                enter.setAttribute("style", "top:-100%;");
             } else {
                 errMsg = response.err;
                 console.log(response.err);
@@ -256,7 +263,6 @@
         color: white;
         display: block;
     }
-
 
     #login-div #login-form{
         width: 100%;
