@@ -6,7 +6,7 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import { gameBoard, gameHistory, gamePref, currSocket, currUser, 
-			 gameTab, allChats, showLogin, showNavBar } from '../Scripts/Init.js';
+			 gameTab, allChats, showLogin, showNavBar, showAudio } from '../Scripts/Init.js';
     import Chat from '../Components/gameChat.svelte';
 	import Game from '../Components/gameBoard.svelte';
 	import Nav from '../Components/navBar.svelte';
@@ -19,6 +19,7 @@
 	import List from '../Components/gameList.svelte';
 	import Create from '../Components/gameCreate.svelte';
 	import Join from '../Components/gameJoin.svelte';
+	import Stream from '../Components/callStream.svelte';
 	
 	let screenWidth = screen.width;
 	let screenHeight = screen.height;
@@ -58,6 +59,10 @@
 		showLogin.set(false);
 	}
 </script>
+
+{#if $currUser != null && $currUser.isAuth}
+	<Stream/>
+{/if}
 
 <Socket/>
 
@@ -144,6 +149,7 @@
 		margin-top:30px;
 		text-align:center;
 		text-transform: uppercase;
+		margin-bottom:100px;
 	}
 
 	.backcolor {

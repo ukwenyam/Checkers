@@ -1,9 +1,20 @@
 <script>
-    import { currSocket, currUser, gamePref, allChats, showNavBar } from '../Scripts/Init.js';
+    import { currSocket, currUser, gamePref, allChats, 
+            showNavBar, peer, callee, showAudio, showCallee, calleeName } from '../Scripts/Init.js';
     import { getAllChats } from '../Scripts/Functions.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { beforeUpdate, afterUpdate } from 'svelte';
     import Indicator from './typeIndicator.svelte';
+    import Loader from './loader.svelte';
+
+    $peer.on('open', function(id){
+        console.log('My peer ID is: ' + id);
+    });
+
+    let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+    let showCallBar = false, showCaller = false, showCallStream = false, answered = false;
+    let callerName;
 
     let div, autoscroll;
     let message;
@@ -12,7 +23,7 @@
 
     let screenWidth = screen.width;
 
-    let chatID, chatMsgs, chatUser, userID, online = false;
+    let chatID, chatMsgs, chatUser, userID;
 
     let currChat = $allChats.length > 0 ? $allChats[0] : null;
 
@@ -53,6 +64,26 @@
     $currSocket.on('no-typing', (room) => {
         isTyping = false;
     }); 
+
+    function makeCall() {
+
+        if(currChat.online) {
+
+            getUserMedia({video: false, audio: true}, function(stream) {
+
+                console.log("Making call To " + chatUser);
+
+                calleeName.set(chatUser);
+
+                callee.set($peer.call(chatUser, stream));
+
+                showAudio.set(true); showCallee.set(true);
+
+            }, function(err) {
+                console.log('Failed to get local stream' ,err);
+            });
+        }
+    }
 
     function viewChat(chat, refresh) {
 
@@ -148,13 +179,14 @@
             <h4 style="text-align:center;color:white;">
                 <button class="btn btn-dark chatHead" style="float:left;border-radius:0;" on:click="{viewStatsOrChats}">
                     {#if screenWidth <= 800}
-                        Back To Chats
+                        <i class="fa fa-arrow-left"></i>
+                        Back
                     {:else}
                         Versus Stats
                     {/if}
                 </button> 
                     {chatUser.toUpperCase()}
-                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" disabled="{$gamePref != null}">Request Game</button>
+                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" on:click="{makeCall}"><i class="fa fa-phone"></i> Voice Chat</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
                 {#each chatMsgs as mesage, i}
@@ -188,12 +220,13 @@
                     {/if}
                 </article>
             </div>
-            <div id="inputBar">
-                <input id="user-msg" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
-                {#if screenWidth > 800}
-                    <i class="fa fa-camera fa-2x"></i>
-                    <i class="fa fa-paper-plane-o fa-2x" on:click="{sendMsg}"></i>
-                {/if}
+            <div class="input-group mb-3">
+                <button class="btn btn-light btn-file camera" type="file">
+                    <i class="fa fa-camera"></i>
+                    <input type="file" hidden>
+                </button> 
+                <input id="user-msg" class="form-control" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
+                <button class="btn btn-light plane" on:click="{sendMsg}"><i class="fa fa-paper-plane-o"></i></button> 
             </div>
         </div>
     {:else}
@@ -218,6 +251,10 @@
 
     .empty {
         color:white;
+    }
+
+    [hidden] {
+        display: none !important;
     }
 
     #allChats {
@@ -297,36 +334,31 @@
         opacity: 65;
     }
 
-    #inputBar {
+    .input-group {
         position:absolute;
         bottom:0;
-        width:100%;
         background-color:#343a40;
-        max-height:12.5%;
+        width:95%;
+        left:2.5%;
     }
 
-    .fa {
-        color:white;
-        bottom:7.5px;
-        position:absolute;
+    .plane {
+        width:10%;
+        margin-left:80%;
+        border-radius:0 1em 1em 0;
     }
 
-    .fa-camera {
-        left:20px;
-    }
-
-    .fa-paper-plane-o {
-        right:20px;
+    .camera {
+        width:10%;
+        border-radius:1em 0 0 1em;
     }
     
     #user-msg {
-        margin-left:10%;
-        width:80%;
-        border-radius: 1em;
         outline:none;
         border:none;
         position:absolute;
-        bottom:5px;
+        width:80%;
+        margin-left:10%;
 	}
 
     .myMsg {
@@ -372,6 +404,8 @@
         width:0px;
     }
 
+   
+
     @media screen and (max-width: 800px) {
 
         #chatWindow {
@@ -407,8 +441,25 @@
         }
 
         #user-msg {
-            margin-left:5%;
+            margin-left:10%;
             width:90%;
+            border-radius:0 1em 1em 0;
+        }
+
+        .input-group {
+            position:absolute;
+            bottom:0;
+            background-color:#343a40;
+            width:95%;
+            left:2.5%;
+        }
+
+        .plane {
+            display:none;
+        }
+
+        .camera {
+            width:10%;
         }
 
         .chatPrev {

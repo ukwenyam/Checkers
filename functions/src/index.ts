@@ -402,7 +402,7 @@ export const saveChat = functions.https.onRequest(async (request, response) => {
     if(user.exists) {
 
         db.collection("CHATS").doc(evt.chatID).update({
-            history: evt.history
+            history: firebase.firestore.FieldValue.arrayUnion(evt.msg)
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {

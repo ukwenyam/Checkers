@@ -1,5 +1,5 @@
 <script>
-    import { currUser, page, showLogin, gameTab } from '../Scripts/Init.js';
+    import { currUser, page, showLogin, gameTab, peer } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { User } from '../Scripts/User.js';
     import Loader from '../Components/loader.svelte';
@@ -139,13 +139,15 @@
 
                 currUser.set(new User(data));
 
+                peer.set(new Peer(data.name));
+
                 getAllChats(); 
                 getUserGames(); 
                 getLeagueTable();
 
                 Email = '', Name = '', Password = '', confirmPassword = '';
                 logEmail = '', logPassword = '';
-                
+
                 loading = false;
                 showLogin.set(false);
 

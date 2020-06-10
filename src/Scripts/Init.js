@@ -18,6 +18,18 @@ export const page = writable(0);
 
 export const gameTab = writable(0);
 
+export const peer = writable(new Peer()); 
+
+export const showAudio = writable(false);
+
+export const callee = writable(null);
+
+export const showCallee = writable(false);
+
+export const calleeName = writable(null);
+
+export const stream = writable(null);
+
 export const userGames = writable(null);
 
 export const leaderBoard = writable(null);
@@ -41,6 +53,8 @@ export const viewJoinGame = writable(false);
 export const viewGameList = writable(false);
 
 export const showLogin = writable(false);
+
+export const viewCallStream = writable(false);
 
 window.onbeforeunload = async function() {
 
@@ -99,12 +113,21 @@ window.onload = async function() {
     if (sessionStorage.getItem('idx') != null) {
 
         const indexes = await JSON.parse(sessionStorage.getItem('idx'));
-        
+
+        if(indexes.user != null)
+            peer.set(new Peer(indexes.user.name));
+        else
+            peer.set(new Peer());
+
         await currUser.set(indexes.user);
 
-        await leaderBoard.set(indexes.league); 
-
-        await gameBoard.set(new Board(indexes.board.board, null));
+        await leaderBoard.set(indexes.league);
+        
+        if(indexes.board == null)
+            await gameBoard.set(null);
+        
+        if(indexes.board != null)
+            await gameBoard.set(new Board(indexes.board.board, null));
 
         await gameHistory.set(indexes.history);
 

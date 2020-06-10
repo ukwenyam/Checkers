@@ -24,7 +24,7 @@
             func: "saveChat",
             id: $currUser.email,
             chatID: $allChats[index].id,
-            history: $allChats[index].history
+            msg: data
         }
 
         $currSocket.emit('save-chat', request);
