@@ -1,6 +1,7 @@
 <script>
-    import { gameTab, gamePref, userGames, leaderBoard, allChats, currUser } from '../Scripts/Init.js';
+    import { gameTab, gamePref, userGames, leaderBoard, allChats, currUser, showPlayer } from '../Scripts/Init.js';
     import { fly, fade } from 'svelte/transition';
+    import Player from './audioPlayer.svelte';
 
     let buttonId = null;
 
@@ -45,6 +46,9 @@
 </script>
 
 <div class="navbar" transition:fly="{{ y:200, duration: 1000 }}">
+    {#if $showPlayer}
+        <Player/>
+    {/if}
     <button id="play" class="btn btn-dark" on:click="{() => switchTabs(0, "play")}" disabled="{$gamePref != null}">
         <i class="fa fa-play"></i>
         <span class="label">Play</span>

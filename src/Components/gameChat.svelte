@@ -1,20 +1,14 @@
 <script>
-    import { currSocket, currUser, gamePref, allChats, 
-            showNavBar, peer, callee, showAudio, showCallee, calleeName } from '../Scripts/Init.js';
-    import { getAllChats } from '../Scripts/Functions.js';
+    import { currSocket, currUser, gamePref, allChats, calleeID, calleeName, callerName,
+            showNavBar, showPlayer, peer, showCallee, showCallBar, onCall, callerID } from '../Scripts/Init.js';
+    import { getAllChats, blink_text } from '../Scripts/Functions.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { beforeUpdate, afterUpdate } from 'svelte';
     import Indicator from './typeIndicator.svelte';
     import Loader from './loader.svelte';
+    import Player from './audioPlayer.svelte';
 
-    $peer.on('open', function(id){
-        console.log('My peer ID is: ' + id);
-    });
-
-    let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-    let showCallBar = false, showCaller = false, showCallStream = false, answered = false;
-    let callerName;
+    $currSocket.emit('go-online', $currUser.email);
 
     let div, autoscroll;
     let message;
@@ -31,23 +25,10 @@
         chatID = currChat.id;
         chatMsgs = currChat.history;
         chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
-        userID = currChat.priName == $currUser.name ? currChat.secEmail : currChat.priEmail;
+        userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
         
-        $currSocket.emit('join-room', chatID, $currUser.name);
+        $currSocket.emit('join-room', { room: chatID, name: $currUser.name, isGame: false });
     }
-
-    setInterval(function() {
-        if($allChats.length > 0) {
-            $currSocket.emit('check-status', $allChats);
-        }
-    }, 5000);
-
-    $currSocket.on('get-status', (chats) => {
-        if(Array.isArray(chats)) {
-            allChats.set(chats);
-            viewChat(currChat, true);
-        }
-    });
 
     beforeUpdate(() => {
 		autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
@@ -65,26 +46,7 @@
         isTyping = false;
     }); 
 
-    function makeCall() {
-
-        if(currChat.online) {
-
-            getUserMedia({video: false, audio: true}, function(stream) {
-
-                console.log("Making call To " + chatUser);
-
-                calleeName.set(chatUser);
-
-                callee.set($peer.call(chatUser, stream));
-
-                showAudio.set(true); showCallee.set(true);
-
-            }, function(err) {
-                console.log('Failed to get local stream' ,err);
-            });
-        }
-    }
-
+    
     function viewChat(chat, refresh) {
 
         if(chat != null) {
@@ -100,15 +62,67 @@
 
             currChat = chat;
 
-            chatID = chat.id;
-            chatMsgs = chat.history;
-            chatUser = chat.priName == $currUser.name ? chat.secName : chat.priName;
-            userID = chat.priName == chat.name ? chat.secEmail : chat.priEmail;
-
-            $currSocket.emit('check-status', userID, chatID);
+            chatID = currChat.id;
+            chatMsgs = currChat.history;
+            chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
+            userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
 
             if(!refresh)
-                $currSocket.emit('join-room', chatID, $currUser.name);
+                $currSocket.emit('join-room', { room: chatID, name: $currUser.name, isGame: false });
+        }
+    }
+
+    function callUser() {
+
+        if(!$onCall) {
+
+            console.log("Making call To " + chatUser);
+
+            calleeName.set(chatUser); calleeID.set(userID);
+
+            callerName.set($currUser.name); callerID.set($currUser.email);
+
+            showCallBar.set(true); showCallee.set(true); 
+
+            navigator.mediaDevices.getUserMedia({video: false, audio: true})
+            .then((stream) => {
+
+                console.log("Creating Peer");
+
+                setInterval(blink_text, 1000);
+
+                setTimeout(function() {
+                    window.$( "#stream" ).draggable();
+                }, 1000);
+
+                peer.set(new SimplePeer({
+                    initiator: true,
+                    trickle:false,
+                    stream: stream
+                }));
+
+                $peer.on("signal", data => {
+                    console.log("Receiving Signal");
+                    $currSocket.emit('call-user', { 
+                        calleeID: userID, 
+                        calleeName: chatUser,  
+                        signal: data, 
+                        callerName: $currUser.name, 
+                        callerID: $currUser.email 
+                    });
+                });
+
+                $peer.on('stream', stream => {
+                    console.log("Sending Stream");
+                    showPlayer.set(true); showCallBar.set(false), showCallee.set(false); 
+                    setTimeout(function() {
+                        let audio = document.getElementById("audio");
+                        audio.srcObject = stream;
+                        onCall.set(true);
+                    }, 500);
+                });
+            })
+            .catch((err) => { console.log(err) });
         }
     }
 
@@ -136,7 +150,7 @@
                 chatID: chatID
             }
 
-            $currSocket.emit('chat message', currMsg);
+            $currSocket.emit('send-msg', currMsg);
 
             message = '';
         }
@@ -186,7 +200,7 @@
                     {/if}
                 </button> 
                     {chatUser.toUpperCase()}
-                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" on:click="{makeCall}"><i class="fa fa-phone"></i> Voice Chat</button>
+                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" on:click="{callUser}" disabled="{!currChat.online && !$onCall}"><i class="fa fa-phone"></i> Voice Chat</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
                 {#each chatMsgs as mesage, i}
@@ -221,11 +235,13 @@
                 </article>
             </div>
             <div class="input-group mb-3">
+                {#if $showPlayer && ($callerName != null || $calleeName != null) && ($calleeName == chatUser || $callerName == chatUser)}
+                    <Player/>
+                {/if}
                 <button class="btn btn-light btn-file camera" type="file">
                     <i class="fa fa-camera"></i>
-                    <input type="file" hidden>
                 </button> 
-                <input id="user-msg" class="form-control" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
+                <input autocomplete="off" id="user-msg" class="form-control" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
                 <button class="btn btn-light plane" on:click="{sendMsg}"><i class="fa fa-paper-plane-o"></i></button> 
             </div>
         </div>
@@ -340,23 +356,29 @@
         background-color:#343a40;
         width:95%;
         left:2.5%;
-    }
-
-    .plane {
-        width:10%;
-        margin-left:80%;
-        border-radius:0 1em 1em 0;
+        height:65px;
     }
 
     .camera {
         width:10%;
         border-radius:1em 0 0 1em;
+        position:absolute;
+        bottom:0;
+    }
+
+    .plane {
+        width:10%;
+        border-radius:0 1em 1em 0;
+        position:absolute;
+        bottom:0;
+        right:0;
     }
     
     #user-msg {
         outline:none;
         border:none;
         position:absolute;
+        bottom:0;
         width:80%;
         margin-left:10%;
 	}
@@ -403,8 +425,6 @@
     ::-webkit-scrollbar {
         width:0px;
     }
-
-   
 
     @media screen and (max-width: 800px) {
 

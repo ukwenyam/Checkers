@@ -1,9 +1,53 @@
 <script>
-    import { gamePref, gameBoard, currSocket, gameHistory, 
-            gameTab, page, currUser, allChats, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
-    import { getAllChats } from '../Scripts/Functions.js';
+    import { gamePref, gameBoard, currSocket, gameHistory, peer, showCallee, showCallBar, callerSignal, onCall,
+            gameTab, page, currUser, allChats, viewCreateGame, smallPopUp, callerName, callerID, showCaller, showPlayer } from '../Scripts/Init.js';
+    import { getAllChats, blink_text } from '../Scripts/Functions.js';
 
-    $currSocket.on('chat message', (data) => {
+    $currSocket.on('online-user', (data) => {
+        let i;
+        setTimeout(function() {
+            if($currUser != null && $currUser.isAuth && $allChats.length > 0 && data != $currUser.email) {
+                for(i = 0; i < $allChats.length; i++) {
+                    if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && !$allChats[i].online) {
+                        allChats.update(state => {
+                            state[i].online = true;
+                            return state;
+                        });
+
+                        break;
+                    } 
+
+                    if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && $allChats[i].online) {
+                        break;
+                    } 
+                }
+            }
+        }, 3000);
+    });
+
+    $currSocket.on('offline-user', (data) => {
+        let i;
+        setTimeout(function() {
+            if($currUser != null && $currUser.isAuth && $allChats.length > 0 && data != $currUser.email) {
+                for(i = 0; i < $allChats.length; i++) {
+                    if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && $allChats[i].online) {
+                        allChats.update(state => {
+                            state[i].online = false;
+                            return state;
+                        });
+
+                        break;
+                    } 
+
+                    if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && !$allChats[i].online) {
+                        break;
+                    } 
+                }
+            }
+        }, 3000);
+    });
+
+    $currSocket.on('recv-msg', async (data) => {
 
         console.log('Received: ' + data.msg);
 
@@ -28,6 +72,51 @@
         }
 
         $currSocket.emit('save-chat', request);
+
+        await getAllChats();
+    });
+
+    $currSocket.on('recv-call', (data) => {
+        if(data.calleeID == $currUser.email && !$onCall) {
+            console.log("receving call from " + data.callerName);
+            callerName.set(data.callerName);
+            callerID.set(data.callerID);
+            callerSignal.set(data.signal);
+
+            showCallBar.set(true), showCaller.set(true);
+
+            setInterval(blink_text, 1000);
+
+            setTimeout(function() {
+                window.$("#stream").draggable();
+            }, 1000);
+        } 
+    });
+
+    $currSocket.on('call-accepted', data => {
+        if(data.callerID == $currUser.email && !$onCall) {
+            console.log("Call Accepted");
+            showCallee.set(false), showCallBar.set(false);
+            $peer.signal(data.signal);
+        }
+    });
+
+    $currSocket.on('end-call', data => {
+        if(data.callerID == $currUser.email || data.calleeID == $currUser.email) {
+            console.log("Ending call");
+
+            if($onCall) {
+                let audio = document.getElementById("audio");
+                audio.src = "";
+                $peer.destroy();
+                onCall.set(false);
+
+                if($showPlayer)
+                    showPlayer.set(false);
+            }
+
+            showCallBar.set(false);
+        }
     });
 
     $currSocket.on('get-second-user', async (data) => {

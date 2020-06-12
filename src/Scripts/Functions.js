@@ -1,5 +1,6 @@
 import { invokeFunction } from './Cloud.js';
-import { allChats, currUser, userGames, leaderBoard } from './Init.js';
+import { allChats, currUser, userGames, leaderBoard, showCallee, calleeName, calleeID,
+            showCallBar, currSocket, peer, onCall, showPlayer } from './Init.js';
 
 let request, userEmail, userName;
 
@@ -95,4 +96,9 @@ export function getUserGames() {
         console.log(error);
         loading = false;
     });
+}
+
+export function blink_text() {
+    window.$('.blink').fadeOut(1000);
+    window.$('.blink').fadeIn(1000);
 }

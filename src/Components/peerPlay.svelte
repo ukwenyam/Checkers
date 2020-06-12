@@ -8,7 +8,7 @@
 	import Blur from './blurScreen.svelte';
     import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
 
-    $currSocket.emit('join-room', $gamePref.gameID, $currUser.name);
+    $currSocket.emit('join-room', { room: $gamePref.gameID, name: $currUser.name, isGame: true });
 
     let clockTime = $gamePref.time;
 

@@ -5,8 +5,8 @@
 	import { writable } from 'svelte/store';
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
-	import { gameBoard, gameHistory, gamePref, currSocket, currUser, 
-			 gameTab, allChats, showLogin, showNavBar, showAudio } from '../Scripts/Init.js';
+	import { gameBoard, gameHistory, gamePref, currSocket, currUser, onCall, startTimeStamp,
+			 gameTab, allChats, showLogin, showNavBar, showCallBar, showPlayer, currentTime } from '../Scripts/Init.js';
     import Chat from '../Components/gameChat.svelte';
 	import Game from '../Components/gameBoard.svelte';
 	import Nav from '../Components/navBar.svelte';
@@ -19,16 +19,11 @@
 	import List from '../Components/gameList.svelte';
 	import Create from '../Components/gameCreate.svelte';
 	import Join from '../Components/gameJoin.svelte';
-	import Stream from '../Components/callStream.svelte';
+	import Call from '../Components/callNotify.svelte';
 	
 	let screenWidth = screen.width;
 	let screenHeight = screen.height;
 	let showChat = false;
-
-	setInterval(function() {
-		if($currUser != null && $currUser.isAuth)
-			$currSocket.emit('go-online', $currUser.email);
-	}, 10000);
 
 	function viewCreateGame() {
 		let index = document.getElementById("index");
@@ -55,16 +50,30 @@
 	}
 
 	function closeAll() {
+		if($onCall) {
+			showCallBar.set(true);
+			setTimeout(function() {
+                window.$("#stream").draggable();
+            }, 1000);
+		}
+
 		showChat = false;
 		showLogin.set(false);
 	}
+
+	setInterval(function() {
+        if($onCall) {
+            $startTimeStamp.add(1, 'second');
+            currentTime.set($startTimeStamp.format('HH:mm:ss'));
+        }
+    }, 1000);
 </script>
 
-{#if $currUser != null && $currUser.isAuth}
-	<Stream/>
-{/if}
-
 <Socket/>
+
+{#if $showCallBar}
+	<Call/>
+{/if}
 
 {#if screenWidth > screenHeight}
 	{#if showChat || $showLogin}	

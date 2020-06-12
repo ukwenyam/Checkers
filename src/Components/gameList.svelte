@@ -1,8 +1,10 @@
 <script>
     import { userGames, gamePref, page, gameTab, currUser, 
-            gameBoard, gameHistory, viewGameList, bigPopUp } from '../Scripts/Init.js';
+            gameBoard, gameHistory, viewGameList, bigPopUp, currSocket } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
+
+    $currSocket.emit('go-online', $currUser.email);
 
     let currGame = $userGames.length > 0 ? $userGames[0] : null;
 

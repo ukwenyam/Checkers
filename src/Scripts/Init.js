@@ -6,9 +6,9 @@ import env from '../env.json';
 export const currSocket = writable(null);
 
 if(window.location.hostname.includes('localhost'))
-    currSocket.set(io(env.local));
+    currSocket.set(io(env.local, {transports: ['websocket'], upgrade: false}));
 else
-    currSocket.set(io(env.server));
+    currSocket.set(io(env.server, {transports: ['websocket'], upgrade: false}));
 
 export const currUser = writable(null);
 
@@ -18,17 +18,31 @@ export const page = writable(0);
 
 export const gameTab = writable(0);
 
-export const peer = writable(new Peer()); 
+export const peer = writable(null);
 
-export const showAudio = writable(false);
+export const showPlayer = writable(false);
 
-export const callee = writable(null);
+export const onCall = writable(false);
+
+export const startTimeStamp = writable(moment().startOf("day"));
+
+export const currentTime = writable(0);
+
+export const showCallBar = writable(false);
 
 export const showCallee = writable(false);
 
 export const calleeName = writable(null);
 
-export const stream = writable(null);
+export const calleeID = writable(null);
+
+export const callerID = writable(null);
+
+export const callerSignal = writable(null);
+
+export const showCaller = writable(false);
+
+export const callerName = writable(false);
 
 export const userGames = writable(null);
 
@@ -113,12 +127,7 @@ window.onload = async function() {
     if (sessionStorage.getItem('idx') != null) {
 
         const indexes = await JSON.parse(sessionStorage.getItem('idx'));
-
-        if(indexes.user != null)
-            peer.set(new Peer(indexes.user.name));
-        else
-            peer.set(new Peer());
-
+            
         await currUser.set(indexes.user);
 
         await leaderBoard.set(indexes.league);
