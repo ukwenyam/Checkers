@@ -6,9 +6,15 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import Blur from './blurScreen.svelte';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
-
-    $currSocket.emit('join-room', { room: $gamePref.gameID, name: $currUser.name, isGame: true });
+	import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
+	
+	if($gamePref.oppID != null) {
+		$currSocket.emit('join-game', { 
+			oppID: $gamePref.oppID, 
+			email: $currUser.email,
+			name: $currUser.name
+		});
+	}
 
     let clockTime = $gamePref.time;
 
@@ -55,39 +61,90 @@
         btnWidth = (0.2 * (screen.width - 800)) - 40;
 	}
 
+	$currSocket.on('switch-player', (gameID) => {
+
+        if(gameID == $gamePref.gameID) {
+
+			clearInterval(timeInterval);
+
+            console.log('Switching Player');
+
+            gamePref.update(state => {
+                state.timer = state.time;
+                state.currPlayer = state.currPlayer == "red" ? "black" : "red";;
+                return state;
+            });
+
+			console.log($gamePref.currPlayer);
+			
+			timeInterval = setInterval(countDown, 1000);
+        }
+	});
+
 	$currSocket.on('piece-move', async (data) => {
 
-        console.log(data);
+		if(data.gameID == $gamePref.gameID) {
 
-        if(data.remove != null) {
+			console.log(data);
 
-            let piece = await $gameBoard.getPieceFromId(data.id);
+			if(data.remove != null) {
 
-            await $gameBoard.removePiece(piece);
-        }
-        
-        let piece = await $gameBoard.getPieceFromId(data.id);
+				let piece = await $gameBoard.getPieceFromId(data.id);
 
-        await $gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
+				await $gameBoard.removePiece(piece);
+			}
+			
+			let piece = await $gameBoard.getPieceFromId(data.id);
 
-        await gameBoard.set($gameBoard);
+			await $gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
 
-        $gameHistory.push($gameBoard.saveBoardState());
+			await gameBoard.set($gameBoard);
 
-        await setCirclePositions();
+			$gamePref.states.push($gameBoard.saveBoardState());
 
-        await gamePref.update(state => {
-            state.numMoves = data.num;
-            state.rangeMoves = data.range;
+			await setCirclePositions();
 
-            if(state.pri == $currUser.name)
-                state.secMoves += 1;
+			await gamePref.update(state => {
+				state.numMoves = data.num;
+				state.rangeMoves = data.range;
 
-            if(state.sec == $currUser.name)
-                state.priMoves += 1;
+				if(state.pri == $currUser.name)
+					state.secMoves += 1;
 
-            return state;
-        });
+				if(state.sec == $currUser.name)
+					state.priMoves += 1;
+
+				return state;
+			});
+		}
+	});
+	
+	$currSocket.on('save-game', (data) => {
+
+		if(data.gameID == $gamePref.gameID) {
+
+			console.log("Game Saved");
+		
+			clearInterval(timeInterval);
+
+			let request = {
+				func: "saveGame",
+				id: $currUser.email,
+				gameID: $gamePref.gameID,
+				gameHistory: $gamePref.states,
+				priMoves: $gamePref.priMoves,
+				secMoves: $gamePref.secMoves,
+				minutes: Math.floor($gamePref.secondsPlayed / 60),
+				currPlayer: $gamePref.currPlayer
+			}
+
+			$currSocket.emit('save-game', request);
+
+			if(data.auto)
+				timeInterval = setInterval(countDown, 1000);
+			else
+				gamePref.set(null);
+		}
     });
 
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
@@ -172,13 +229,13 @@
 
 		console.log(i + ", " + j);
 
-		if($gamePref.currPlayer == $gamePref.side && lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false && $gamePref.sec != null) {
+		if($gamePref.currPlayer == $gamePref.side && lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false && $gamePref.opp != null) {
 
 			let litCircle = document.getElementById($gameBoard.getId(i,j));
 
 			let allCircles, index;
 
-			if($gameBoard.getSide(i,j) == "black" && $currUser.name == $gamePref.sec) {
+			if($gameBoard.getSide(i,j) == "black" && "black" == $gamePref.side) {
 				allCircles = document.getElementsByClassName("black");
 
 				for (index = 0; index < allCircles.length; ++index) 
@@ -187,7 +244,7 @@
 				litCircle.setAttribute("style", "fill:grey");
             }
             
-			if($gameBoard.getSide(i,j) == "red" && $currUser.name == $gamePref.pri) {
+			if($gameBoard.getSide(i,j) == "red" && "red" == $gamePref.side) {
 				allCircles = document.getElementsByClassName("red");
 
 				for (index = 0; index < allCircles.length; ++index) 
@@ -247,14 +304,14 @@
                     remove : res.id,
                     num: $gamePref.numMoves,
                     range: $gamePref.rangeMoves,
-					room: $gamePref.gameID
+					gameID: $gamePref.gameID
 				}
 
 				$currSocket.emit('piece-move', pieceInfo)
 
 				updateCirclePositions(nextPos);
                 
-                $gameHistory.push($gameBoard.saveBoardState());
+                $gamePref.states.push($gameBoard.saveBoardState());
 
 				currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
 			}
@@ -263,7 +320,9 @@
 
 	function viewBoardHistory() {
 
-		gameBoard.set(new Board($gameHistory[$gamePref.rangeMoves], null));
+		let state = $gamePref.states[$gamePref.rangeMoves];
+
+		gameBoard.set(new Board(state, null));
 
 		setCirclePositions();
 	}
@@ -285,8 +344,6 @@
 
         if($gamePref.side == $gamePref.currPlayer) {
 
-			clearInterval(timeInterval);
-
             let allCircles, index;
 
             if($gamePref.currPlayer == "black") {
@@ -306,31 +363,15 @@
             }
             
             $currSocket.emit('switch-player', $gamePref.gameID);
-			
-			gamePref.update(state => {
-				state.currPlayer = state.currPlayer == "red" ? "black" : "red";
-				state.timer = clockTime;
-                return state;
-            });
 
             currPos = null, nextPos = null;
 			lockedPiece = false;
-			
-			timeInterval = setInterval(countDown, 1000);
         }
     }
     
     function startGame() {
-
-        if($gamePref.side == $gamePref.currPlayer) {
-
-            gamePref.update(state => {
-                state.paused = false;
-                return state;
-            });
-
+        if($gamePref.side == $gamePref.currPlayer) 
             $currSocket.emit('start-game', $gamePref.gameID);
-        }
 	}
 
     setInterval(function(){
@@ -341,33 +382,8 @@
     }, 300000);
 
     function saveGame(auto) {
-
-        if($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) {
-
-			clearInterval(timeInterval);
-
-            let request = {
-				func: "saveGame",
-				id: $currUser.email,
-                gameID: $gamePref.gameID,
-                gameHistory: $gameHistory,
-                priMoves: $gamePref.priMoves,
-                secMoves: $gamePref.secMoves,
-				minutes: Math.floor($gamePref.secondsPlayed / 60),
-				currPlayer: $gamePref.currPlayer,
-				auto: auto,
-				saved: false
-			}
-			
-			if(auto) {
-				$currSocket.emit('save-game', request);
-				timeInterval = setInterval(countDown, 1000);
-			} else {
-                $currSocket.emit('save-game', request);
-                //gameBoard.set(null);
-				gamePref.set(null);
-			}
-        }
+        if($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) 
+			$currSocket.emit('game-save', {gameID: $gamePref.gameID, auto: auto});
     }
 </script>
 
@@ -379,7 +395,7 @@
 	<h2 id="time">Timer: {$gamePref.timer}</h2>
 </div>
 
-<h4 class="players" style="top:0;%">{$gamePref.pri == $currUser.name ? $gamePref.sec : $gamePref.pri}</h4>
+<h4 class="players" style="top:0;%">{$gamePref.opp != null ? $gamePref.opp : "Waiting for Other Player"}</h4>
 
 <div id="board">
 	<svg id="hover">
@@ -399,7 +415,7 @@
 	<svg>
 </div>
 
-<h4 class="players" style="bottom:0;">{$gamePref.pri == $currUser.name ? $gamePref.pri : $gamePref.sec}</h4>
+<h4 class="players" style="bottom:0;">{$currUser.name}</h4>
 
 {#if $gamePref.finished}
     <div id="state">
@@ -408,7 +424,7 @@
     </div>
 {:else}
     <div id="gameBtn" class="container">
-        {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.pri != null && $gamePref.sec != null} 
+        {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.opp != null} 
             <button class="btn btn-success btn-lg pause" on:click="{startGame}">Start Game</button>
         {/if}
 

@@ -3,6 +3,8 @@
     import { currSocket, currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewJoinGame, smallPopUp } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import Loader from './loader.svelte';
+    import { Game } from '../Scripts/Game.js';
+    import { getAllChats } from '../Scripts/Functions.js';
 
     let gamePassword;
 
@@ -30,36 +32,13 @@
             invokeFunction(request).then((response) => {
                 console.log(response);
                 if(response.msg != null) {
-
-                    let game = response.msg.game;
-
+                    let game = response.msg;
                     if(game.priEmail != $currUser.email) {
+                        game.name = $currUser.name;
+                        game.side = "black";
 
                         gameBoard.set(new Board(null, true));
-
-                        $gameHistory.push($gameBoard.saveBoardState());
-
-                        gameChat.set(response.msg.chat.history);
-
-                        gamePref.update(state => {
-                            state = {};
-                            state.time = game.time;
-                            state.timer = game.time;
-                            state.gameID = gamePassword;
-                            state.chatID = response.msg.chat.id;
-                            state.pri = null;
-                            state.sec = game.secPlayer;
-                            state.currPlayer = game.currPlayer;
-                            state.numMoves = 0;
-                            state.priMoves = 0;
-                            state.secMoves = 0;
-                            state.rangeMoves = 0;
-                            state.paused = true;
-                            state.finished = false;
-                            state.side = "black";
-                            state.secondsPlayed = 0;
-                            return state;
-                        });
+                        gamePref.set(new Game(game, $gameBoard.saveBoardState(), false));
 
                         loading = false;
                         smallPopUp.set(false);
@@ -69,9 +48,8 @@
                         loading = false;
                         errMsg = "Cannot Join A Game You Created";
                         viewError = true;
-                        deleteGame(gamePassword, response.msg.chat.id);
+                        deleteGame(gamePassword);
                     }
-
                 } else {
                     loading = false;
                     console.log(response.err);
@@ -83,12 +61,11 @@
         }
     }
 
-    function deleteGame(gameID, chatID) {
+    function deleteGame(gameID) {
 
         request = {
             func: "deleteGame",
-            gameID: gameID,
-            chatID: chatID
+            gameID: gameID
         }
 
         invokeFunction(request).then((response) => {

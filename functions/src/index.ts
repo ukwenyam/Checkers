@@ -228,8 +228,8 @@ export const createGame = functions.https.onRequest(async (request, response) =>
             const collection:any = client.db("CheckasIO").collection("GAMES");
 
             const currPlayer:string = Math.floor(Math.random() * 2) === 0 ? "red" : "black";
-            
-            collection.insertOne({ 
+
+            const game:any = { 
                 _id: gameID,
                 gameHistory: [],
                 priPlayer: evt.name,
@@ -243,8 +243,10 @@ export const createGame = functions.https.onRequest(async (request, response) =>
                 minutesPlayed: 0,
                 finished: false,
                 currPlayer: currPlayer
-            }).then(function(result:any) {
-                res.send({msg: { gameID: gameID, currPlayer: currPlayer }});
+            }
+            
+            collection.insertOne(game).then(function(result:any) {
+                res.send({msg: game});
             }).catch(function(error:any) {
                 res.send({err: error})
             });
@@ -314,15 +316,13 @@ export const joinGame = functions.https.onRequest(async (request, response) => {
                         secEmail: evt.email,
                         history: []
                     }).then(async function() {
-                        const newChat:any = await db.collection("CHATS").doc(chatID).get();
-                        const chatData:any = newChat.data(); chatData.id = chatID;
-                        res.send({msg: {chat: chatData, game: game}});
+                        res.send({msg: game});
                     }).catch(function(error:any) {
                         res.send({err: error.message});
                     });
 
                 } else {
-                    res.send({msg: {chat: gameChat, game: game}});
+                    res.send({msg: game});
                 }
 
                 client.close();

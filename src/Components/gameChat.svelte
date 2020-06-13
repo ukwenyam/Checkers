@@ -8,6 +8,8 @@
     import Loader from './loader.svelte';
     import Player from './audioPlayer.svelte';
 
+    $currSocket.emit('go-online', $currUser.email);
+
     let div, autoscroll;
     let message;
     let isTyping = false;
@@ -39,19 +41,17 @@
     $currSocket.on('typing', (id) => {
         if(id == $currUser.email)
             isTyping = true;
-        $currSocket.emit('go-online', $currUser.email);
     });
 
     $currSocket.on('no-typing', (id) => {
         if(id == $currUser.email)
             isTyping = false;
-        $currSocket.emit('go-online', $currUser.email);
     }); 
 
     setInterval(function() {
         if($allChats != null && $allChats.length > 0)
             viewChat(currChat, true);
-    }, 1000);
+    }, 500);
     
     function viewChat(chat, refresh) {
 
@@ -212,7 +212,7 @@
                     {/if}
                 </button> 
                     {chatUser.toUpperCase()}
-                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" on:click="{callUser}" disabled="{!currChat.online && !$onCall}"><i class="fa fa-phone"></i> Voice Chat</button>
+                <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;">Request Game</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
                 {#each chatMsgs as msg, i}
@@ -250,8 +250,8 @@
                 {#if $showPlayer && ($callerName != null || $calleeName != null) && ($calleeName == chatUser || $callerName == chatUser)}
                     <Player/>
                 {/if}
-                <button class="btn btn-light btn-file camera" type="file">
-                    <i class="fa fa-camera"></i>
+                <button class="btn btn-light btn-file camera" on:click="{callUser}" disabled="{!currChat.online && !$onCall}">
+                    <i class="fa fa-phone"></i>
                 </button> 
                 <input autocomplete="off" id="user-msg" class="form-control" placeholder="Type Here" bind:value="{message}" on:keyup="{inputStatus}" on:keydown="{event => event.which === 13 && sendMsg()}"/>
                 <button class="btn btn-light plane" on:click="{sendMsg}"><i class="fa fa-paper-plane-o"></i></button> 

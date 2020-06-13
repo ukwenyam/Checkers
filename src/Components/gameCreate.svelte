@@ -2,6 +2,7 @@
     import { currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { Board } from '../Scripts/Board.js';
+    import { Game } from '../Scripts/Game.js';
     import Loader from './loader.svelte';
 
     let Time = 15;
@@ -20,10 +21,6 @@
 
         loading = true;
 
-        gameBoard.set(new Board(null, false));
-
-        $gameHistory.push($gameBoard.saveBoardState());
-
         request = {
             func: "createGame",
             email: $currUser.email,
@@ -40,25 +37,14 @@
 
                 console.log(response.msg);
 
-                gamePref.update(state => {
-                    state = {};
-                    state.gameID = response.msg.gameID;
-                    state.time = Time;
-                    state.timer = Time;
-                    state.pri = $currUser.name;
-                    state.sec = null;
-                    state.chatID = null;
-                    state.currPlayer = response.msg.currPlayer;
-                    state.numMoves = 0;
-                    state.priMoves = 0;
-                    state.secMoves = 0;
-                    state.rangeMoves = 0;
-                    state.paused = true;
-                    state.finished = false;
-                    state.side = "red";
-                    state.secondsPlayed = 0;
-                    return state;
-                });
+                let game = response.msg;
+                game.time = Time;
+                game.side = "red";
+                game.name = $currUser.name;
+
+                gameBoard.set(new Board(null, false));
+
+                gamePref.set(new Game(game, $gameBoard.saveBoardState(), true));
 
                 loading = false;
             } else {

@@ -114,84 +114,54 @@
         }
     });
 
-    $currSocket.on('get-second-user', async (data) => {
+    $currSocket.on('get-second-user', (data) => {
 
-        if($gamePref.sec == null && $gamePref.currPlayer != null) {
+        if(data.oppID == $currUser.email && $gamePref.oppID == null && $gamePref.opp == null && $gamePref.currPlayer != null) {
 
             console.log('Received second player');
 
             gamePref.update(state => {
-                state.sec = data;
+                state.opp = data.name;
+                state.oppID = data.email;
                 return state;
             });
 
-            await getAllChats();
+            getAllChats();
 
-            $currSocket.emit('send-first-user', { room: $gamePref.gameID, name: $currUser.name });
+            $currSocket.emit('send-first-user', { oppID: data.email, name: $currUser.name });
 
             viewCreateGame.set(false); smallPopUp.set(false);
 
-            gameTab.set(2);
+            gameTab.set(5);
         }
     });
 
     $currSocket.on('get-first-user', (data) => {
 
-        if($gamePref.pri == null && $gamePref.currPlayer != null) {
+        if(data.oppID == $currUser.email && $gamePref.opp == null && $gamePref.currPlayer != null) {
 
             console.log('Received first player');
 
             gamePref.update(state => {
-                state.pri = data;
+                state.opp = data.name;
                 return state;
             });
 
-            gameTab.set(2);
+            getAllChats();
+
+            gameTab.set(5);
         }
     });
 
-    $currSocket.on('switch-player', () => {
+    $currSocket.on('start-game', (gameID) => {
 
-        console.log('Switching Player');
+        if(gameID == $gamePref.gameID) {
+            console.log("Game Started");
 
-        gamePref.update(state => {
-            state.timer = state.time;
-            state.currPlayer = state.currPlayer == "red" ? "black" : "red";;
-            return state;
-        });
-
-        console.log($gamePref.currPlayer);
-	});
-
-    $currSocket.on('start-game', () => {
-
-        console.log("Game Started");
-
-        gamePref.update(state => {
-            state.paused = false;
-            return state;
-        });
-    });
-
-    $currSocket.on('save-game', (data) => {
-
-        console.log("Game Saved");
-
-        let request = {
-            func: "saveGame",
-            id: $currUser.email,
-            gameID: $gamePref.gameID,
-            gameHistory: $gameHistory,
-            priMoves: $gamePref.priMoves,
-            secMoves: $gamePref.secMoves,
-            minutes: Math.floor($gamePref.secondsPlayed / 60),
-            currPlayer: $gamePref.currPlayer,
-            auto: data.auto,
-            saved: true
+            gamePref.update(state => {
+                state.paused = false;
+                return state;
+            });
         }
-
-        $currSocket.emit('save-game', request);
-
-        if(!data.auto) { gamePref.set(null); }
     });
 </script>
