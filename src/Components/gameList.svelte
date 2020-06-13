@@ -4,8 +4,6 @@
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
 
-    $currSocket.emit('go-online', $currUser.email);
-
     let currGame = $userGames.length > 0 ? $userGames[0] : null;
 
     let screenWidth = screen.width;

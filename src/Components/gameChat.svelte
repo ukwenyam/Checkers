@@ -8,8 +8,6 @@
     import Loader from './loader.svelte';
     import Player from './audioPlayer.svelte';
 
-    $currSocket.emit('go-online', $currUser.email);
-
     let div, autoscroll;
     let message;
     let isTyping = false;
@@ -38,14 +36,22 @@
 		if (autoscroll) div.scrollTo(0, div.scrollHeight);
     });
     
-    $currSocket.on('typing', (room) => {
-        isTyping = true;
+    $currSocket.on('typing', (id) => {
+        if(id == $currUser.email)
+            isTyping = true;
+        $currSocket.emit('go-online', $currUser.email);
     });
 
-    $currSocket.on('no-typing', (room) => {
-        isTyping = false;
+    $currSocket.on('no-typing', (id) => {
+        if(id == $currUser.email)
+            isTyping = false;
+        $currSocket.emit('go-online', $currUser.email);
     }); 
 
+    setInterval(function() {
+        if($allChats != null && $allChats.length > 0)
+            viewChat(currChat, true);
+    }, 1000);
     
     function viewChat(chat, refresh) {
 
@@ -102,14 +108,16 @@
                 }));
 
                 $peer.on("signal", data => {
-                    console.log("Receiving Signal");
-                    $currSocket.emit('call-user', { 
-                        calleeID: userID, 
-                        calleeName: chatUser,  
-                        signal: data, 
-                        callerName: $currUser.name, 
-                        callerID: $currUser.email 
-                    });
+                    if(!$onCall) {
+                        console.log("Receiving Signal");
+                        $currSocket.emit('call-user', { 
+                            calleeID: userID, 
+                            calleeName: chatUser,  
+                            signal: data, 
+                            callerName: $currUser.name, 
+                            callerID: $currUser.email 
+                        });
+                    }
                 });
 
                 $peer.on('stream', stream => {
@@ -143,11 +151,15 @@
         if(message != null || message != '') {
 
             currMsg = {
-                name: $currUser.name,
-                msg: message,
-                date: moment().format("YYYYMMDD, HH:mm"),
-                room: chatID,
-                chatID: chatID
+                chatID: chatID,
+                userID: userID,
+                func: "saveChat",
+                id: $currUser.email,
+                msg: {
+                    msgid: $currUser.email,
+                    date: moment().format("YYYYMMDD, HH:mm"),
+                    message: message
+                }
             }
 
             $currSocket.emit('send-msg', currMsg);
@@ -158,9 +170,9 @@
 
     function inputStatus() {
         if(message == '') {
-            $currSocket.emit('no-typing', chatID);
+            $currSocket.emit('no-typing', userID);
         } else {
-            $currSocket.emit('typing', chatID);
+            $currSocket.emit('typing', userID);
         }
     }
 
@@ -182,7 +194,7 @@
                             {/if}
                         </h5>
                         {#if chat.history.length > 0}
-                            <p style="font-weight:lighter;font-size:15px;text-align:left;">{chat.history[chat.history.length - 1].msg}</p>
+                            <p style="font-weight:lighter;font-size:15px;text-align:left;">{chat.history[chat.history.length - 1].message}</p>
                             <p style="font-weight:lighter;font-size:15px;text-align:right;">{getTimeSpan(chat.history[chat.history.length - 1].date)}</p>
                         {/if}
                     </div>
@@ -203,27 +215,27 @@
                 <button class="btn btn-dark chatHead" style="float:right;border-radius:0 0.4rem 0 0;" on:click="{callUser}" disabled="{!currChat.online && !$onCall}"><i class="fa fa-phone"></i> Voice Chat</button>
             </h4>
             <div class="scrollable container" bind:this={div}>
-                {#each chatMsgs as mesage, i}
-                    {#if mesage.name == $currUser.name}
+                {#each chatMsgs as msg, i}
+                    {#if msg.msgid == $currUser.email}
                         <article class="myMsg">
-                            <span class="txtMsg">{mesage.msg}</span>
+                            <span class="txtMsg">{msg.message}</span>
                             {#if i < chatMsgs.length - 1}
                                 {#if chatMsgs[i + 1].date != chatMsgs[i].date}
-                                    <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                                    <p style="font-size:10px;">{getTimeSpan(msg.date)}</p>
                                 {/if}
                             {:else}
-                                <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                                <p style="font-size:10px;">{getTimeSpan(msg.date)}</p>
                             {/if}
                         </article>
                     {:else}
                         <article class="odaMsg">
-                            <span class="txtMsg">{mesage.msg}</span>
+                            <span class="txtMsg">{msg.message}</span>
                             {#if i < chatMsgs.length - 1}
                                 {#if chatMsgs[i + 1].date != chatMsgs[i].date}
-                                    <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                                    <p style="font-size:10px;">{getTimeSpan(msg.date)}</p>
                                 {/if}
                             {:else}
-                                <p style="font-size:10px;">{getTimeSpan(mesage.date)}</p>
+                                <p style="font-size:10px;">{getTimeSpan(msg.date)}</p>
                             {/if}
                         </article>
                     {/if}

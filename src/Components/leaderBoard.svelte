@@ -2,8 +2,6 @@
     import { currUser, page, userGames, leaderBoard, currSocket } from '../Scripts/Init.js';
     import { getLeagueTable } from '../Scripts/Functions.js';
 
-    $currSocket.emit('go-online', $currUser.email);
-
     let screenWidth = screen.width;
 
     function viewMyStats() {

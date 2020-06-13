@@ -3,8 +3,6 @@
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
-    $currSocket.emit('go-online', $currUser.email);
-
     let Name = $currUser.name;
     let Picture = $currUser.picture;
     let authPassword;
