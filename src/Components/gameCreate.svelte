@@ -41,6 +41,7 @@
                 game.time = Time;
                 game.side = "red";
                 game.name = $currUser.name;
+                game.email = $currUser.email;
 
                 gameBoard.set(new Board(null, false));
 

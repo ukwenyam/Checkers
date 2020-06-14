@@ -129,6 +129,11 @@
         }
     }
 
+    function checkNotifications() {
+        if(Notification.permission == "default" || Nofification.permission == "denied") 
+            Notification.requestPermission();
+    }
+
     function retrieveUser() {
 
         invokeFunction(request).then((response) => {
@@ -140,6 +145,7 @@
 
                 currUser.set(new User(data));
 
+                checkNotifications();
                 getAllChats(); 
                 getUserGames(); 
                 getLeagueTable();

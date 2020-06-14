@@ -3,6 +3,7 @@
             gameBoard, gameHistory, viewGameList, bigPopUp, currSocket } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
+    import { Game } from '../Scripts/Game.js';
 
     let currGame = $userGames.length > 0 ? $userGames[0] : null;
 
@@ -29,37 +30,25 @@
     }
 
     function getGame() {
-
-        if(currGame.finished) {
-            gameBoard.set(new Board(currGame.gameHistory[currGame.gameHistory.length - 1], null));
+        
+        if(currGame.gameHistory.length == 0) {
+            if(currGame.priEmail == $currUser.email)
+                gameBoard.set(new Board(null, false));
+            else
+                gameBoard.set(new Board(null, true));
         } else {
-            gameBoard.set(new Board(currGame.gameHistory, null));
+            gameBoard.set(new Board(currGame.gameHistory[currGame.gameHistory.length - 1], null));
         }
 
-        gameHistory.set(currGame.gameHistory);
+        currGame.side = currGame.priEmail == $currUser.email ? "red" : "black";
 
-        gamePref.update(state => {
-            state = {};
-            state.id = currGame._id;
-            state.time = currGame.time;
-            state.timer = currGame.time;
-            state.pri = currGame.priEmail == $currUser.email ? $currUser.name : null;
-            state.sec = currGame.secEmail == $currUser.email ? $currUser.name : null;
-            state.currPlayer = currGame.currPlayer;
-            state.numMoves = currGame.finished == true ? currGame.gameHistory.length - 1 : currGame.numMoves;
-            state.rangeMoves = currGame.finished == true ? currGame.gameHistory.length - 1 : currGame.numMoves;
-            state.priMoves = currGame.priMoves,
-            state.secMoves = currGame.secMoves,
-            state.paused = resume == true ? true : false;
-            state.finished = currGame.finished;
-            state.side = currGame.priEmail == $currUser.email ? "red" : "black";
-            state.secondsPlayed = currGame.minutesPlayed * 60;
-            return state;
-        });
+        let initiator = currGame.priEmail == $currUser.email ? true : false;
+
+        gamePref.set(new Game(currGame, gameHistory, initiator));
 
         bigPopUp.set(false);
         viewGameList.set(false); 
-        gameTab.set(0);
+        gameTab.set(5);
     }
 </script>
 
@@ -72,7 +61,7 @@
         {#each $userGames as game}
             {#if !game.finished}
                 {#if game.secPlayer != null}
-                    <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</button>
+                    <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : currGame.secPlayer.toUpperCase()}</button>
                 {:else}
                     <button on:click="{() => viewGameDetails(game)}" class="btn btn-dark">{game.priPlayer == $currUser.name ? "Me" : game.priPlayer.toUpperCase()} vs. {game.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</button>
                 {/if}
@@ -91,7 +80,7 @@
             <button class="btn btn-dark" style="width:25%;" on:click="{goBack}"><i class="fa fa-arrow-left"></i> Back</button>
         {/if}
         {#if currGame.secPlayer != null}
-            <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</h3>
+            <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : currGame.secPlayer.toUpperCase()}</h3>
         {:else}
             <h3 id="versus">{currGame.priPlayer == $currUser.name ? "Me" : currGame.priPlayer.toUpperCase()} vs. {currGame.secPlayer == $currUser.name ? "Me" : "Unknown Player"}</h3>
         {/if}

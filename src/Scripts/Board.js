@@ -208,16 +208,10 @@ export class Board {
 
     isMoveLegal(piece, nextPos) {
 
-        let name, priPlayer, secPlayer;
-
-        currUser.update(state => {
-            name = state.name;
-            return state;
-        });
+        let mySide;
         
         gamePref.update(state => {
-            priPlayer = state.pri;
-            secPlayer = state.sec;
+            mySide = state.side;
             return state
         });
 
@@ -260,11 +254,11 @@ export class Board {
         } */
 
         console.log(nextPos.isEmpty);
-
+        console.log(piece.side);
         console.log("red: " + piece.side == "red");
         console.log("black: " + piece.side == "black");
 
-        if(piece.side == "red" && nextPos.isEmpty && name == priPlayer) {
+        if(piece.side == "red" && nextPos.isEmpty && piece.side == mySide) {
 
             console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
@@ -304,7 +298,7 @@ export class Board {
             }
         }
 
-        if(piece.side == "black" && nextPos.isEmpty && name == secPlayer) {
+        if(piece.side == "black" && nextPos.isEmpty && piece.side == mySide) {
 
             //console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
@@ -353,16 +347,10 @@ export class Board {
 
     doMove(piece, nextPos) {
 
-        let name, priPlayer, secPlayer;
-
-        currUser.update(state => {
-            name = state.name;
-            return state;
-        });
+        let mySide;
         
         gamePref.update(state => {
-            priPlayer = state.pri;
-            secPlayer = state.sec;
+            mySide = state.side;
             return state
         });
 
@@ -374,14 +362,12 @@ export class Board {
 
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            if(name == priPlayer) {
-
+            if(newPiece.side == mySide) {
                 if(nextPos.xPos == 0 && newPiece.side == "red" && newPiece.stack == 1) 
                     newPiece.incrementStack();
             } 
             
-            if(name == secPlayer) {
-
+            if(newPiece.side == mySide) {
                 if(nextPos.xPos == 0 && newPiece.side == "black" && newPiece.stack == 1) 
                     newPiece.incrementStack();
             }
@@ -481,17 +467,11 @@ export class Board {
 
     otherPlayerMove(piece, xDiff, yDiff) {
 
-        let name, priPlayer, secPlayer;
-
-        currUser.update(state => {
-            name = state.name;
-            return state;
-        });
+        let mySide;
         
         gamePref.update(state => {
-            priPlayer = state.pri;
-            secPlayer = state.sec;
-            return state
+            mySide = state.side;
+            return state;
         });
 
         let xPos = piece.getPosition().xPos;
@@ -505,13 +485,13 @@ export class Board {
 
         let newPiece = new Piece(nextPosX, nextPosY, piece.side, piece.id, piece.stack);
 
-        if(name == priPlayer) {
+        if(newPiece.side == mySide) {
 
             if(nextPosX == 0 && newPiece.side == "red" && newPiece.stack == 1) 
                 newPiece.incrementStack();
         } 
         
-        if(name == secPlayer) {
+        if(newPiece.side == mySide) {
 
             if(nextPosX == 0 && newPiece.side == "black" && newPiece.stack == 1) 
                 newPiece.incrementStack();

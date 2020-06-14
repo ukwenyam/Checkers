@@ -35,6 +35,7 @@
                     let game = response.msg;
                     if(game.priEmail != $currUser.email) {
                         game.name = $currUser.name;
+                        game.email = $currUser.email;
                         game.side = "black";
 
                         gameBoard.set(new Board(null, true));

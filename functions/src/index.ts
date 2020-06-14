@@ -231,7 +231,8 @@ export const createGame = functions.https.onRequest(async (request, response) =>
 
             const game:any = { 
                 _id: gameID,
-                gameHistory: [],
+                priHistory: [],
+                secHistory: [],
                 priPlayer: evt.name,
                 priEmail: evt.email,
                 secPlayer: null,
@@ -369,22 +370,40 @@ export const saveGame = functions.https.onRequest(async (request, response) => {
             assert.equal(null, err);
 
             const collection:any = client.db("CheckasIO").collection("GAMES");
-            
-            collection.updateOne({ _id: evt.gameID },
-                { $set: { 
-                    "gameHistory": evt.gameHistory, 
-                    "minutesPlayed": Number(evt.minutes),
-                    "currPlayer": evt.currPlayer,
-                    "priMoves": evt.priMoves,
-                    "secMoves": evt.secMoves
-                }
-            }).then(function(result:any) {
-                res.send({msg: "SUCCESS"});
-            }).catch(function(error:any) {
-                res.send({err: error});
-            });
 
-            client.close();
+            if(evt.initiator) {
+                collection.updateOne({ _id: evt.gameID },
+                    { $set: { 
+                        "priHistory": evt.gameHistory, 
+                        "minutesPlayed": Number(evt.minutes),
+                        "currPlayer": evt.currPlayer,
+                        "priMoves": evt.myMoves,
+                        "numMoves": evt.numMoves
+                    }
+                }).then(function(result:any) {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error});
+                });
+
+                client.close();
+            } else {
+                collection.updateOne({ _id: evt.gameID },
+                    { $set: { 
+                        "secHistory": evt.gameHistory, 
+                        "minutesPlayed": Number(evt.minutes),
+                        "currPlayer": evt.currPlayer,
+                        "secMoves": evt.myMoves,
+                        "numMoves": evt.numMoves
+                    }
+                }).then(function(result:any) {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error});
+                });
+
+                client.close();
+            }
         });
 
     } else {
@@ -559,13 +578,24 @@ export const retrieveUserGames = functions.https.onRequest(async (request, respo
             });
 
             await cursor.forEach(function(doc:any) {
-                if(doc.finished) {
-                    games.push(doc);
+                if(doc.priEmail == evt.email) {
+                    if(doc.finished) {
+                        games.push(doc);
+                    } else {
+                        const game:any = doc;
+                        game.numMoves = game.priHistory.length > 0 ? game.priHistory.length - 1 : 0;
+                        game.gameHistory = game.priHistory.length > 0 ? game.priHistory[game.priHistory.length - 1] : [];
+                        games.push(game);
+                    }
                 } else {
-                    const game:any = doc;
-                    game.numMoves = game.gameHistory.length > 0 ? game.gameHistory.length - 1 : 0;
-                    game.gameHistory = game.gameHistory.length > 0 ? game.gameHistory[game.gameHistory.length - 1]: [];
-                    games.push(game);
+                    if(doc.finished) {
+                        games.push(doc);
+                    } else {
+                        const game:any = doc;
+                        game.numMoves = game.secHistory.length > 0 ? game.secHistory.length - 1 : 0;
+                        game.gameHistory = game.secHistory.length > 0 ? game.secHistory[game.secHistory.length - 1] : [];
+                        games.push(game);
+                    }
                 }
             });
 

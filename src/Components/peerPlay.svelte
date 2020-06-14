@@ -8,9 +8,9 @@
 	import Blur from './blurScreen.svelte';
 	import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
 	
-	if($gamePref.oppID != null) {
+	if($gamePref.oppID != null && $gamePref.opp == null) {
 		$currSocket.emit('join-game', { 
-			oppID: $gamePref.oppID, 
+			gameID: $gamePref.gameID, 
 			email: $currUser.email,
 			name: $currUser.name
 		});
@@ -76,76 +76,37 @@
             });
 
 			console.log($gamePref.currPlayer);
-			
+
 			timeInterval = setInterval(countDown, 1000);
         }
 	});
 
-	$currSocket.on('piece-move', async (data) => {
+	$currSocket.on('piece-move', (data) => {
 
-		if(data.gameID == $gamePref.gameID) {
+		if(data.gameID == $gamePref.gameID && data.oppID == $currUser.email) {
 
 			console.log(data);
 
-			if(data.remove != null) {
-
-				let piece = await $gameBoard.getPieceFromId(data.id);
-
-				await $gameBoard.removePiece(piece);
-			}
+			if(data.remove != null)
+				$gameBoard.removePiece($gameBoard.getPieceFromId(data.id));
 			
-			let piece = await $gameBoard.getPieceFromId(data.id);
+			let piece = $gameBoard.getPieceFromId(data.id);
 
-			await $gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
+			$gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
 
-			await gameBoard.set($gameBoard);
+			gameBoard.set($gameBoard);
 
 			$gamePref.states.push($gameBoard.saveBoardState());
 
-			await setCirclePositions();
+			setCirclePositions();
 
-			await gamePref.update(state => {
-				state.numMoves = data.num;
-				state.rangeMoves = data.range;
-
-				if(state.pri == $currUser.name)
-					state.secMoves += 1;
-
-				if(state.sec == $currUser.name)
-					state.priMoves += 1;
-
+			gamePref.update(state => {
+				state.numMoves += 1;
+				state.rangeMoves += 1;
 				return state;
 			});
 		}
 	});
-	
-	$currSocket.on('save-game', (data) => {
-
-		if(data.gameID == $gamePref.gameID) {
-
-			console.log("Game Saved");
-		
-			clearInterval(timeInterval);
-
-			let request = {
-				func: "saveGame",
-				id: $currUser.email,
-				gameID: $gamePref.gameID,
-				gameHistory: $gamePref.states,
-				priMoves: $gamePref.priMoves,
-				secMoves: $gamePref.secMoves,
-				minutes: Math.floor($gamePref.secondsPlayed / 60),
-				currPlayer: $gamePref.currPlayer
-			}
-
-			$currSocket.emit('save-game', request);
-
-			if(data.auto)
-				timeInterval = setInterval(countDown, 1000);
-			else
-				gamePref.set(null);
-		}
-    });
 
 	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
 
@@ -159,34 +120,23 @@
 
 	function countDown() {
 
-		if(currPos != null)
-			highlightCircle(currPos);
+		//if(currPos != null)
+			//highlightCircle(currPos);
 
-		if($gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
+		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
 
 			//console.log($gamePref.timer);
 
 			if($gamePref.timer > 0) {
-
 				gamePref.update(state => {
 					state.timer -= 1;
 					state.secondsPlayed += 1;
 					return state;
 				});
 			} else {
-				clearInterval(timeInterval);
-
-				gamePref.update(state => {
-					state.currPlayer = state.currPlayer == "red" ? "black" : "red";
-					state.timer = state.time;
-                    state.secondsPlayed += 1;
-					return state;
-				});
-
+				switchPlayer();
 				currPos = null, nextPos = null;
 				lockedPiece = false;
-
-				timeInterval = setInterval(countDown, 1000);
 			}
 		}
 	}
@@ -284,14 +234,8 @@
 
                 gamePref.update(state => {
                     state.numMoves += 1;
-                    state.rangeMoves += 1;
-
-                    if(state.pri == $currUser.name)
-                        state.priMoves += 1;
-
-                    if(state.sec == $currUser.name)
-                        state.secMoves += 1;
-
+					state.rangeMoves += 1;
+					state.myMoves += 1;
                     return state;
                 });
 
@@ -302,9 +246,8 @@
 					xDiff: currPos.getPosition().xPos - nextPos.xPos,
                     yDiff: currPos.getPosition().yPos - nextPos.yPos,
                     remove : res.id,
-                    num: $gamePref.numMoves,
-                    range: $gamePref.rangeMoves,
-					gameID: $gamePref.gameID
+					gameID: $gamePref.gameID,
+					oppID: $gamePref.oppID
 				}
 
 				$currSocket.emit('piece-move', pieceInfo)
@@ -342,31 +285,28 @@
 
 	function switchPlayer() {
 
-        if($gamePref.side == $gamePref.currPlayer) {
+        let allCircles, index;
 
-            let allCircles, index;
+		if($gamePref.currPlayer == "black") {
 
-            if($gamePref.currPlayer == "black") {
+			allCircles = document.getElementsByClassName("black");
 
-                allCircles = document.getElementsByClassName("black");
+			for (index = 0; index < allCircles.length; ++index) 
+				allCircles[index].setAttribute("style", "fill:black");
+		} 
+		
+		if($gamePref.currPlayer == "red") {
 
-                for (index = 0; index < allCircles.length; ++index) 
-                    allCircles[index].setAttribute("style", "fill:black");
-            } 
-            
-            if($gamePref.currPlayer == "red") {
+			allCircles = document.getElementsByClassName("red");
 
-                allCircles = document.getElementsByClassName("red");
+			for (index = 0; index < allCircles.length; ++index) 
+				allCircles[index].setAttribute("style", "fill:red");
+		}
+		
+		$currSocket.emit('switch-player', $gamePref.gameID);
 
-                for (index = 0; index < allCircles.length; ++index) 
-                    allCircles[index].setAttribute("style", "fill:red");
-            }
-            
-            $currSocket.emit('switch-player', $gamePref.gameID);
-
-            currPos = null, nextPos = null;
-			lockedPiece = false;
-        }
+		currPos = null, nextPos = null;
+		lockedPiece = false;
     }
     
     function startGame() {
@@ -383,7 +323,7 @@
 
     function saveGame(auto) {
         if($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) 
-			$currSocket.emit('game-save', {gameID: $gamePref.gameID, auto: auto});
+			$currSocket.emit('game-save', {gameID: $gamePref.gameID, auto: auto, oppID: $gamePref.oppID});
     }
 </script>
 
@@ -425,7 +365,7 @@
 {:else}
     <div id="gameBtn" class="container">
         {#if $gamePref.paused && $gamePref.side == $gamePref.currPlayer && $gamePref.opp != null} 
-            <button class="btn btn-success btn-lg pause" on:click="{startGame}">Start Game</button>
+            <button class="btn btn-success btn-lg start" on:click="{startGame}">Start Game</button>
         {/if}
 
         {#if $gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0}
@@ -465,20 +405,6 @@
     }
     
     .start {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
-	}
-
-    .pause {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
-	}
-	
-	.start {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		margin-top: 50%;
 		margin-left:25%;
@@ -639,7 +565,15 @@
 
         .start {
             margin-top:10px;
-        }
+		}
+		
+		.save {
+			margin-top:10px;
+            margin-right: 0px;
+            position:unset;
+            float:right;
+            width:35%;
+		}
 
         #state {
 			width:100%;
@@ -647,19 +581,11 @@
 			margin-top:-37.5%;
         }
 
-        .pause {
-            margin-top:10px;
-            position:unset;
-            float:left;
-            margin-left:0px;
-            width:35%;
-        }
-
         .switch {
             margin-top:10px;
             margin-left: 0px;
             position:unset;
-            float:right;
+            float:left;
             width:35%;
         }
 

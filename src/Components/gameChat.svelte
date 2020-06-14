@@ -297,14 +297,14 @@
         width:100%;
         height:100px;
         padding: 10px;
-        border-radius:0px;
+        border-radius:1em 0 0 0 ;
         border-bottom:1px solid white;
     }
 
     .chatPrev {
         float:right;
         height:100%;
-        width:70%;
+        width:calc(100% - 100px);
     }
 
     .indicator.online {
