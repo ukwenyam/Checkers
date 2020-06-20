@@ -1,5 +1,6 @@
 <script>
 	import { Position } from '../Scripts/Position.js';
+	import ThreeD from './threeD.svelte';
 	import { Board } from '../Scripts/Board.js';
 	import { spring } from 'svelte/motion';
 	import { writable } from 'svelte/store';
@@ -19,47 +20,6 @@
     let clockTime = $gamePref.time;
 
     let lastNumMoves = $gamePref.numMoves;
-	    
-	let currPos = null, nextPos = null;
-
-	let lockedPiece = false;
-
-    let screenWidth = screen.width, remWidth;
-
-	let size;
-
-	const cirPos = spring([]);
-
-	let squares = [0, 1, 2, 3, 4, 5, 6, 7];
-
-	let squareSize, boardHeight, factor, btnWidth;
-
-	if(screen.width <= 800) {
-		factor = 800 / (screen.width - 12.5); 
-		squareSize = Math.floor((screen.width - 10) / 8);
-
-		if(screen.width >= 500)
-			size = spring(25);
-		else
-			size = spring(12.5);
-
-		boardHeight = squareSize * 8;
-        remWidth = screen.width;
-	} else {
-		if(screen.height >= 800) {
-			factor = 1;
-			size = spring(30);
-			squareSize = 100;
-		} else {
-			squareSize = 10 * Math.floor(screen.height / 100);
-			factor = 1000 / (squareSize * 10);
-			size = spring(25);
-        }
-		
-		boardHeight = squareSize * 8;
-        remWidth = 0.8 * (screen.width - 800);
-        btnWidth = (0.2 * (screen.width - 800)) - 40;
-	}
 
 	$currSocket.on('switch-player', (gameID) => {
 
@@ -98,8 +58,6 @@
 
 			$gamePref.states.push($gameBoard.saveBoardState());
 
-			setCirclePositions();
-
 			gamePref.update(state => {
 				state.numMoves += 1;
 				state.rangeMoves += 1;
@@ -108,20 +66,9 @@
 		}
 	});
 
-	document.documentElement.style.setProperty('--chat-width', remWidth + 'px');
-
-    document.documentElement.style.setProperty('--board-height', boardHeight + 'px');
-    
-    document.documentElement.style.setProperty('--btn-width', btnWidth + 'px');
-
-	setCirclePositions();
-
 	let timeInterval = setInterval(countDown, 1000);
 
 	function countDown() {
-
-		//if(currPos != null)
-			//highlightCircle(currPos);
 
 		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
 
@@ -140,126 +87,6 @@
 			}
 		}
 	}
-	
-	function updateCirclePositions(nextPos) {
-
-		let i = nextPos.xPos, j = nextPos.yPos;
-
-		let id = $gameBoard.getId(i, j);
-
-		cirPos.update(state => {
-			state[id].x = (i + i + 1) * (50 / factor);  
-			state[id].y = (j + j + 1) * (50 / factor); 
-			return state;
-		});
-	}
-
-	function setCirclePositions() {
-
-		for(let i = 0; i < 8; i++) {
-			
-			for(let j = 0; j < 8; j++) {
-
-				if(!$gameBoard.isEmpty(i, j)) {
-
-					let id = $gameBoard.getId(i, j);
-
-					cirPos.update(state => {
-						state[id] = {};
-						state[id].x = (i + i + 1) * (50 / factor);  
-                        state[id].y = (j + j + 1) * (50 / factor); 
-						return state; 
-					});
-				} 
-			}
-		} 
-	}
-
-	function setCurrPos(i, j, evt) {
-
-		console.log(i + ", " + j);
-
-		if($gamePref.currPlayer == $gamePref.side && lockedPiece == false && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false && $gamePref.opp != null) {
-
-			let litCircle = document.getElementById($gameBoard.getId(i,j));
-
-			let allCircles, index;
-
-			if($gameBoard.getSide(i,j) == "black" && "black" == $gamePref.side) {
-				allCircles = document.getElementsByClassName("black");
-
-				for (index = 0; index < allCircles.length; ++index) 
-					allCircles[index].setAttribute("style", "fill:black");
-				
-				litCircle.setAttribute("style", "fill:grey");
-            }
-            
-			if($gameBoard.getSide(i,j) == "red" && "red" == $gamePref.side) {
-				allCircles = document.getElementsByClassName("red");
-
-				for (index = 0; index < allCircles.length; ++index) 
-					allCircles[index].setAttribute("style", "fill:red");
-
-				litCircle.setAttribute("style", "fill:pink");
-			}
-
-			let newtarget = evt.target || event.target;
-			let topmost = document.getElementById("use");
-			topmost.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href","#" + newtarget.id);
-			currPos = $gameBoard.getPiece(i, j);
-		}
-			
-		//let pos = currPos.getPosition();
-
-		//console.log(pos.xPos + ", " + pos.yPos);
-	}
-
-	function setNextPos(i, j) {
-
-        console.log(i + ", " + j);
-		
-		if($gameBoard.isEmpty(i, j) && currPos != null && $gamePref.rangeMoves == $gamePref.numMoves) {
-
-			nextPos = new Position(i, j, 'E');
-
-            let res = $gameBoard.doMove(currPos, nextPos);
-
-            console.log(res.move);
-
-			gameBoard.set($gameBoard);
-
-			console.log($gameBoard);
-
-			if(res.move) {
-
-                gamePref.update(state => {
-                    state.numMoves += 1;
-					state.rangeMoves += 1;
-					state.myMoves += 1;
-                    return state;
-                });
-
-                lockedPiece = true; 
-                
-				let pieceInfo = {
-					id : $gameBoard.getId(i, j),
-					xDiff: currPos.getPosition().xPos - nextPos.xPos,
-                    yDiff: currPos.getPosition().yPos - nextPos.yPos,
-                    remove : res.id,
-					gameID: $gamePref.gameID,
-					oppID: $gamePref.oppID
-				}
-
-				$currSocket.emit('piece-move', pieceInfo)
-
-				updateCirclePositions(nextPos);
-                
-                $gamePref.states.push($gameBoard.saveBoardState());
-
-				currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
-			}
-		}
-	}
 
 	function viewBoardHistory() {
 
@@ -270,38 +97,7 @@
 		setCirclePositions();
 	}
 
-	function highlightCircle(currPos) {
-
-        let i = currPos.getPosition().xPos, j = currPos.getPosition().yPos;
-
-        let litCircle = document.getElementById($gameBoard.getId(i, j));
-
-        if($gameBoard.getSide(i,j) == "black") 
-            litCircle.setAttribute("style", "fill:grey");
-            
-        if($gameBoard.getSide(i,j) == "red")
-            litCircle.setAttribute("style", "fill:pink");
-	}
-
 	function switchPlayer() {
-
-        let allCircles, index;
-
-		if($gamePref.currPlayer == "black") {
-
-			allCircles = document.getElementsByClassName("black");
-
-			for (index = 0; index < allCircles.length; ++index) 
-				allCircles[index].setAttribute("style", "fill:black");
-		} 
-		
-		if($gamePref.currPlayer == "red") {
-
-			allCircles = document.getElementsByClassName("red");
-
-			for (index = 0; index < allCircles.length; ++index) 
-				allCircles[index].setAttribute("style", "fill:red");
-		}
 		
 		$currSocket.emit('switch-player', $gamePref.gameID);
 
@@ -337,23 +133,7 @@
 
 <h4 class="players" style="top:0;%">{$gamePref.opp != null ? $gamePref.opp : "Waiting for Other Player"}</h4>
 
-<div id="board">
-	<svg id="hover">
-		{#each squares as i}
-			{#each squares as j}
-				{#if !$gameBoard.isEmpty(i, j)}
-					<rect width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-					<circle class="{$gameBoard.getSide(i, j)}" id="{$gameBoard.getId(i, j)}" on:click="{() => setCurrPos(i, j, event)}" cx="{$cirPos[$gameBoard.getId(i, j)].y}" cy="{$cirPos[$gameBoard.getId(i, j)].x}" r="{$size}" stroke="white" stroke-width="{$gameBoard.getPiece(i,j).stack * 2}" fill="{$gameBoard.getSide(i, j)}" />
-				{:else if $gameBoard.isEmpty(i, j)}
-                    {#if (i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0)}
-                        <rect on:click="{() => setNextPos(i, j)}" width="{squareSize}" height="{squareSize}" style="fill:brown;" x="{j * squareSize}" y="{i * squareSize}"/>
-                    {/if}
-				{/if}
-			{/each}
-		{/each}
-		<use id="use" xlink:href="#24" />
-	<svg>
-</div>
+<ThreeD/>
 
 <h4 class="players" style="bottom:0;">{$currUser.name}</h4>
 
@@ -382,10 +162,6 @@
 	.players {
 		left:47.5%;
 		position:fixed;
-	}
-
-	.navi {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
 	#gameStatus {
@@ -430,41 +206,6 @@
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		margin-left:25%;
 		width: 50%;
-	}
-
-	#board {
-		width:800px;
-		height:var(--board-height);
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		top:calc((100% - 800px)/2);
-		position:fixed;
-		left: calc((100% - 800px)/2);
-	}
-
-	#hover { 
-		width: 100%; 
-		height: 100%; 
-		background-color: wheat;
-	}
-
-	circle {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	}
-
-	.checker {
-		border-radius:50%;
-		height:50px;
-		width:50px;
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		float:right;
-	}
-
-	.blacka {
-		background-color: black;
-	}
-
-	.reda {
-		background-color: red;
 	}
 	
 	#player {
@@ -544,13 +285,6 @@
             text-align:center;
         }
 
-        #board {
-			width:100%;
-			bottom:unset;
-			position:unset;
-			left:unset
-        }
-
         #me {
             margin-top:10px;
         }
@@ -597,9 +331,5 @@
             width:35%;
         }
 
-		.checker {
-			height:25px;
-			width:25px;
-		}
     }
 </style>

@@ -31,7 +31,7 @@ export class Board {
                             this.board[i][j] = new Piece(i, j, "black", k, null);
                             
                         else 
-                            this.board[i][j] = new Piece(i, j, "red", k, null);
+                            this.board[i][j] = new Piece(i, j, "white", k, null);
 
                         k++;
                     }
@@ -255,10 +255,10 @@ export class Board {
 
         console.log(nextPos.isEmpty);
         console.log(piece.side);
-        console.log("red: " + piece.side == "red");
+        console.log("white: " + piece.side == "white");
         console.log("black: " + piece.side == "black");
 
-        if(piece.side == "red" && nextPos.isEmpty && piece.side == mySide) {
+        if(piece.side == "white" && nextPos.isEmpty && piece.side == mySide) {
 
             console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
@@ -363,7 +363,7 @@ export class Board {
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
             if(newPiece.side == mySide) {
-                if(nextPos.xPos == 0 && newPiece.side == "red" && newPiece.stack == 1) 
+                if(nextPos.xPos == 0 && newPiece.side == "white" && newPiece.stack == 1) 
                     newPiece.incrementStack();
             } 
             
@@ -487,7 +487,7 @@ export class Board {
 
         if(newPiece.side == mySide) {
 
-            if(nextPosX == 0 && newPiece.side == "red" && newPiece.stack == 1) 
+            if(nextPosX == 0 && newPiece.side == "white" && newPiece.stack == 1) 
                 newPiece.incrementStack();
         } 
         
@@ -543,11 +543,9 @@ export class Board {
 
         for(i = 0; i < 8; i++) {
             for(j = 0; j < 8; j++) {
-                if(this.board[i][j] != null) {
-                    if(this.board[i][j].id == id) {
-                        piece = this.board[i][j];
-                        break;
-                    }
+                if(this.board[i][j] != null && this.board[i][j].id == id) {
+                    piece = this.board[i][j];
+                    break;
                 }
             }
         }
@@ -558,5 +556,4 @@ export class Board {
     getBoard() {
         return this.board;
     }
-
 }

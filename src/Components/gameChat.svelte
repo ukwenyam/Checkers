@@ -26,8 +26,6 @@
         chatMsgs = currChat.history;
         chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
         userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
-        
-        $currSocket.emit('join-room', { room: chatID, name: $currUser.name, isGame: false });
     }
 
     beforeUpdate(() => {
@@ -72,9 +70,6 @@
             chatMsgs = currChat.history;
             chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
             userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
-
-            if(!refresh)
-                $currSocket.emit('join-room', { room: chatID, name: $currUser.name, isGame: false });
         }
     }
 
@@ -353,7 +348,7 @@
 		flex: 1 1 auto;
 		margin: 0 0 0.5em 0;
         overflow-y: auto;
-        max-height:87.5%;
+        max-height:85%;
     }
 
     #isTypingSpan {

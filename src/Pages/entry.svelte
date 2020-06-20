@@ -130,7 +130,7 @@
     }
 
     function checkNotifications() {
-        if(Notification.permission == "default" || Nofification.permission == "denied") 
+        if(Notification.permission == "default" || Notification.permission == "denied") 
             Notification.requestPermission();
     }
 

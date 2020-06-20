@@ -3,9 +3,11 @@
     export let icon;
     export let body;
 
-    const notification = new Notification(header, {
-        body: body,
-        icon: icon,
-        vibrate: [200, 100, 200]
+    navigator.serviceWorker.ready.then(function(registration) {
+            registration.showNotification(header, {
+            body: body,
+            icon: icon,
+            vibrate: [200, 100, 200, 100, 200, 100, 200]
+        });
     });
 </script>

@@ -73,6 +73,16 @@
                 showNotify = true;
                 setTimeout(closeNotify, 3000);
             }
+
+            if($allChats.length > 1 && i != 0) {
+                allChats.update(state => {
+                    let latestChat = state[i];
+                    for(let j = i; j >= 0; j--) 
+                        state[j] = state[j - 1];
+                    state[0] = latestChat;
+                    return state;
+                });
+            }
         }
     });
 

@@ -20,6 +20,13 @@ export function getAllChats() {
         console.log(response);
         if(response.msg != null) {
             allChats.set(response.msg);
+
+            allChats.update(state => {
+                if(state.length > 1)
+                    state = state.sort((a,b) => new Moment(a.history[a.history.length - 1].date).format("YYYYMMDD, HH:mm") - new Moment(b.history[b.history.length - 1].date).format("YYYYMMDD, HH:mm"));
+                console.log(state);
+                return state;
+            });
         } else {
             console.log(response.err);
             loading = false;
