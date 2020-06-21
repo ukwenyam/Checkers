@@ -19,11 +19,15 @@
 
     let clockTime = $gamePref.time;
 
-    let lastNumMoves = $gamePref.numMoves;
+	let lastNumMoves = $gamePref.numMoves;
+	
+	let currPos, nextPos;
 
 	$currSocket.on('switch-player', (gameID) => {
 
         if(gameID == $gamePref.gameID) {
+
+			currPos = null, nextPos = null;
 
 			clearInterval(timeInterval);
 
@@ -31,7 +35,7 @@
 
             gamePref.update(state => {
                 state.timer = state.time;
-                state.currPlayer = state.currPlayer == "red" ? "black" : "red";;
+                state.currPlayer = state.currPlayer == "white" ? "black" : "white";
                 return state;
             });
 
@@ -83,7 +87,6 @@
 			} else {
 				switchPlayer();
 				currPos = null, nextPos = null;
-				lockedPiece = false;
 			}
 		}
 	}
@@ -98,11 +101,7 @@
 	}
 
 	function switchPlayer() {
-		
 		$currSocket.emit('switch-player', $gamePref.gameID);
-
-		currPos = null, nextPos = null;
-		lockedPiece = false;
     }
     
     function startGame() {
@@ -124,7 +123,7 @@
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};"></i></h2>
+	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};background:brown;"></i></h2>
 
 	<h2 id="moves">Moves: {$gamePref.numMoves}</h2>
 
@@ -133,7 +132,7 @@
 
 <h4 class="players" style="top:0;%">{$gamePref.opp != null ? $gamePref.opp : "Waiting for Other Player"}</h4>
 
-<ThreeD/>
+<ThreeD currPos={currPos} nextPos={nextPos}/>
 
 <h4 class="players" style="bottom:0;">{$currUser.name}</h4>
 
@@ -162,6 +161,10 @@
 	.players {
 		left:47.5%;
 		position:fixed;
+	}
+
+	.fa-circle {
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
 	#gameStatus {

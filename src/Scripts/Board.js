@@ -80,7 +80,7 @@ export class Board {
                     } else  {
 
                         if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, "red", k, null);
+                            this.board[i][j] = new Piece(i, j, "white", k, null);
                             
                         else 
                             this.board[i][j] = new Piece(i, j, "black", k, null);

@@ -6,11 +6,15 @@
 
     let square, boardSquare, size;
 
-	if(screen.width <= 800) {
+	if(screen.width < 800) {
         boardSquare = screen.width;
 		square = boardSquare / 8;
         size = boardSquare / 20;
-	} else {
+	} else if(screen.height == 800) {
+        boardSquare = 600;
+		square = boardSquare / 8;
+        size = boardSquare / 20;
+    } else {
         boardSquare = 800;
         size = boardSquare / 20;
 		square = boardSquare / 8;
@@ -18,8 +22,11 @@
 
     let yRotation = 0, cyHeight = 0, maxHeight = size / 2;
     let currDim = "3D";
-    let currPos, nextPos;
+    export let currPos; 
+    export let nextPos;
+
     let lockedPiece = false;
+    let moving = false;
 
     let checkers = [];
     let emptySqs = [];
@@ -111,7 +118,7 @@
                         p5.box(square, square, 10);
 
                         if(!$gameBoard.isEmpty(i, j)) {
-
+                            
                             p5.push();
                             p5.rotateX(90);
                             if($gameBoard.getSide(i, j) == "black")
@@ -198,6 +205,8 @@
 
                     if(res.move) {
 
+                        moving = true;
+
                         gamePref.update(state => {
                             state.numMoves += 1;
                             state.rangeMoves += 1;
@@ -206,7 +215,7 @@
                         });
                         
                         let pieceInfo = {
-                            id : $gameBoard.getId(i, j),
+                            id : $gameBoard.getId(emptySqs[i].i, emptySqs[i].j),
                             xDiff: currPos.getPosition().xPos - nextPos.xPos,
                             yDiff: currPos.getPosition().yPos - nextPos.yPos,
                             remove : res.id,
@@ -242,24 +251,29 @@
 
     function changeDimension() {
 
-        let step = maxHeight / boardSquare;
+        let step = maxHeight / (boardSquare / 25);
+        let turn;
 
         if(yRotation == 0) {
             currDim = "2D";
-            for(let i = yRotation; i < boardSquare; i++) {
-                setTimeout(function() {
-                    yRotation = i;
+            turn = setInterval(function() {
+                if(yRotation < boardSquare) {
+                    yRotation += 25;
                     cyHeight += step;
-                }, 100);
-            }
-        } else {
+                } else {
+                    clearInterval(turn);
+                }
+            }, 100);
+        } else if(yRotation >= boardSquare) {
             currDim = "3D";
-            for(let i = yRotation; i >= 0; i--) {
-                setTimeout(function() {
-                    yRotation = i;
+            turn = setInterval(function() {
+                if(yRotation > 0) {
+                    yRotation -= 25;
                     cyHeight -= step;
-                }, 100);
-            }
+                } else {
+                    clearInterval(turn);
+                }
+            }, 100);
         }
     }
 
@@ -281,6 +295,8 @@
     }
 
     .btn-sm {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        margin-top:10px;
         margin-left:75%;
     }
 
@@ -295,7 +311,6 @@
         }
 
         .btn-sm {
-            margin-top:10px;
             margin-left:unset;
             float:right;
         }

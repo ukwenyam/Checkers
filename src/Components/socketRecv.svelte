@@ -200,8 +200,6 @@
             }
 
 			console.log("Game Saved");
-		
-			clearInterval(timeInterval);
 
 			let request = {
 				func: "saveGame",
@@ -217,9 +215,7 @@
 
 			$currSocket.emit('save-game', request);
 
-			if(data.auto)
-				timeInterval = setInterval(countDown, 1000);
-			else
+			if(!data.auto)
 				gamePref.set(null);
 		}
     });

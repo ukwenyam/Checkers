@@ -39,7 +39,7 @@
 
                 let game = response.msg;
                 game.time = Time;
-                game.side = "red";
+                game.side = "white";
                 game.name = $currUser.name;
                 game.email = $currUser.email;
 

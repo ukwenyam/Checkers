@@ -227,7 +227,7 @@ export const createGame = functions.https.onRequest(async (request, response) =>
 
             const collection:any = client.db("CheckasIO").collection("GAMES");
 
-            const currPlayer:string = Math.floor(Math.random() * 2) === 0 ? "red" : "black";
+            const currPlayer:string = Math.floor(Math.random() * 2) === 0 ? "white" : "black";
 
             const game:any = { 
                 _id: gameID,

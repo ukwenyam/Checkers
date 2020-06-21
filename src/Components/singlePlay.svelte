@@ -11,13 +11,15 @@
 
     gameBoard.set(new Board(null, false));
 
-    let currPlayer = "red";
+    let currPlayer = "white";
 
     let clockTime = 60, timer = 60, time = 60;
 
     let numMoves = 0, rangeMoves = 0, lastNumMoves = 0;
 
-    let side = "red";
+	let side = "white";
+	
+	let currPos, nextPos;
 
     let paused = true;
 
@@ -95,7 +97,7 @@
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer};"></i></h2>
+	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer};background:brown;"></i></h2>
 
 	<h2 id="moves">Moves: {numMoves}</h2>
 
@@ -104,7 +106,7 @@
 
 <h4 id="comp" class="players" style="top:0;%">Computer</h4>
 
-<ThreeD/>
+<ThreeD currPos={currPos} nextPos={nextPos} />
 
 <h4 id="me" class="players" style="bottom:0;">{$currUser != null ? $currUser.name : "ME"}</h4>
 
