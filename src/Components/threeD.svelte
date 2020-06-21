@@ -118,35 +118,189 @@
                         p5.box(square, square, 10);
 
                         if(!$gameBoard.isEmpty(i, j)) {
-                            
-                            p5.push();
-                            p5.rotateX(90);
-                            if($gameBoard.getSide(i, j) == "black")
-                                p5.stroke(255);
-                            p5.fill($gameBoard.getSide(i, j));
-                            p5.cylinder(size, cyHeight);
-                            p5.pop();
-                            
-                            p5.push();
-                            p5.translate(0, 0, (size / 2) + 1);
-                            p5.strokeWeight(2);
-                            if($gameBoard.getSide(i, j) == "black") {
-                                p5.stroke("white");
+
+                            if(moving && currPos != null && nextPos != null && i == nextPos.xPos && j == nextPos.yPos) {
+                                
+                                let xCurrPos = currPos.getPosition().xPos;
+                                let yCurrPos = currPos.getPosition().yPos;
+
+                                let xNextPos = nextPos.xPos;
+                                let yNextPos = nextPos.yPos;
+
+                                let id = $gameBoard.getId(xNextPos, yNextPos);
+
+                                let prevXPos = checkers[id].x;
+                                let prevYPos = checkers[id].y;
+
+                                console.log("Prev: " + prevXPos + ", " + prevYPos);
+                                console.log("Curr: " + currX + ", " + currY);
+
+                                if(prevXPos > currX && prevYPos > currY) {
+                                    console.log("MOVING PIECE top left");
+                                    p5.push();
+                                    p5.translate(prevXPos - currX, prevYPos - currY);
+                                    p5.rotateX(90);
+                                    if($gameBoard.getSide(i, j) == "black")
+                                        p5.stroke(255);
+                                    p5.fill("gold");
+                                    p5.cylinder(size, cyHeight);
+                                    p5.pop();
+
+                                    p5.push();
+                                    p5.translate(prevXPos - currX, prevYPos - currY, (size / 2) + 1);
+                                    p5.strokeWeight(2);
+                                    if($gameBoard.getSide(i, j) == "black") {
+                                        p5.stroke("white");
+                                    } else {
+                                        p5.stroke("black");
+                                    }
+                                    p5.fill("gold");
+                                    p5.circle(0, 0, size * 2);
+                                    p5.pop();
+
+                                    checkers[id] = {};
+                                    checkers[id].x = prevXPos - 2;
+                                    checkers[id].y = prevYPos - 2;
+                                    checkers[id].i = i;
+                                    checkers[id].j = j;
+                                    checkers[id].r = size; 
+                                } else if(prevXPos > currX && prevYPos < currY) {
+                                    console.log("MOVING PIECE bottom left");
+                                    p5.push();
+                                    p5.translate(currX - prevXPos, currY - prevYPos);
+                                    p5.rotateX(90);
+                                    if($gameBoard.getSide(i, j) == "black")
+                                        p5.stroke(255);
+                                    p5.fill("gold");
+                                    p5.cylinder(size, cyHeight);
+                                    p5.pop();
+
+                                    p5.push();
+                                    p5.translate(currX - prevXPos, currY - prevYPos, (size / 2) + 1);
+                                    p5.strokeWeight(2);
+                                    if($gameBoard.getSide(i, j) == "black") {
+                                        p5.stroke("white");
+                                    } else {
+                                        p5.stroke("black");
+                                    }
+                                    p5.fill("gold");
+                                    p5.circle(0, 0, size * 2);
+                                    p5.pop();
+
+                                    checkers[id] = {};
+                                    checkers[id].x = prevXPos - 2;
+                                    checkers[id].y = prevYPos + 2;
+                                    checkers[id].i = i;
+                                    checkers[id].j = j;
+                                    checkers[id].r = size; 
+                                } else if(prevXPos < currX && prevYPos > currY) {
+                                    console.log("MOVING PIECE top right");
+                                    p5.push();
+                                    p5.translate(prevXPos - currX, prevYPos - currY);
+                                    p5.rotateX(90);
+                                    if($gameBoard.getSide(i, j) == "black")
+                                        p5.stroke(255);
+                                    p5.fill("gold");
+                                    p5.cylinder(size, cyHeight);
+                                    p5.pop();
+
+                                    p5.push();
+                                    p5.translate(prevXPos - currX, prevYPos - currY, (size / 2) + 1);
+                                    p5.strokeWeight(2);
+                                    if($gameBoard.getSide(i, j) == "black") {
+                                        p5.stroke("white");
+                                    } else {
+                                        p5.stroke("black");
+                                    }
+                                    p5.fill("gold");
+                                    p5.circle(0, 0, size * 2);
+                                    p5.pop();
+
+                                    checkers[id] = {};
+                                    checkers[id].x = prevXPos + 2;
+                                    checkers[id].y = prevYPos - 2;
+                                    checkers[id].i = i;
+                                    checkers[id].j = j;
+                                    checkers[id].r = size; 
+                                } else if(prevXPos < currX && prevYPos < currY) {
+                                    console.log("MOVING PIECE bottom right");
+                                    p5.push();
+                                    p5.translate(currX - prevXPos, currY - prevYPos);
+                                    p5.rotateX(90);
+                                    if($gameBoard.getSide(i, j) == "black")
+                                        p5.stroke(255);
+                                    p5.fill("gold");
+                                    p5.cylinder(size, cyHeight);
+                                    p5.pop();
+
+                                    p5.push();
+                                    p5.translate(currX - prevXPos, currY - prevYPos, (size / 2) + 1);
+                                    p5.strokeWeight(2);
+                                    if($gameBoard.getSide(i, j) == "black") {
+                                        p5.stroke("white");
+                                    } else {
+                                        p5.stroke("black");
+                                    }
+                                    p5.fill("gold");
+                                    p5.circle(0, 0, size * 2);
+                                    p5.pop();
+
+                                    checkers[id] = {};
+                                    checkers[id].x = prevXPos + 2;
+                                    checkers[id].y = prevYPos + 2;
+                                    checkers[id].i = i;
+                                    checkers[id].j = j;
+                                    checkers[id].r = size;
+                                } else {
+                                    console.log("STOP moving");
+                                    moving = false;
+                                    nextPos = null;
+                                }
                             } else {
-                                p5.stroke("black");
+
+                                let xCurrPos;
+                                let yCurrPos;
+
+                                if(currPos != null) {
+                                    xCurrPos = currPos.getPosition().xPos;
+                                    yCurrPos = currPos.getPosition().yPos;
+                                }
+                                
+                                p5.push();
+                                p5.rotateX(90);
+                                if($gameBoard.getSide(i, j) == "black")
+                                    p5.stroke(255);
+                                if(currPos != null && i == xCurrPos && j == yCurrPos)
+                                    p5.fill("gold");
+                                else
+                                    p5.fill($gameBoard.getSide(i, j));
+                                p5.cylinder(size, cyHeight);
+                                p5.pop();
+                                
+                                p5.push();
+                                p5.translate(0, 0, (size / 2) + 1);
+                                p5.strokeWeight(2);
+                                if($gameBoard.getSide(i, j) == "black") {
+                                    p5.stroke("white");
+                                } else {
+                                    p5.stroke("black");
+                                }
+                                if(currPos != null && i == xCurrPos && j == yCurrPos)
+                                    p5.fill("gold");
+                                else
+                                    p5.fill($gameBoard.getSide(i, j));
+                                p5.circle(0, 0, size * 2);
+                                p5.pop();
+
+                                let id = $gameBoard.getId(i, j);
+
+                                checkers[id] = {};
+                                checkers[id].x = currX;
+                                checkers[id].y = currY;
+                                checkers[id].i = i;
+                                checkers[id].j = j;
+                                checkers[id].r = size; 
                             }
-                            p5.fill($gameBoard.getSide(i, j));
-                            p5.circle(0, 0, size * 2);
-                            p5.pop();
-
-                            let id = $gameBoard.getId(i, j);
-
-                            checkers[id] = {};
-                            checkers[id].x = currX;
-                            checkers[id].y = currY;
-                            checkers[id].i = i;
-                            checkers[id].j = j;
-                            checkers[id].r = size; 
                         } else {
                             emptySqs[count] = {};
                             emptySqs[count].x = currX;
@@ -229,8 +383,6 @@
 
                         currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
                     }
-
-                    currPos = null, nextPos = null;
 
                     break;
                 }
