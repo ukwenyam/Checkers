@@ -5,19 +5,20 @@
     import { Position } from '../Scripts/Position.js';
 
     let square, boardSquare, size;
+    let numSquares = 8;
 
 	if(screen.width < 800) {
         boardSquare = screen.width;
-		square = boardSquare / 8;
+		square = boardSquare / numSquares;
         size = boardSquare / 20;
-	} else if(screen.height == 800) {
-        boardSquare = 600;
-		square = boardSquare / 8;
+	} else if(screen.height == 800 && screen.width > 1024) {
+        boardSquare = 700;
+		square = boardSquare / numSquares;
         size = boardSquare / 20;
     } else {
         boardSquare = 800;
         size = boardSquare / 20;
-		square = boardSquare / 8;
+		square = boardSquare / numSquares ;
 	}
 
     let yRotation = 0, cyHeight = 0, maxHeight = size / 2;
@@ -105,8 +106,8 @@
 
             let count = 0;
             
-            for(let i = 0; i < 8; i++) {
-                for(let j = 0; j < 8; j++) {
+            for(let i = 0; i < numSquares; i++) {
+                for(let j = 0; j < numSquares; j++) {
                     let even = (i % 2 == 0) && (j % 2 == 0);
                     let odd = (i % 2 != 0) && (j % 2 != 0);
 
@@ -452,6 +453,25 @@
         margin-left:75%;
     }
 
+    @media screen and (max-height: 800px) and (max-width: 1300px) {
+
+        #board {
+            width:700px;
+            height:700px;
+            top:calc((100% - 700px)/2);
+            position:fixed;
+            left:calc((100% - 700px)/2);
+        }
+
+        .btn-sm {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            margin-top:10px;
+            margin-left:75%;
+            z-index:1;
+            position:fixed;
+        }
+    }
+
     @media screen and (max-width: 800px) {
         #board {
             width:100%;
@@ -464,7 +484,9 @@
 
         .btn-sm {
             margin-left:unset;
-            float:right;
+            right:5px;
+            z-index:1;
+            position:fixed;
         }
     }
 </style>

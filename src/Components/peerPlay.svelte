@@ -123,7 +123,7 @@
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};background:brown;"></i></h2>
+	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};"></i></h2>
 
 	<h2 id="moves">Moves: {$gamePref.numMoves}</h2>
 
@@ -165,6 +165,7 @@
 
 	.fa-circle {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		border-radius:50%;
 	}
 
 	#gameStatus {
@@ -185,50 +186,54 @@
     
     .start {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		top:50%;
+		right:7.5%;
 	}
 
     .switch {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-bottom: 50%;
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		top:25%;
+		right:7.5%;
     }
 
     .save {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-left:25%;
-		margin-bottom: 50%;
-		width: 50%;
+		position:fixed;
+		top:50%;
+		right:7.5%;
 	}
 	
 	.forfeit {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		top:75%;
+		right:7.5%;
 	}
 	
 	#player {
-		margin-top: 50%;
-		text-align:center;
-		margin-bottom: 50%;
+		position:fixed;
+		top:25%;
+		left:7.5%;
 	}
 
 	#moves {
-		margin-bottom: 50%;
-		text-align:center;
+		position:fixed;
+		top:50%;
+		left:7.5%;
 	}
 
 	#time {
-		text-align:center;
+		position:fixed;
+		top:50%;
+		left:7.5%;
 	}
 
 	#state {
-        width:100%;
-        margin-top:100%;
+		position:fixed;
+		top:50%;
+		right:7.5%
 	}
 
 	#rangeBar {
@@ -239,6 +244,25 @@
 
 	.custom-range {
         width:100%;
+	}
+	
+	@media screen and (max-height: 800px) and (max-width: 1300px) {
+
+        #gameStatus {
+			width: calc((100% - 700px)/2);
+			height:700px;
+			top:calc((100% - 700px)/2);
+			position:fixed;
+			left:0;
+		}
+
+		#gameBtn {
+			width: calc((100% - 700px)/2);
+			height:700px;
+			top:calc((100% - 700px)/2);
+			position:fixed;
+			right:0;
+		}
     }
 
 	@media screen and (max-width: 800px) {
@@ -246,25 +270,26 @@
         #gameStatus {
             width: 100%;
             height:unset;
-            top:unset;
             position:unset;
-            left:unset;
         }
 
         #player {
             font-size:20px;
-            margin-top:0px;
+			margin-top:0px;
+			margin-left:-5px;
             margin-bottom:unset;
             text-align:center;
             width:33.33%;
-            float:left;
+			float:left;
+			position:unset;
         }
         
         #time {
 			font-size:20px;
             margin-top:0px;
             width:33.33%;
-            margin-left:33.33%;
+			margin-left:33.33%;
+			position:unset;
         }
 
         #moves {
@@ -273,7 +298,8 @@
             margin-top:0px;
             margin-bottom:unset;
             text-align:center;
-            width:33.33%;
+			width:33.33%;
+			position:unset;
         }
         
         #comp {
@@ -295,13 +321,13 @@
         #gameBtn {
             width: 100%;
             height:unset;
-            top:unset;
             position:unset;
-            right:unset;
         }
 
         .start {
-            margin-top:10px;
+			margin-top:10px;
+			width:50%;
+			margin-left:25%;
 		}
 		
 		.save {
@@ -316,6 +342,7 @@
 			width:100%;
 			text-align: center;
 			margin-top:-37.5%;
+			position:unset;
         }
 
         .switch {

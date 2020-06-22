@@ -7,7 +7,7 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import Blur from './blurScreen.svelte';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page } from '../Scripts/Init.js';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page, gameTab } from '../Scripts/Init.js';
 
     gameBoard.set(new Board(null, false));
 
@@ -24,6 +24,8 @@
     let paused = true;
 
 	let timeInterval = setInterval(countDown, 1000);
+
+	let screenWidth = screen.width;
 
 	function countDown() {
 
@@ -94,10 +96,22 @@
 			clearInterval(timeInterval);
         }
 	}
+
+	function viewEntry() {
+		gameTab.set(0);
+
+		setTimeout(function() {
+			let index = document.getElementById("index");
+			index.setAttribute("style", "top:100%;");
+
+			let enter = document.getElementById("enter");
+			enter.setAttribute("style", "top:0;");
+		}, 500);
+	}
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer};background:brown;"></i></h2>
+	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer};"></i></h2>
 
 	<h2 id="moves">Moves: {numMoves}</h2>
 
@@ -118,6 +132,10 @@
             <h2 id="rangeBar">Game State at Move: {rangeMoves}</h2>
             <input class="custom-range" orient="vertical" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{numMoves}" step="1">
         </div>
+
+		{#if $currUser == null && screenWidth <= 800}
+			<button class="btn btn-primary btn-lg login" on:click="{viewEntry}">Login/Register <i class="fa fa-sign-in"></i></button>
+		{/if}
     {:else}
         <button class="btn btn-warning btn-lg pause" on:click="{() => (paused = !paused)}">Pause Game</button>
 
@@ -131,6 +149,12 @@
 	.players {
 		left:47.5%;
 		position:fixed;
+		z-index:1;
+	}
+
+	.fa-circle {
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		border-radius:50%;
 	}
 
 	#gameStatus {
@@ -151,57 +175,54 @@
     
     .start {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
+		top: 33.33%;
+		right:7.5%;
+		position:fixed;
 	}
 
     .pause {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
-	}
-	
-	.start {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		right:7.5%;
+		top:25%;
 	}
 
     .switch {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-top: 50%;
-		margin-bottom: 50%;
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		right:7.5%;
+		top:50%;
     }
 	
 	.forfeit {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		margin-left:25%;
-		width: 50%;
+		position:fixed;
+		right:7.5%;
+		top:75%;
 	}
 	
 	#player {
-		margin-top: 50%;
-		text-align:center;
-		margin-bottom: 50%;
+		top:25%;
+		position:fixed;
+		margin-left:7.5%;
 	}
 
 	#moves {
-		margin-bottom: 50%;
-		text-align:center;
+		position:fixed;
+		top:50%;
+		margin-left:7.5%;
 	}
 
 	#time {
-		text-align:center;
+		position:fixed;
+		top:75%;
+		margin-left:7.5%;
 	}
 
 	#state {
-        width:100%;
-        margin-top:100%;
+		position:fixed;
+		top:66.66%;
+		right:5%;
 	}
 
 	#rangeBar {
@@ -212,6 +233,25 @@
 
 	.custom-range {
         width:100%;
+	}
+	
+	@media screen and (max-height: 800px) and (max-width: 1300px) {
+
+        #gameStatus {
+			width: calc((100% - 700px)/2);
+			height:700px;
+			top:calc((100% - 700px)/2);
+			position:fixed;
+			left:0;
+		}
+
+		#gameBtn {
+			width: calc((100% - 700px)/2);
+			height:700px;
+			top:calc((100% - 700px)/2);
+			position:fixed;
+			right:0;
+		}
     }
 
 	@media screen and (max-width: 800px) {
@@ -219,34 +259,35 @@
         #gameStatus {
             width: 100%;
             height:unset;
-            top:unset;
             position:unset;
-            left:unset;
         }
 
         #player {
             font-size:20px;
             margin-top:0px;
-            margin-bottom:unset;
             text-align:center;
-            width:33.33%;
-            float:left;
+			width:33.33%;
+			float:left;
+			position:unset;
+			margin-left:-5px;
         }
         
         #time {
 			font-size:20px;
             margin-top:0px;
             width:33.33%;
-            margin-left:33.33%;
+			margin-left:33.33%;
+			position:unset;
+			text-align:center;
         }
 
         #moves {
-            float:right;
+			float:right;
 			font-size:20px;
             margin-top:0px;
-            margin-bottom:unset;
             text-align:center;
-            width:33.33%;
+			width:33.33%;
+			position:unset;
         }
         
         #comp {
@@ -277,13 +318,17 @@
         }
 
         .start {
-            margin-top:10px;
+			margin-left:25%;
+			width:50%;
+			margin-top:10px;
+			position:unset;
         }
 
         #state {
 			width:100%;
 			text-align: center;
 			margin-top:-37.5%;
+			position:unset;
         }
 
         .pause {
@@ -308,6 +353,13 @@
             float:right;
             position:unset;
             width:35%;
-        }
+		}
+		
+		.login {
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			margin-top:20px;
+			width:50%;
+			margin-left:25%;
+		}
     }
 </style>
