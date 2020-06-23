@@ -7,19 +7,19 @@
     let square, boardSquare, size;
     let numSquares = 8;
 
-	if(screen.width < 800) {
+    let ratio = screen.width / screen.height;
+
+	if(ratio < 1) {
         boardSquare = screen.width;
 		square = boardSquare / numSquares;
         size = boardSquare / 20;
-	} else if(screen.height == 800 && screen.width > 1024) {
-        boardSquare = 700;
-		square = boardSquare / numSquares;
-        size = boardSquare / 20;
-    } else {
-        boardSquare = 800;
+	} else {
+        boardSquare = 0.9 * screen.height;
         size = boardSquare / 20;
 		square = boardSquare / numSquares ;
-	}
+    }
+    
+    document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
 
     let yRotation = 0, cyHeight = 0, maxHeight = size / 2;
     let currDim = "3D";
@@ -440,53 +440,32 @@
 
 <style>
     #board {
-        width:800px;
-        height:800px;
-		top:calc((100% - 800px)/2);
+        width:var(--boardSquare);
+        height:var(--boardSquare);
+		top:calc((100% - var(--boardSquare))/2);
 		position:fixed;
-		left:calc((100% - 800px)/2);
+		left:calc((100% - var(--boardSquare))/2);
     }
 
     .btn-sm {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        margin-top:10px;
-        margin-left:75%;
-    }
-
-    @media screen and (max-height: 800px) and (max-width: 1300px) {
-
-        #board {
-            width:700px;
-            height:700px;
-            top:calc((100% - 700px)/2);
-            position:fixed;
-            left:calc((100% - 700px)/2);
-        }
-
-        .btn-sm {
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            margin-top:10px;
-            margin-left:75%;
-            z-index:1;
-            position:fixed;
-        }
+        top:10px;
+        right:25%;
+        z-index:1;
+        position:fixed;
     }
 
     @media screen and (max-width: 800px) {
         #board {
             width:100%;
-            bottom:unset;
             position:unset;
-            left:unset;
             margin-left:-5px;
             height:unset;
         }
 
         .btn-sm {
-            margin-left:unset;
-            right:5px;
-            z-index:1;
-            position:fixed;
+            position:unset;
+            margin-top:10px;
         }
     }
 </style>
