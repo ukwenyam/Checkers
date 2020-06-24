@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { gameBoard, gamePref, currSocket } from '../Scripts/Init.js';
+    import { gameBoard, gamePref, currSocket, currUser } from '../Scripts/Init.js';
     import { spring } from 'svelte/motion';
     import { Position } from '../Scripts/Position.js';
 
@@ -16,13 +16,24 @@
 	} else {
         boardSquare = 0.9 * screen.height;
         size = boardSquare / 20;
-		square = boardSquare / numSquares ;
+		square = boardSquare / numSquares;
     }
     
     document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
 
-    let yRotation = 0, cyHeight = 0, maxHeight = size / 2;
-    let currDim = "3D";
+    let yRotation; 
+
+    if($currUser != null) {
+        if($currUser.gamePref.orient == "2D")
+            yRotation = 0;
+        else
+            yRotation = boardSquare;
+    } else {
+        yRotation = 0;
+    }
+    
+    let cyHeight = 0, maxHeight = size / 2;
+    let currDim = $currUser != null ? $currUser.gamePref.orient : "2D";
     export let currPos; 
     export let nextPos;
 
@@ -122,38 +133,29 @@
 
                             if(moving && currPos != null && nextPos != null && i == nextPos.xPos && j == nextPos.yPos) {
                                 
-                                let xCurrPos = currPos.getPosition().xPos;
-                                let yCurrPos = currPos.getPosition().yPos;
-
-                                let xNextPos = nextPos.xPos;
-                                let yNextPos = nextPos.yPos;
-
-                                let id = $gameBoard.getId(xNextPos, yNextPos);
+                                let id = $gameBoard.getId(i, j);
 
                                 let prevXPos = checkers[id].x;
                                 let prevYPos = checkers[id].y;
-
-                                console.log("Prev: " + prevXPos + ", " + prevYPos);
-                                console.log("Curr: " + currX + ", " + currY);
 
                                 if(prevXPos > currX && prevYPos > currY) {
                                     console.log("MOVING PIECE top left");
                                     p5.push();
                                     p5.translate(prevXPos - currX, prevYPos - currY);
                                     p5.rotateX(90);
-                                    if($gameBoard.getSide(i, j) == "black")
+                                    if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
                                     p5.fill("gold");
                                     p5.cylinder(size, cyHeight);
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(prevXPos - currX, prevYPos - currY, (size / 2) + 1);
+                                    p5.translate(prevXPos - currX, prevYPos - currY, maxHeight + 1);
                                     p5.strokeWeight(2);
-                                    if($gameBoard.getSide(i, j) == "black") {
+                                    if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
                                     } else {
-                                        p5.stroke("black");
+                                        p5.stroke("#000000");
                                     }
                                     p5.fill("gold");
                                     p5.circle(0, 0, size * 2);
@@ -170,19 +172,19 @@
                                     p5.push();
                                     p5.translate(currX - prevXPos, currY - prevYPos);
                                     p5.rotateX(90);
-                                    if($gameBoard.getSide(i, j) == "black")
+                                    if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
                                     p5.fill("gold");
                                     p5.cylinder(size, cyHeight);
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos, (size / 2) + 1);
+                                    p5.translate(currX - prevXPos, currY - prevYPos, maxHeight + 1);
                                     p5.strokeWeight(2);
-                                    if($gameBoard.getSide(i, j) == "black") {
+                                    if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
                                     } else {
-                                        p5.stroke("black");
+                                        p5.stroke("#000000");
                                     }
                                     p5.fill("gold");
                                     p5.circle(0, 0, size * 2);
@@ -199,19 +201,19 @@
                                     p5.push();
                                     p5.translate(prevXPos - currX, prevYPos - currY);
                                     p5.rotateX(90);
-                                    if($gameBoard.getSide(i, j) == "black")
+                                    if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
                                     p5.fill("gold");
                                     p5.cylinder(size, cyHeight);
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(prevXPos - currX, prevYPos - currY, (size / 2) + 1);
+                                    p5.translate(prevXPos - currX, prevYPos - currY, maxHeight + 1);
                                     p5.strokeWeight(2);
-                                    if($gameBoard.getSide(i, j) == "black") {
+                                    if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
                                     } else {
-                                        p5.stroke("black");
+                                        p5.stroke("#000000");
                                     }
                                     p5.fill("gold");
                                     p5.circle(0, 0, size * 2);
@@ -228,19 +230,19 @@
                                     p5.push();
                                     p5.translate(currX - prevXPos, currY - prevYPos);
                                     p5.rotateX(90);
-                                    if($gameBoard.getSide(i, j) == "black")
+                                    if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
                                     p5.fill("gold");
                                     p5.cylinder(size, cyHeight);
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos, (size / 2) + 1);
+                                    p5.translate(currX - prevXPos, currY - prevYPos, maxHeight + 1);
                                     p5.strokeWeight(2);
-                                    if($gameBoard.getSide(i, j) == "black") {
+                                    if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
                                     } else {
-                                        p5.stroke("black");
+                                        p5.stroke("#000000");
                                     }
                                     p5.fill("gold");
                                     p5.circle(0, 0, size * 2);
@@ -258,7 +260,6 @@
                                     nextPos = null;
                                 }
                             } else {
-
                                 let xCurrPos;
                                 let yCurrPos;
 
@@ -269,7 +270,7 @@
                                 
                                 p5.push();
                                 p5.rotateX(90);
-                                if($gameBoard.getSide(i, j) == "black")
+                                if($gameBoard.getSide(i, j) == "#000000")
                                     p5.stroke(255);
                                 if(currPos != null && i == xCurrPos && j == yCurrPos)
                                     p5.fill("gold");
@@ -279,12 +280,12 @@
                                 p5.pop();
                                 
                                 p5.push();
-                                p5.translate(0, 0, (size / 2) + 1);
+                                p5.translate(0, 0, maxHeight + 1);
                                 p5.strokeWeight(2);
-                                if($gameBoard.getSide(i, j) == "black") {
+                                if($gameBoard.getSide(i, j) == "#000000") {
                                     p5.stroke("white");
                                 } else {
-                                    p5.stroke("black");
+                                    p5.stroke("#000000");
                                 }
                                 if(currPos != null && i == xCurrPos && j == yCurrPos)
                                     p5.fill("gold");

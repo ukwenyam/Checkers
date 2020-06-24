@@ -20,5 +20,12 @@ export class User {
         this.avgTimePlayPerGame = data.avgTimePlayPerGame;
         this.totalPoints = data.totalPoints;
         this.position = null;
+
+        this.gamePref = {
+            myColor: data.gamePreferences.myColor,
+            otherColor: data.gamePreferences.otherColor,
+            compTime: data.gamePreferences.compTime,
+            orient: data.gamePreferences.orient
+        }
     }
 }

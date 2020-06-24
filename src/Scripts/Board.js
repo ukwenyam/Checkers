@@ -6,6 +6,19 @@ export class Board {
 
     constructor(state, inverted) {
 
+        let myColor, otherColor;
+
+        currUser.update(state => {
+            if(state != null) {
+                myColor = state.gamePref.myColor;
+                otherColor = state.gamePref.otherColor;
+            } else {
+                myColor = "#ffffff";
+                otherColor = "#000000";
+            }
+            return state;
+        });
+
         if(state == null && !inverted) {
 
             this.board = [];
@@ -28,10 +41,10 @@ export class Board {
                     } else  {
 
                         if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, "black", k, null);
+                            this.board[i][j] = new Piece(i, j, otherColor, k, null);
                             
                         else 
-                            this.board[i][j] = new Piece(i, j, "white", k, null);
+                            this.board[i][j] = new Piece(i, j, myColor, k, null);
 
                         k++;
                     }
@@ -80,10 +93,10 @@ export class Board {
                     } else  {
 
                         if(0 <= i && i <= 2)
-                            this.board[i][j] = new Piece(i, j, "white", k, null);
+                            this.board[i][j] = new Piece(i, j, otherColor, k, null);
                             
                         else 
-                            this.board[i][j] = new Piece(i, j, "black", k, null);
+                            this.board[i][j] = new Piece(i, j, myColor, k, null);
 
                         k--;
                     }

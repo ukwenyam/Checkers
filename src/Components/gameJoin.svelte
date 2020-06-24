@@ -36,7 +36,7 @@
                     if(game.priEmail != $currUser.email) {
                         game.name = $currUser.name;
                         game.email = $currUser.email;
-                        game.side = "black";
+                        game.side = 1;
 
                         gameBoard.set(new Board(null, true));
                         gamePref.set(new Game(game, $gameBoard.saveBoardState(), false));

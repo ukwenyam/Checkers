@@ -87,7 +87,13 @@ export const createUser = functions.https.onRequest(async (request, response) =>
             mostTimePlayed: 0,
             totalTimePlayed: 0,
             avgTimePlayPerGame: 0,
-            totalPoints: 0
+            totalPoints: 0,
+            gamePreferences : {
+                myColor: "#ffffff",
+                otherColor: "#000000",
+                compTime: 60,
+                orient: "2D"
+            }
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
@@ -175,6 +181,31 @@ export const retrieveUser = functions.https.onRequest(async (request, response) 
     });
 }); */
 
+export const updateGamePref = functions.https.onRequest(async (request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    const user:any = await db.collection("USERS").doc(evt.id).get();
+
+    if(user.exists) {
+        db.collection("USERS").doc(evt.id).update({
+            gamePreferences: {
+                myColor: evt.myColor,
+                otherColor: evt.otherColor,
+                orient: evt.orient,
+                compTime: evt.compTime
+            }
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
+        });
+    } else {
+        res.send({err: "Code 007"});
+    }
+});
+
 export const forgotPassword = functions.https.onRequest((request, response) => {
 
     const res:any = respond.setResponse(response);
@@ -227,7 +258,7 @@ export const createGame = functions.https.onRequest(async (request, response) =>
 
             const collection:any = client.db("CheckasIO").collection("GAMES");
 
-            const currPlayer:string = Math.floor(Math.random() * 2) === 0 ? "white" : "black";
+            const currPlayer:number = Math.floor(Math.random() * 2) === 0 ? 0 : 1;
 
             const game:any = { 
                 _id: gameID,

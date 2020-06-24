@@ -11,13 +11,11 @@
 
     gameBoard.set(new Board(null, false));
 
-    let currPlayer = "white";
+    let currPlayer = 0, side = 0;
 
     let clockTime = 60, timer = 60, time = 60;
 
     let numMoves = 0, rangeMoves = 0, lastNumMoves = 0;
-
-	let side = "white";
 	
 	let currPos, nextPos;
 
@@ -40,7 +38,7 @@
 			} else {
                 clearInterval(timeInterval);
                 
-                currPlayer = currPlayer == "red" ? "black" : "red";
+                currPlayer = currPlayer == 0 ? 1 : 0;
 
                 timer = clockTime;
 
@@ -63,7 +61,7 @@
 
 			clearInterval(timeInterval);
             
-            currPlayer = currPlayer == "red" ? "black" : "red";
+            currPlayer = currPlayer == 0 ? 1 : 0;
 
             timer = clockTime;
 
@@ -111,7 +109,12 @@
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer};"></i></h2>
+
+	{#if $currUser != null}
+		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer == side ? $currUser.gamePref.myColor : "#000000"};"></i></h2>
+	{:else}
+		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer == side ? "#ffffff" : "#000000"};"></i></h2>
+	{/if}
 
 	<h2 id="moves">Moves: {numMoves}</h2>
 

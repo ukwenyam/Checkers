@@ -35,7 +35,7 @@
 
             gamePref.update(state => {
                 state.timer = state.time;
-                state.currPlayer = state.currPlayer == "white" ? "black" : "white";
+                state.currPlayer = state.currPlayer == 0 ? 1 : 0;
                 return state;
             });
 
@@ -123,7 +123,7 @@
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer};"></i></h2>
+	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer == $gamePref.side ? $currUser.gamePref.myColor : $currUser.gamePref.otherColor};"></i></h2>
 
 	<h2 id="moves">Moves: {$gamePref.numMoves}</h2>
 
