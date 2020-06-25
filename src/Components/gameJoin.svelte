@@ -1,6 +1,6 @@
 <script>
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { currSocket, currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewJoinGame, smallPopUp } from '../Scripts/Init.js';
+    import { currSocket, currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewJoinGame, smallPopUp, ratio } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import Loader from './loader.svelte';
     import { Game } from '../Scripts/Game.js';
@@ -9,8 +9,6 @@
     let gamePassword;
 
     let request;
-
-    let screenWidth = screen.width;
 
     let viewError = false, errMsg;
 
@@ -91,7 +89,7 @@
     }
 </script>
 
-{#if screenWidth <= 800}
+{#if $ratio < 1}
     <button id="backBtn" class="btn btn-dark" on:click="{goBack}">Back <i class="fa fa-arrow-right"></i></button>
 {/if}
 

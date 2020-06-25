@@ -1,6 +1,6 @@
 <script>
     import { currUser, page, userGames, leaderBoard, allChats, gamePref, currSocket,
-             viewCreateGame, viewJoinGame, viewGameList, smallPopUp, bigPopUp } from '../Scripts/Init.js';
+             viewCreateGame, viewJoinGame, viewGameList, smallPopUp, bigPopUp, gameTab } from '../Scripts/Init.js';
     import { fly, fade } from 'svelte/transition';
     import Create from './gameCreate.svelte';
     import Join from './gameJoin.svelte';
@@ -40,6 +40,8 @@
         setTimeout(() => { smallPopUp.set(true); }, 1);
 
         setTimeout(() => { viewCreateGame.set(true); }, 2);
+
+        gameTab.set(0);
     }
 
     function popGamePass() {
@@ -49,6 +51,8 @@
         setTimeout(() => { smallPopUp.set(true); }, 1);
 
         setTimeout(() => { viewJoinGame.set(true); }, 2);
+
+        gameTab.set(0);
     }
 
     function viewGames() {
@@ -60,6 +64,8 @@
             setTimeout(() => { bigPopUp.set(true); }, 1);
 
             setTimeout(() => { viewGameList.set(true); }, 1);
+
+            gameTab.set(1);
         }
     }
 
@@ -72,6 +78,8 @@
             setTimeout(() => { bigPopUp.set(true); }, 1);
 
             setTimeout(() => { leaderBoardView = true; }, 1);
+
+            gameTab.set(2);
         }
     }
 
@@ -82,6 +90,8 @@
         setTimeout(() => { bigPopUp.set(true); }, 1);
 
         setTimeout(() => { settingsView = true; }, 1);
+
+        gameTab.set(4);
     }
 
     function signOut() {

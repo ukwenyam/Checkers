@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, readable } from 'svelte/store';
 import io from 'socket.io-client';
 import { Board } from './Board.js';
 import env from '../env.json';
@@ -9,6 +9,8 @@ if(window.location.hostname.includes('localhost'))
     currSocket.set(io(env.local, {transports: ['websocket'], upgrade: false}));
 else
     currSocket.set(io(env.server, {transports: ['websocket'], upgrade: false}));
+
+export const ratio = readable(screen.width / screen.height);
 
 export const currUser = writable(null);
 

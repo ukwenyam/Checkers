@@ -5,7 +5,7 @@
 	import { writable } from 'svelte/store';
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
-	import { gameBoard, gameHistory, gamePref, currSocket, currUser, onCall, startTimeStamp,
+	import { gameBoard, gameHistory, gamePref, currSocket, currUser, onCall, startTimeStamp, ratio,
 			 gameTab, allChats, showLogin, showNavBar, showCallBar, showPlayer, currentTime } from '../Scripts/Init.js';
     import Chat from '../Components/gameChat.svelte';
 	import Game from '../Components/gameBoard.svelte';
@@ -21,8 +21,6 @@
 	import Join from '../Components/gameJoin.svelte';
 	import Call from '../Components/callNotify.svelte';
 	
-	let screenWidth = screen.width;
-	let screenHeight = screen.height;
 	let showChat = false;
 
 	function viewCreateGame() {
@@ -75,7 +73,7 @@
 	<Call/>
 {/if}
 
-{#if screenWidth > screenHeight}
+{#if $ratio > 1}
 	{#if showChat || $showLogin}	
 		<div on:click="{closeAll}">
 			<Blur/>

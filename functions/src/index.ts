@@ -5,6 +5,8 @@ const generator = require('generate-password');
 const firebase = require('firebase');
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const { Storage } = require('@google-cloud/storage');
+const stream = require('stream');
 
 // Connection URL
 const url = 'mongodb+srv://Chidelma:Tasseobi96@autocluster-cl1yh.mongodb.net/CheckasIO?retryWrites=true&w=majority';
@@ -20,9 +22,10 @@ firebase.initializeApp({
     "measurementId" : "G-Y4XHBBVNC5"
 });
 
+const storage = new Storage({ projectId: "checker-io", keyFilename: './serviceAccount.json' });
+
 const auth = firebase.auth();
 const db = firebase.firestore();
-//const storeRef = firebase.storage().ref();
 
 export const signUp = functions.https.onRequest(async (request, response) => {
 
@@ -75,19 +78,21 @@ export const createUser = functions.https.onRequest(async (request, response) =>
         docRef.set({
             name: evt.name,
             picture: null,
-            wins: 0,
-            draws: 0,
-            losses: 0,
-            gamesPlayed: 0,
-            leastMoves: 0,
-            mostMoves: 0,
-            totalMoves: 0,
-            avgMovesPerGame: 0,
-            leastTimePlayed: 0,
-            mostTimePlayed: 0,
-            totalTimePlayed: 0,
-            avgTimePlayPerGame: 0,
-            totalPoints: 0,
+            stats : {
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                gamesPlayed: 0,
+                leastMoves: 0,
+                mostMoves: 0,
+                totalMoves: 0,
+                avgMovesPerGame: 0,
+                leastTimePlayed: 0,
+                mostTimePlayed: 0,
+                totalTimePlayed: 0,
+                avgTimePlayPerGame: 0,
+                totalPoints: 0
+            },
             gamePreferences : {
                 myColor: "#ffffff",
                 otherColor: "#000000",
@@ -131,7 +136,7 @@ export const retrieveUser = functions.https.onRequest(async (request, response) 
     }
 });
 
-/* export const updateProfile = functions.https.onRequest((request, response) => {
+export const updateProfile = functions.https.onRequest((request, response) => {
 
     const res:any = respond.setResponse(response);
     const evt:any = request.body;
@@ -139,47 +144,69 @@ export const retrieveUser = functions.https.onRequest(async (request, response) 
     auth.signInWithEmailAndPassword(evt.email, evt.password).then(async () => {
         
         const user:any = auth.currentUser;
+        const bucket = await storage.bucket('gs://checker-io.appspot.com');
 
         user.updateProfile({
             displayName: evt.name
-        }).then(function() {
+        }).then(async function() {
+            if(evt.picture != null) {
 
-            if(evt.picture !== null) {
-                const metadata = {
-                    contentType: 'image/jpeg'
-                };
-    
-                storeRef.child('profilePics/' + evt.email + '.jpg').put(evt.picture, metadata).then((snapshot:any) => {
+                const image:any = evt.picture;
+                const mimeType:any = image.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)[1];
+                const fileName:string = evt.email + '.jpeg';
 
-                    snapshot.ref.getDownloadURL().then(function(imgURL:string) {
-                        const docRef:any = db.collection("USERS").doc(evt.email);
-    
-                        docRef.update({
-                            name: evt.name,
-                            picture: imgURL
-                        }).then(function() {
-                            res.send({msg: "SUCCESS"});
-                        }).catch(function(error:any) {
-                            res.send({err: error});
-                        });
+                const base64EncodedImageString:any = image.replace(/^data:image\/\w+;base64,/, '');
+
+                const imageBuffer:any = Buffer.from(base64EncodedImageString, 'base64');
+
+                const bufferStream:any = new stream.PassThrough();
+
+                bufferStream.end(imageBuffer);
+
+                const file:any = bucket.file('profilePics/' + fileName);
+
+                bufferStream.pipe(file.createWriteStream({
+                    metadata: {
+                    contentType: mimeType
+                    },
+                    public: true,
+                    validation: "md5"
+                }))
+                .on('error', function (err:any) {
+                    console.log('error from image upload', err);
+                })
+                .on('finish', async function () {
+                    // The file upload is complete.
+                    const signedUrls:any = await file.getSignedUrl({
+                                                action: 'read',
+                                                expires: '03-09-2491'
+                                            });
+
+                    db.collection("USERS").doc(evt.email).update({
+                        picture: signedUrls[0],
+                        name: evt.name
+                    }).then(function() {
+                        res.send({msg: "SUCCESS"});
                     }).catch(function(error:any) {
-                        res.send({err: error});
+                        res.send({err: error.message});
                     });
-                    
-                }).catch(function(error:any) {
-                    res.send({err: error});
                 });
             } else {
-                res.send({msg: "SUCCESS"});
+                db.collection("USERS").doc(evt.email).update({
+                    name: evt.name
+                }).then(function() {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
             }
-
         }).catch(function(error:any) {
             res.send({err: error});
         });
     }).catch(function(error:any) {
         res.send({err: error.message});
     });
-}); */
+});
 
 export const updateGamePref = functions.https.onRequest(async (request, response) => {
 

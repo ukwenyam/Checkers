@@ -1,6 +1,6 @@
 <script>
     import { currSocket, currUser, gamePref, allChats, calleeID, calleeName, callerName,
-            showNavBar, showPlayer, peer, showCallee, showCallBar, onCall, callerID } from '../Scripts/Init.js';
+            showNavBar, showPlayer, peer, showCallee, showCallBar, onCall, callerID, ratio } from '../Scripts/Init.js';
     import { getAllChats, blink_text } from '../Scripts/Functions.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { beforeUpdate, afterUpdate } from 'svelte';
@@ -14,8 +14,6 @@
     let message;
     let isTyping = false;
     let currMsg;
-
-    let screenWidth = screen.width;
 
     let chatID, chatMsgs, chatUser, userID;
 
@@ -199,7 +197,7 @@
         <div id="currChat">
             <h4 style="text-align:center;color:white;">
                 <button class="btn btn-dark chatHead" style="float:left;border-radius:0;" on:click="{viewStatsOrChats}">
-                    {#if screenWidth <= 800}
+                    {#if $ratio < 1}
                         <i class="fa fa-arrow-left"></i>
                         Back
                     {:else}

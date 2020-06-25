@@ -1,15 +1,13 @@
 <script>
     import { onMount } from 'svelte';
-    import { gameBoard, gamePref, currSocket, currUser } from '../Scripts/Init.js';
+    import { gameBoard, gamePref, currSocket, currUser, ratio } from '../Scripts/Init.js';
     import { spring } from 'svelte/motion';
     import { Position } from '../Scripts/Position.js';
 
     let square, boardSquare, size;
     let numSquares = 8;
 
-    let ratio = screen.width / screen.height;
-
-	if(ratio < 1) {
+	if($ratio < 1) {
         boardSquare = screen.width;
 		square = boardSquare / numSquares;
         size = boardSquare / 20;

@@ -1,9 +1,7 @@
 <script>
-    import { onCall, showCaller, showCallee, callerName, calleeName, peer, calleeID,
+    import { onCall, showCaller, showCallee, callerName, calleeName, peer, calleeID, 
             currSocket, callerSignal, showCallBar, callerID, showPlayer, currentTime } from '../Scripts/Init.js';
     import Player from './audioPlayer.svelte';
-
-    let screenWidth = screen.width;
     
     function acceptCall() {
 

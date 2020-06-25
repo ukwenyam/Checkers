@@ -1,5 +1,5 @@
 <script>
-    import { currUser, page, userGames, leaderBoard, currSocket } from '../Scripts/Init.js';
+    import { currUser, page, userGames, leaderBoard, currSocket, ratio } from '../Scripts/Init.js';
     import { getLeagueTable } from '../Scripts/Functions.js';
 
     let screenWidth = screen.width;
@@ -23,8 +23,8 @@
 
 <div id="stats" class="container-fluid">
 
-    {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:left;margin-top:12.5px;" on:click="{viewLeagueTable}"><i class="fa fa-arrow-left"></i> League</button>
+    {#if $ratio < 1}
+        <button class="btn btn-dark" style="float:left;margin-top:12.5px;" on:click="{viewLeagueTable}"><i class="fa fa-arrow-left"></i> League</button>
     {/if}
 
     <h5 id="titleStats">My Stats</h5>
@@ -92,8 +92,8 @@
 
 <div id="league" class="container-fluid">
 
-    {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:right;margin-top:12.5px;" on:click="{viewMyStats}">My Stats <i class="fa fa-arrow-right"></i></button>
+    {#if $ratio < 1}
+        <button class="btn btn-dark" style="float:right;margin-top:12.5px;" on:click="{viewMyStats}">My Stats <i class="fa fa-arrow-right"></i></button>
     {/if}
 
     <h5 id="titleLeague">Checkas League - Top 50</h5>
@@ -105,7 +105,7 @@
         <tr>
             <th>#</th>
             <th>Name</th>
-            {#if screenWidth > 800}
+            {#if $ratio > 1}
                 <th>Games</th>
             {/if}
             <th>Wins</th>
@@ -118,7 +118,7 @@
                 <tr>
                     <td>{i + 1}</td>
                     <td>{user.name}</td>
-                    {#if screenWidth > 800}
+                    {#if $ratio > 1}
                         <td>{user.gamesPlayed}</td>
                     {/if}
                     <td>{user.wins}</td>
@@ -130,7 +130,7 @@
                 <tr>
                     <th>{i + 1}</th>
                     <th>{user.name}</th>
-                    {#if screenWidth > 800}
+                    {#if $ratio > 1}
                         <th>{user.gamesPlayed}</th>
                     {/if}
                     <th>{user.wins}</th>

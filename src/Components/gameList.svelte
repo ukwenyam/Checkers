@@ -1,13 +1,11 @@
 <script>
     import { userGames, gamePref, page, gameTab, currUser, 
-            gameBoard, gameHistory, viewGameList, bigPopUp, currSocket } from '../Scripts/Init.js';
+            gameBoard, gameHistory, viewGameList, bigPopUp, currSocket, ratio } from '../Scripts/Init.js';
     import { Board } from '../Scripts/Board.js';
     import { getUserGames } from '../Scripts/Functions.js';
     import { Game } from '../Scripts/Game.js';
 
     let currGame = $userGames.length > 0 ? $userGames[0] : null;
-
-    let screenWidth = screen.width;
 
     function viewGameDetails(game) {
         if(screen.width <= 800) {
@@ -76,7 +74,7 @@
         {/each}
     </div>
     <div id="gameDetails">
-        {#if screenWidth <= 800}
+        {#if $ratio < 1}
             <button class="btn btn-dark" style="width:25%;" on:click="{goBack}"><i class="fa fa-arrow-left"></i> Back</button>
         {/if}
         {#if currGame.secPlayer != null}

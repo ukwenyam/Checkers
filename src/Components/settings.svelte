@@ -1,5 +1,5 @@
 <script>
-    import { currUser, currSocket, gameTab } from '../Scripts/Init.js';
+    import { currUser, currSocket, gameTab, ratio } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
@@ -12,8 +12,6 @@
     let myColor = $currUser.gamePref.myColor, otherColor = $currUser.gamePref.otherColor;
     let compTime = $currUser.gamePref.compTime;
     let myOrient = $currUser.gamePref.orient;
-
-    let screenWidth = screen.width;
 
     let request;
     let loading = false;
@@ -46,14 +44,14 @@
             request = {
                 func: "updateProfile",
                 name: Name,
-                picture: Picture.includes('unsplash') ? null : Picture,
+                picture: Picture.includes('adorable') ? null : Picture,
                 password: authPassword,
                 email: $currUser.email
             }
 
             invokeFunction(request).then((response) => {
 
-                if(response.msg != null) {
+                if(response.msg != null && response.msg == "SUCCESS") {
                     console.log(response.msg);
 
                     authPassword = '';
@@ -175,13 +173,13 @@
     }
 </script>
 
-{#if screenWidth > 800}
+{#if $ratio > 1}
     <h3>Settings</h3>
 {/if}
 
 <div id="leftSet" class="container-fluid">
-    {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:right;margin-top:12.5px;" on:click="{viewGamePref}">Game Prefernces <i class="fa fa-arrow-right"></i></button>
+    {#if $ratio < 1}
+        <button class="btn btn-dark" style="float:right;margin-top:12.5px;" on:click="{viewGamePref}">Game Prefernces <i class="fa fa-arrow-right"></i></button>
     {/if}
 
     <h5 style="text-align:center">Profile</h5>
@@ -219,14 +217,14 @@
         <Loader/>
     {/if}
 
-    {#if screenWidth <= 800}
+    {#if $ratio < 1}
         <button class="btn btn-danger middle" on:click="{signOut}">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
     {/if}
 </div>
 
 <div id="rightSet" class="container-fluid">
-    {#if screenWidth <= 800}
-        <button class="btn btn-primary" style="float:left;margin-top:12.5px;" on:click="{viewProfile}"><i class="fa fa-arrow-left"></i> Profile</button>
+    {#if $ratio < 1}
+        <button class="btn btn-dark" style="float:left;margin-top:12.5px;" on:click="{viewProfile}"><i class="fa fa-arrow-left"></i> Profile</button>
     {/if}
 
     <h5 style="text-align:center;margin-bottom:20px;">Game Preferences</h5>

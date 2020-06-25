@@ -1,5 +1,5 @@
 <script>
-    import { currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewCreateGame, smallPopUp } from '../Scripts/Init.js';
+    import { currUser, gameBoard, gameHistory, gamePref, page, gameTab, viewCreateGame, smallPopUp, ratio } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { Board } from '../Scripts/Board.js';
     import { Game } from '../Scripts/Game.js';
@@ -10,8 +10,6 @@
     let request;
 
     let loading = false;
-
-    let screenWidth = screen.width;
 
     function selectTime(time) {
         Time = time;
@@ -69,7 +67,7 @@
 </script>
 
 {#if $gamePref == null}
-    {#if screenWidth <= 800}
+    {#if $ratio < 1}
         <button id="backBtn" class="btn btn-dark" on:click="{goBack}"><i class="fa fa-arrow-left"></i>  Back</button>
     {/if}
     <h5>Game Preferences</h5>
