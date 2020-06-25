@@ -4,18 +4,17 @@
     import { spring } from 'svelte/motion';
     import { Position } from '../Scripts/Position.js';
 
-    let square, boardSquare, size;
+    let boardSquare;
     let numSquares = 8;
 
 	if($ratio < 1) {
         boardSquare = screen.width;
-		square = boardSquare / numSquares;
-        size = boardSquare / 20;
 	} else {
         boardSquare = 0.9 * screen.height;
-        size = boardSquare / 20;
-		square = boardSquare / numSquares;
     }
+
+    let square = boardSquare / numSquares;
+    let size = boardSquare / 20;
     
     document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
 
@@ -86,12 +85,12 @@
             bottomRightX = topLeftX * 15;
             bottomRightY = bottomLeftY;
 
-            if(yRotation == boardSquare) {
+            if(yRotation >= boardSquare) {
 
                 //console.log("TopLeftX: " + topLeftX + ", TopLeftY: " + topLeftY);
 
-                topLeftX = Math.floor(topLeftX * 4.4);
-                topLeftY = Math.floor(topLeftY * 5.5);
+                topLeftX = Math.floor(topLeftX * 4.074);
+                topLeftY = Math.floor(topLeftY * 5.092);
 
                 currX = topLeftX;
                 currY = topLeftY;
@@ -99,14 +98,14 @@
                 //console.log("TopLeftX: " + topLeftX + ", TopLeftY: " + topLeftY);
                 //console.log("TopRightX: " + topRightX + ", TopRightY: " + topRightY);
 
-                topRightX = Math.floor(topRightX * 0.767);
+                topRightX = Math.floor(topRightX * 0.762);
                 topRightY = topLeftY;
 
                 //console.log("TopRightX: " + topRightX + ", TopRightY: " + topRightY);
                 //console.log("bottomLeftX: " + bottomLeftX + ", bottomLeftY: " + bottomLeftY);
 
-                bottomLeftX = Math.floor(bottomLeftX * 2.5);
-                bottomLeftY = Math.floor(bottomLeftY * 0.7867);
+                bottomLeftX = Math.floor(bottomLeftX * 2.314);
+                bottomLeftY = Math.floor(bottomLeftY * 0.782);
 
                 //console.log("bottomLeftX: " + bottomLeftX + ", bottomLeftY: " + bottomLeftY);
                 //console.log("bottomRightX: " + bottomRightX + ", bottomRightY: " + bottomRightY);
@@ -135,17 +134,17 @@
                     } else {
                         if(possibleMoves.length > 0) {
 
-                            let found = false;
+                            p5.fill('brown');
 
-                            for(let k = 0; k < possibleMoves.length; k++) {
-                                if(possibleMoves[k].x == i && possibleMoves[k].y == j) {
-                                    p5.fill("skyblue");
-                                    found = true;
-                                } 
+                            if(!moving) {
+                                for(let k = 0; k < possibleMoves.length; k++) {
+                                    if(possibleMoves[k].x == i && possibleMoves[k].y == j) {
+                                        p5.fill("skyblue");
+                                        break;
+                                    } 
+                                }
                             }
-
-                            if(!found)
-                                p5.fill('brown');
+                                
                         } else {
                             p5.fill('brown');
                         }
