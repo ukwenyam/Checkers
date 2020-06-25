@@ -1,5 +1,6 @@
 node_modules
 /public/build
+functions/src/serviceAccount.json
 
 npm-debug.log
 
