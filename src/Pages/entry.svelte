@@ -1,5 +1,5 @@
 <script>
-    import { currUser, page, showLogin, gameTab, peer, currSocket } from '../Scripts/Init.js';
+    import { currUser, page, showLogin, gameTab, peer, currSocket, ratio } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import { User } from '../Scripts/User.js';
     import Loader from '../Components/loader.svelte';
@@ -210,8 +210,16 @@
 </script>
 
 <div id="entry" class="container">
+
     <img src="images/LOGO-192.png" alt="Logo" style="height:80px;"/>
+
     <h3>Checkas.io</h3>
+
+    {#if $ratio > 1}
+        <button style="margin-top:10px;" class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(5))}">vs Computer <i class="fa fa-desktop"></i></button>
+        <hr style="border: 1px solid green"/>
+    {/if}
+
     {#if viewError}
         <h6 style="text-align:center;color:red;margin-top:20px;">{errMsg}</h6>
     {/if}

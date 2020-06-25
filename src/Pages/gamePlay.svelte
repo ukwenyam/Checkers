@@ -74,25 +74,31 @@
 {/if}
 
 {#if $ratio > 1}
-	{#if showChat || $showLogin}	
-		<div on:click="{closeAll}">
-			<Blur/>
-		</div>
-		{#if showChat}
+	{#if $currUser != null && $currUser.isAuth}
+		{#if showChat}	
+			<div on:click="{closeAll}">
+				<Blur/>
+			</div>
 			<Chat/>
+		{/if}
+		<button class="btn btn-dark btn-lg navi" style="right:5px;position:fixed;" on:click="{() => (showChat = true)}">Chat Board <i class="fa fa-comments"></i></button>
+		<SideBar/>
+		<Game/>
+	{:else}
+		{#if $gameTab == 5}
+			{#if $showLogin}	
+				<div on:click="{closeAll}">
+					<Blur/>
+				</div>
+				<Entry/>
+			{/if}
+			<button class="btn btn-dark btn-lg navi" style="right:5px;position:fixed;" on:click="{() => (showLogin.set(true))}">Login/Register <i class="fa fa-sign-in"></i></button>
+			<Game/>
 		{:else}
+			<img id="checkers" src="./images/checkers.jpg" alt="welcome"/>
 			<Entry/>
 		{/if}
 	{/if}
-
-	{#if $currUser != null && $currUser.isAuth}
-		<button class="btn btn-dark btn-lg navi" style="right:5px;position:fixed;" on:click="{() => (showChat = true)}">Chat Board <i class="fa fa-comments"></i></button>
-		<SideBar/>
-	{:else}
-		<button class="btn btn-dark btn-lg navi" style="right:5px;position:fixed;" on:click="{() => (showLogin.set(true))}">Login/Register <i class="fa fa-sign-in"></i></button>
-	{/if}
-
-	<Game/>
 {:else}
 	{#if $gameTab == 0}
 		<div id="enter">
@@ -102,7 +108,7 @@
 			<Join/>
 		</div>
 		<div id="index" class="backcolor" out:fade>
-			<img alt="logo" src="./images/LOGO-192.png"/> 
+			<img id="logo" alt="logo" src="./images/LOGO-192.png"/> 
 			<h3 id="home">Checkas.io</h3>
 			<button class="btn btn-secondary btn-lg" on:click="{() => (gameTab.set(5))}">vs Computer <i class="fa fa-desktop"></i></button>
 			<hr/>
@@ -144,7 +150,15 @@
 		z-index:30;
 	}
 
-	img {
+	#checkers {
+		position:fixed;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+	}
+
+	#logo {
 		height:80px;
 		width:80px;
 		margin-left:calc((100% - 80px) / 2);

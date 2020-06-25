@@ -14,7 +14,7 @@
     }
 
     let square = boardSquare / numSquares;
-    let size = boardSquare / 20;
+    let size = 0.35 * square;
     
     document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
 
