@@ -132,16 +132,13 @@ export class Board {
     takePiece(piece, currPos, yDiff, nextPos) {
 
         let isTaken = false;
-/*
-        if(piece.side == 'U' && piece.stack == 1) {
+        let xPiece = null;
+        let yPiece = null;
 
-            let xPiece = currPos.xPos + 1;
-            let yPiece = null;
+        if(nextPos.xPos < currPos.xPos && nextPos.yPos < currPos.yPos) {
 
-            if(yDiff < 0)
-                yPiece = currPos.yPos - 1;
-            if(yDiff > 0)
-                yPiece = currPos.yPos + 1;
+            xPiece = currPos.xPos - 1;
+            yPiece = currPos.yPos - 1;
 
             if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                 this.board[xPiece][yPiece] = null;
@@ -149,15 +146,10 @@ export class Board {
             }
         }
 
-        if(piece.side == 'D' && piece.stack == 1) {
+        if(nextPos.xPos < currPos.xPos && nextPos.yPos > currPos.yPos) {
 
-            let xPiece = currPos.xPos - 1;
-            let yPiece = null;
-
-            if(yDiff < 0)
-                yPiece = currPos.yPos + 1;
-            if(yDiff > 0)
-                yPiece = currPos.yPos - 1;
+            xPiece = currPos.xPos - 1;
+            yPiece = currPos.yPos + 1;
 
             if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
                 this.board[xPiece][yPiece] = null;
@@ -165,113 +157,147 @@ export class Board {
             }
         }
 
-        if(piece.stack > 1) {
-*/
-            let xPiece = null;
-            let yPiece = null;
+        if(nextPos.xPos > currPos.xPos && nextPos.yPos < currPos.yPos) {
 
-            if(nextPos.xPos < currPos.xPos && nextPos.yPos < currPos.yPos) {
+            xPiece = currPos.xPos + 1;
+            yPiece = currPos.yPos - 1;
 
-                xPiece = currPos.xPos - 1;
-                yPiece = currPos.yPos - 1;
-
-                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                    this.board[xPiece][yPiece] = null;
-                    isTaken = true;
-                }
+            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
+                this.board[xPiece][yPiece] = null;
+                isTaken = true;
             }
+        }
 
-            if(nextPos.xPos < currPos.xPos && nextPos.yPos > currPos.yPos) {
+        if(nextPos.xPos > currPos.xPos && nextPos.yPos > currPos.yPos) {
 
-                xPiece = currPos.xPos - 1;
-                yPiece = currPos.yPos + 1;
+            xPiece = currPos.xPos + 1;
+            yPiece = currPos.yPos + 1;
 
-                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                    this.board[xPiece][yPiece] = null;
-                    isTaken = true;
-                }
+            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
+                this.board[xPiece][yPiece] = null;
+                isTaken = true;
             }
-
-            if(nextPos.xPos > currPos.xPos && nextPos.yPos < currPos.yPos) {
-
-                xPiece = currPos.xPos + 1;
-                yPiece = currPos.yPos - 1;
-
-                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                    this.board[xPiece][yPiece] = null;
-                    isTaken = true;
-                }
-            }
-
-            if(nextPos.xPos > currPos.xPos && nextPos.yPos > currPos.yPos) {
-
-                xPiece = currPos.xPos + 1;
-                yPiece = currPos.yPos + 1;
-
-                if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                    this.board[xPiece][yPiece] = null;
-                    isTaken = true;
-                }
-            }
-        //}
+        }
 
         return isTaken;
+    }
+    
+
+    possibleMoves(piece) {
+
+        let moves = [];
+        let move;
+
+        let xPos = piece.getPosition().xPos;
+        let yPos = piece.getPosition().yPos;
+
+        if((0 <= xPos - 2 || 0 <= xPos - 1) && (0 <= yPos - 2 || 0 <= yPos - 1) && (xPos - 2 <= 7 || xPos - 1 <= 7) && (yPos - 2 <= 7 || yPos - 1 <= 7)) {
+            //console.log("Upper Left");
+            if(this.board[xPos - 1][yPos - 1] == null) {
+                move = {
+                    x: xPos - 1,
+                    y: yPos - 1 
+                }
+
+                moves.push(move);
+                //console.log("Upper Left");
+            } else if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side && this.board[xPos - 2][yPos - 2] == null) {
+                move = {
+                    x: xPos - 2,
+                    y: yPos - 2 
+                }
+
+                moves.push(move);
+            }
+        }
+
+        if((0 <= xPos + 2 || 0 <= xPos + 1) && (0 <= yPos + 2 || 0 <= yPos + 1) && (xPos + 2 <= 7 || xPos + 1 <= 7) && (yPos + 2 <= 7 || yPos + 1 <= 7)) {
+            //console.log("Lower Right");
+            if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
+                move = {
+                    x: xPos + 2,
+                    y: yPos + 2 
+                }
+
+                moves.push(move);
+                //console.log("Lower Right");
+            } else if(this.board[xPos + 1][yPos + 1] == null && piece.stack > 1) {
+                move = {
+                    x: xPos + 1,
+                    y: yPos + 1 
+                }
+
+                moves.push(move);
+            }
+        }
+
+        if((0 <= xPos - 2 || 0 <= xPos - 1) && (0 <= yPos + 2 || 0 <= yPos + 1) && (xPos - 2 <= 7 || xPos - 1 <= 7) && (yPos + 2 <= 7 || yPos + 1 <= 7)) {
+            //console.log("Upper Right");
+            if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
+                move = {
+                    x: xPos - 2,
+                    y: yPos + 2 
+                }
+
+                moves.push(move);
+                //console.log("Upper Right");
+            } else if(this.board[xPos - 1][yPos + 1] == null) {
+                move = {
+                    x: xPos - 1,
+                    y: yPos + 1 
+                }
+
+                moves.push(move);
+            }
+        }
+
+        if((0 <= xPos + 2 || 0 <= xPos + 1) && (0 <= yPos - 2 || 0 <= yPos - 1) && (xPos + 2 <= 7 || xPos + 1 <= 7) && (yPos - 2 <= 7 || yPos - 1 <= 7)) {
+            //console.log("Lower Left");
+            if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
+                move = {
+                    x: xPos + 2,
+                    y: yPos - 2 
+                }
+
+                moves.push(move);
+                //console.log("Lower Left");
+            } else if(this.board[xPos + 1][yPos - 1] == null && piece.stack > 1) {
+                move = {
+                    x: xPos + 1,
+                    y: yPos - 1 
+                }
+
+                moves.push(move);
+            }
+        }
+        
+        return moves;
     }
 
 
     isMoveLegal(piece, nextPos) {
 
-        let mySide;
-        
-        gamePref.update(state => {
-            mySide = state.side;
-            return state
+        let myColor, otherColor;
+
+        currUser.update(state => {
+            if(state != null) {
+                myColor = state.gamePref.myColor;
+                otherColor = state.gamePref.otherColor;
+            } else {
+                myColor = "#ffffff";
+                otherColor = "#000000";
+            }
+            return state;
         });
 
         let legal = false;
 
         let currPos = piece.getPosition();
 
-        /* if(piece.side == "black" && nextPos.isEmpty) {
-
-            let xDiff = nextPos.xPos - currPos.xPos;
-
-            let yDiff = nextPos.yPos - currPos.yPos;
-
-            if(piece.stack == 1) {
-
-                let oneSq = (yDiff == 1 || yDiff == -1) && xDiff == 1;
-
-                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
-
-                if(oneSq)
-                    legal = true;
-
-                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) {
-                    legal = true;
-                }
-
-            } else {
-
-                let oneSq = (xDiff == 1 || xDiff == -1) && (yDiff == 1 || yDiff == -1);
-
-                let twoSq = (xDiff == 2 || xDiff == -2) && (yDiff == 2 || yDiff == -2);
-
-                if(oneSq)
-                    legal = true;
-
-                if(twoSq && this.takePiece(piece, currPos, yDiff, nextPos)) {
-                    legal = true;
-                }
-            }
-        } */
-
         console.log(nextPos.isEmpty);
         console.log(piece.side);
-        console.log("white: " + piece.side == "white");
-        console.log("black: " + piece.side == "black");
 
-        if(piece.side == "white" && nextPos.isEmpty && piece.side == mySide) {
+        if((piece.side == "#ffffff" || piece.side == myColor) && nextPos.isEmpty) {
 
             console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
@@ -311,7 +337,7 @@ export class Board {
             }
         }
 
-        if(piece.side == "black" && nextPos.isEmpty && piece.side == mySide) {
+        if((piece.side == "#000000" || piece.side == otherColor) && nextPos.isEmpty) {
 
             //console.log(currPos.xPos + ", " + currPos.yPos + " --> " + nextPos.xPos + ", " + nextPos.yPos);
 
@@ -360,11 +386,17 @@ export class Board {
 
     doMove(piece, nextPos) {
 
-        let mySide;
-        
-        gamePref.update(state => {
-            mySide = state.side;
-            return state
+        let myColor, otherColor;
+
+        currUser.update(state => {
+            if(state != null) {
+                myColor = state.gamePref.myColor;
+                otherColor = state.gamePref.otherColor;
+            } else {
+                myColor = "#ffffff";
+                otherColor = "#000000";
+            }
+            return state;
         });
 
         let moved = false, remove = null;
@@ -375,13 +407,13 @@ export class Board {
 
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            if(newPiece.side == mySide) {
-                if(nextPos.xPos == 0 && newPiece.side == "white" && newPiece.stack == 1) 
+            if(newPiece.side == myColor || newPiece.side == "#ffffff") {
+                if(nextPos.xPos == 0 && (newPiece.side == myColor || newPiece.side == "#ffffff") && newPiece.stack == 1) 
                     newPiece.incrementStack();
             } 
             
-            if(newPiece.side == mySide) {
-                if(nextPos.xPos == 0 && newPiece.side == "black" && newPiece.stack == 1) 
+            if(newPiece.side == otherColor || newPiece.side == "#000000") {
+                if(nextPos.xPos == 0 && (newPiece.side == otherColor || newPiece.side == "#000000") && newPiece.stack == 1) 
                     newPiece.incrementStack();
             }
 

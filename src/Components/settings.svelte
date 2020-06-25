@@ -12,6 +12,7 @@
     let myColor = $currUser.gamePref.myColor, otherColor = $currUser.gamePref.otherColor;
     let compTime = $currUser.gamePref.compTime;
     let myOrient = $currUser.gamePref.orient;
+    let difficulty = 0;
 
     let request;
     let loading = false;
@@ -156,6 +157,10 @@
         myOrient = orient;
     }
 
+    function selectDifficulty(diff) {
+        difficulty = diff;
+    }
+
     function viewGamePref() {
         let profile = document.getElementById("leftSet");
         let game = document.getElementById("rightSet");
@@ -239,27 +244,30 @@
 
     <hr/>
 
-    <h6 style="width:100%;">Time Per Turn versus Computer:</h6>
+    <h6 style="width:100%;">Time Per Turn versus Computer:
+        {#if $ratio < 1}
+            <br/><br/>
+        {/if}
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
+            <label class="form-check-label" for="inlineRadio1">15</label>
+        </div>
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
-        <label class="form-check-label" for="inlineRadio1">15</label>
-    </div>
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
+            <label class="form-check-label" for="inlineRadio2">30</label>
+        </div>
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
-        <label class="form-check-label" for="inlineRadio2">30</label>
-    </div>
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <label class="form-check-label" for="inlineRadio3">45</label>
+        </div>
 
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-        <label class="form-check-label" for="inlineRadio3">45</label>
-    </div>
-
-    <div class="form-check form-check-inline">
-        <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-        <label class="form-check-label" for="inlineRadio3">60</label>
-    </div>
+        <div class="form-check form-check-inline">
+            <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <label class="form-check-label" for="inlineRadio3">60</label>
+        </div>
+    </h6>
 
     <h6 style="width:100%;text-align:center;margin-top:20px;">{compTime} seconds</h6>
     <input class="custom-range" bind:value="{compTime}" type="range" min="15" max="60" step="1">
@@ -275,6 +283,33 @@
         <div class="form-check form-check-inline">
             <input on:change="{() => selectOrient("3D")}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio5">
             <label class="form-check-label" for="inlineRadio3">3D</label>
+        </div>
+    </h6>
+
+    <hr/>
+
+    <h6 style="width:100%;">Difficulty Level versus Computer:
+        {#if $ratio < 1}
+            <br/><br/>
+        {/if}
+        <div class="form-check form-check-inline oda-check">
+            <input on:change="{() => selectDifficulty(0)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio6">
+            <label class="form-check-label" for="inlineRadio1">Easy</label>
+        </div>
+
+        <div class="form-check form-check-inline oda-check">
+            <input on:change="{() => selectDifficulty(1)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio7">
+            <label class="form-check-label" for="inlineRadio2">Medium</label>
+        </div>
+
+        <div class="form-check form-check-inline oda-check">
+            <input on:change="{() => selectDifficulty(2)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio8">
+            <label class="form-check-label" for="inlineRadio3">Hard</label>
+        </div>
+
+        <div class="form-check form-check-inline oda-check">
+            <input on:change="{() => selectDifficulty(3)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio9">
+            <label class="form-check-label" for="inlineRadio3">Legend</label>
         </div>
     </h6>
 
@@ -320,7 +355,11 @@
     }
 
     .form-check {
-        margin-left:15%;
+        margin-left:5%;
+    }
+
+    .oda-check {
+        margin-left:10px;
     }
 
     img {
@@ -355,10 +394,6 @@
     #propic {
         opacity: 1;
         border-radius:0.4rem;
-    }
-
-    .form-check {
-        margin-left:10%;
     }
 
     .middle {

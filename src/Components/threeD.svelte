@@ -19,19 +19,26 @@
     
     document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
 
-    let yRotation; 
+    let yRotation, currDim, cyHeight; 
+
+    let maxHeight = size / 2;
 
     if($currUser != null) {
-        if($currUser.gamePref.orient == "2D")
+        if($currUser.gamePref.orient == "2D") {
             yRotation = 0;
-        else
+            currDim = "3D";
+            cyHeight = 0;
+        } else {
             yRotation = boardSquare;
+            currDim = "2D";
+            cyHeight = maxHeight;
+        }
     } else {
         yRotation = 0;
+        currDim = "3D";
+        cyHeight = 0;
     }
-    
-    let cyHeight = 0, maxHeight = size / 2;
-    let currDim = $currUser != null ? $currUser.gamePref.orient : "2D";
+
     export let currPos; 
     export let nextPos;
 
@@ -40,6 +47,8 @@
 
     let checkers = [];
     let emptySqs = [];
+
+    let possibleMoves = [];
 
     let board = function(p5) {
 
@@ -124,7 +133,22 @@
                         p5.fill('wheat');
                         p5.box(square, square, 10);
                     } else {
-                        p5.fill('brown');
+                        if(possibleMoves.length > 0) {
+
+                            let found = false;
+
+                            for(let k = 0; k < possibleMoves.length; k++) {
+                                if(possibleMoves[k].x == i && possibleMoves[k].y == j) {
+                                    p5.fill("skyblue");
+                                    found = true;
+                                } 
+                            }
+
+                            if(!found)
+                                p5.fill('brown');
+                        } else {
+                            p5.fill('brown');
+                        }
                         p5.box(square, square, 10);
 
                         if(!$gameBoard.isEmpty(i, j)) {
@@ -164,7 +188,7 @@
                                     checkers[id].y = prevYPos - 2;
                                     checkers[id].i = i;
                                     checkers[id].j = j;
-                                    checkers[id].r = size; 
+                                    checkers[id].r = size * 1.5; 
                                 } else if(prevXPos > currX && prevYPos < currY) {
                                     console.log("MOVING PIECE bottom left");
                                     p5.push();
@@ -193,7 +217,7 @@
                                     checkers[id].y = prevYPos + 2;
                                     checkers[id].i = i;
                                     checkers[id].j = j;
-                                    checkers[id].r = size; 
+                                    checkers[id].r = size * 1.5; 
                                 } else if(prevXPos < currX && prevYPos > currY) {
                                     console.log("MOVING PIECE top right");
                                     p5.push();
@@ -222,7 +246,7 @@
                                     checkers[id].y = prevYPos - 2;
                                     checkers[id].i = i;
                                     checkers[id].j = j;
-                                    checkers[id].r = size; 
+                                    checkers[id].r = size * 1.5; 
                                 } else if(prevXPos < currX && prevYPos < currY) {
                                     console.log("MOVING PIECE bottom right");
                                     p5.push();
@@ -251,7 +275,7 @@
                                     checkers[id].y = prevYPos + 2;
                                     checkers[id].i = i;
                                     checkers[id].j = j;
-                                    checkers[id].r = size;
+                                    checkers[id].r = size * 1.5;
                                 } else {
                                     console.log("STOP moving");
                                     moving = false;
@@ -299,7 +323,7 @@
                                 checkers[id].y = currY;
                                 checkers[id].i = i;
                                 checkers[id].j = j;
-                                checkers[id].r = size; 
+                                checkers[id].r = size * 1.5; 
                             }
                         } else {
                             emptySqs[count] = {};
@@ -307,7 +331,7 @@
                             emptySqs[count].y = currY;
                             emptySqs[count].i = i;
                             emptySqs[count].j = j;
-                            emptySqs[count].r = size;
+                            emptySqs[count].r = size * 1.5;
                             count++;
                         }
                     }
@@ -343,48 +367,82 @@
             //console.log(checkers);
 
             for(let i = 0; i < emptySqs.length; i++) {
+
                 let dist = p5.dist(this.mouseX, this.mouseY, emptySqs[i].x, emptySqs[i].y);
 
-                if(dist < emptySqs[i].r && $gameBoard.isEmpty(emptySqs[i].i, emptySqs[i].j) && currPos != null && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.currPlayer == $gamePref.side) {
+                if($gamePref != null) {
 
-                    console.log("Empty Square at: " + emptySqs[i].i + ", " + emptySqs[i].j);
+                    if(dist < emptySqs[i].r && $gameBoard.isEmpty(emptySqs[i].i, emptySqs[i].j) && currPos != null && $gamePref.rangeMoves == $gamePref.numMoves && $gamePref.currPlayer == $gamePref.side) {
 
-                    nextPos = new Position(emptySqs[i].i, emptySqs[i].j, 'E');
+                        console.log("Empty Square at: " + emptySqs[i].i + ", " + emptySqs[i].j);
 
-                    let res = $gameBoard.doMove(currPos, nextPos);
+                        nextPos = new Position(emptySqs[i].i, emptySqs[i].j, 'E');
 
-                    console.log(res.move);
+                        let res = $gameBoard.doMove(currPos, nextPos);
 
-                    gameBoard.set($gameBoard);
+                        console.log(res.move);
 
-                    if(res.move) {
+                        gameBoard.set($gameBoard);
 
-                        moving = true;
+                        if(res.move) {
 
-                        gamePref.update(state => {
-                            state.numMoves += 1;
-                            state.rangeMoves += 1;
-                            state.myMoves += 1;
-                            return state;
-                        });
-                        
-                        let pieceInfo = {
-                            id : $gameBoard.getId(emptySqs[i].i, emptySqs[i].j),
-                            xDiff: currPos.getPosition().xPos - nextPos.xPos,
-                            yDiff: currPos.getPosition().yPos - nextPos.yPos,
-                            remove : res.id,
-                            gameID: $gamePref.gameID,
-                            oppID: $gamePref.oppID
+                            moving = true;
+
+                            gamePref.update(state => {
+                                state.numMoves += 1;
+                                state.rangeMoves += 1;
+                                state.myMoves += 1;
+                                return state;
+                            });
+                            
+                            let pieceInfo = {
+                                id : $gameBoard.getId(emptySqs[i].i, emptySqs[i].j),
+                                xDiff: currPos.getPosition().xPos - nextPos.xPos,
+                                yDiff: currPos.getPosition().yPos - nextPos.yPos,
+                                remove : res.id,
+                                gameID: $gamePref.gameID,
+                                oppID: $gamePref.oppID
+                            }
+
+                            $currSocket.emit('piece-move', pieceInfo);
+                            
+                            $gamePref.states.push($gameBoard.saveBoardState());
+
+                            currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
+
+                            possibleMoves = $gameBoard.possibleMoves(currPos);
+
+                            console.log(possibleMoves);
                         }
 
-                        $currSocket.emit('piece-move', pieceInfo);
-                        
-                        $gamePref.states.push($gameBoard.saveBoardState());
+                        break;
+                    } 
+                } else {
+                    if(dist < emptySqs[i].r && $gameBoard.isEmpty(emptySqs[i].i, emptySqs[i].j) && currPos != null) {
 
-                        currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
-                    }
+                        console.log("Empty Square at: " + emptySqs[i].i + ", " + emptySqs[i].j);
 
-                    break;
+                        nextPos = new Position(emptySqs[i].i, emptySqs[i].j, 'E');
+
+                        let res = $gameBoard.doMove(currPos, nextPos);
+
+                        console.log(res.move);
+
+                        gameBoard.set($gameBoard);
+
+                        if(res.move) {
+
+                            moving = true;
+
+                            currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
+
+                            possibleMoves = $gameBoard.possibleMoves(currPos);
+
+                            console.log(possibleMoves);
+                        }
+
+                        break;
+                    } 
                 }
             }
 
@@ -392,10 +450,21 @@
                 //console.log(i + ": " + state[i].x + ", " + state[i].y);
                 let dist = p5.dist(this.mouseX, this.mouseY, checkers[i].x, checkers[i].y);
                 //console.log(dist);
-                if(dist < checkers[i].r && !$gameBoard.isEmpty(checkers[i].i, checkers[i].j) && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
-                    console.log("Clicked Checker at: " + checkers[i].i + ", " + checkers[i].j);
-                    currPos = $gameBoard.getPieceFromId(i);
-                    break;
+                if($gamePref != null) {
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(checkers[i].i, checkers[i].j) && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
+                        console.log("Clicked Checker at: " + checkers[i].i + ", " + checkers[i].j);
+                        currPos = $gameBoard.getPieceFromId(i);
+                        possibleMoves = $gameBoard.possibleMoves(currPos);
+                        break;
+                    }
+                } else {
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(checkers[i].i, checkers[i].j)) {
+                        console.log("Clicked Checker at: " + checkers[i].i + ", " + checkers[i].j);
+                        currPos = $gameBoard.getPieceFromId(i);
+                        possibleMoves = $gameBoard.possibleMoves(currPos);
+                        console.log(possibleMoves);
+                        break;
+                    }
                 }
             }
         }
