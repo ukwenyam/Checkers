@@ -52,6 +52,8 @@ export const leaderBoard = writable(null);
 
 export const gameBoard = writable(null);
 
+export const gameLevel = writable(0);
+
 export const gameHistory = writable(null);
 
 export const gamePref = writable(null);

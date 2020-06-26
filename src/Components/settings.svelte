@@ -1,5 +1,5 @@
 <script>
-    import { currUser, currSocket, gameTab, ratio } from '../Scripts/Init.js';
+    import { currUser, currSocket, gameTab, ratio, gameLevel } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
@@ -12,7 +12,7 @@
     let myColor = $currUser.gamePref.myColor, otherColor = $currUser.gamePref.otherColor;
     let compTime = $currUser.gamePref.compTime;
     let myOrient = $currUser.gamePref.orient;
-    let difficulty = 0;
+    let difficulty = $gameLevel;
 
     let request;
     let loading = false;
@@ -129,6 +129,8 @@
                         state.gamePref.orient = myOrient;
                         return state;
                     });
+
+                    gameLevel.set(difficulty);
                 } else {
                     loading = false;
                     console.log(response.err);
@@ -155,10 +157,6 @@
 
     function selectOrient(orient) {
         myOrient = orient;
-    }
-
-    function selectDifficulty(diff) {
-        difficulty = diff;
     }
 
     function viewGamePref() {
@@ -293,23 +291,23 @@
             <br/><br/>
         {/if}
         <div class="form-check form-check-inline oda-check">
-            <input on:change="{() => selectDifficulty(0)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio6">
+            <input on:change="{() => (difficulty = 0)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio6">
             <label class="form-check-label" for="inlineRadio1">Easy</label>
         </div>
 
         <div class="form-check form-check-inline oda-check">
-            <input on:change="{() => selectDifficulty(1)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio7">
+            <input on:change="{() => (difficulty = 1)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio7">
             <label class="form-check-label" for="inlineRadio2">Medium</label>
         </div>
 
         <div class="form-check form-check-inline oda-check">
-            <input on:change="{() => selectDifficulty(2)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio8">
+            <input on:change="{() => (difficulty = 2)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio8">
             <label class="form-check-label" for="inlineRadio3">Hard</label>
         </div>
 
         <div class="form-check form-check-inline oda-check">
-            <input on:change="{() => selectDifficulty(3)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio9">
-            <label class="form-check-label" for="inlineRadio3">Legend</label>
+            <input on:change="{() => (difficulty = 3)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio9">
+            <label class="form-check-label" for="inlineRadio3">World Class</label>
         </div>
     </h6>
 

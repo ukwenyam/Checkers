@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { gameBoard, gamePref, currSocket, currUser, ratio } from '../Scripts/Init.js';
+    import { gameBoard, gamePref, currSocket, currUser, ratio, gameLevel } from '../Scripts/Init.js';
     import { spring } from 'svelte/motion';
     import { Position } from '../Scripts/Position.js';
 
@@ -278,7 +278,6 @@
                                 } else {
                                     console.log("STOP moving");
                                     moving = false;
-                                    nextPos = null;
                                 }
                             } else {
                                 let xCurrPos;
@@ -433,11 +432,34 @@
 
                             moving = true;
 
-                            currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
+                            console.log(possibleMoves);
 
+                            let timeMove = Math.floor(Math.random() * (0.75 * 15)) + (0.25 * 15);
+
+                            console.log(timeMove);
+
+                            currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
                             possibleMoves = $gameBoard.possibleMoves(currPos);
 
-                            console.log(possibleMoves);
+                            setTimeout(function() {
+                                switch($gameLevel) {
+                                    case 1:
+                                        $gameBoard.medMove();
+                                        break;
+                                    case 2:
+                                        $gameBoard.hardMove();
+                                        break;
+                                    case 3:
+                                        $gameBoard.classMove();
+                                        break;
+                                    default:
+                                        $gameBoard.easyMove();
+                                }
+
+                                gameBoard.set($gameBoard);
+                                currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
+                                possibleMoves = $gameBoard.possibleMoves(currPos);
+                            }, timeMove * 1000);
                         }
 
                         break;
@@ -449,19 +471,21 @@
                 //console.log(i + ": " + state[i].x + ", " + state[i].y);
                 let dist = p5.dist(this.mouseX, this.mouseY, checkers[i].x, checkers[i].y);
                 //console.log(dist);
+                let xPos = checkers[i].i;
+                let yPos = checkers[i].j;
+
                 if($gamePref != null) {
-                    if(dist < checkers[i].r && !$gameBoard.isEmpty(checkers[i].i, checkers[i].j) && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
-                        console.log("Clicked Checker at: " + checkers[i].i + ", " + checkers[i].j);
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
+                        console.log("Clicked Checker at: " + xPos + ", " + yPos);
                         currPos = $gameBoard.getPieceFromId(i);
                         possibleMoves = $gameBoard.possibleMoves(currPos);
                         break;
                     }
                 } else {
-                    if(dist < checkers[i].r && !$gameBoard.isEmpty(checkers[i].i, checkers[i].j)) {
-                        console.log("Clicked Checker at: " + checkers[i].i + ", " + checkers[i].j);
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gameBoard.getSide(xPos, yPos) == "#ffffff") {
+                        console.log("Clicked Checker at: " + xPos + ", " + yPos);
                         currPos = $gameBoard.getPieceFromId(i);
                         possibleMoves = $gameBoard.possibleMoves(currPos);
-                        console.log(possibleMoves);
                         break;
                     }
                 }
