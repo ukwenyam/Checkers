@@ -97,7 +97,7 @@ export const createUser = functions.https.onRequest(async (request, response) =>
                 myColor: "#ffffff",
                 otherColor: "#000000",
                 compTime: 60,
-                orient: "2D"
+                orient: 2
             }
         }).then(function() {
             res.send({msg: "SUCCESS"});

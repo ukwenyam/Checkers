@@ -151,14 +151,6 @@
         gameTab.set(0);
     }
 
-    function selectTime(time) {
-        compTime = time;
-    }
-
-    function selectOrient(orient) {
-        myOrient = orient;
-    }
-
     function viewGamePref() {
         let profile = document.getElementById("leftSet");
         let game = document.getElementById("rightSet");
@@ -247,22 +239,22 @@
             <br/><br/>
         {/if}
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectTime(15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
+            <input on:change="{() => (compTime = 15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
             <label class="form-check-label" for="inlineRadio1">15</label>
         </div>
 
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectTime(30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
+            <input on:change="{() => (compTime = 30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
             <label class="form-check-label" for="inlineRadio2">30</label>
         </div>
 
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectTime(45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <input on:change="{() => (compTime = 45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
             <label class="form-check-label" for="inlineRadio3">45</label>
         </div>
 
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectTime(60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
+            <input on:change="{() => (compTime = 60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
             <label class="form-check-label" for="inlineRadio3">60</label>
         </div>
     </h6>
@@ -274,12 +266,12 @@
 
     <h6 style="width:100%;">Board Orientation:
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectOrient("2D")}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio4">
+            <input on:change="{() => (myOrient = 2)}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio4">
             <label class="form-check-label" for="inlineRadio2">2D</label>
         </div>
 
         <div class="form-check form-check-inline">
-            <input on:change="{() => selectOrient("3D")}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio5">
+            <input on:change="{() => (myOrient = 3)}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio5">
             <label class="form-check-label" for="inlineRadio3">3D</label>
         </div>
     </h6>

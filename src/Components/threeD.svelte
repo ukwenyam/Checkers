@@ -15,15 +15,18 @@
 
     let square = boardSquare / numSquares;
     let size = 0.35 * square;
+
+    let cirDim = 0.05 * screen.height;
     
     document.documentElement.style.setProperty('--boardSquare', boardSquare + 'px');
+    document.documentElement.style.setProperty('--cirDim', cirDim + 'px');
 
     let yRotation, currDim, cyHeight; 
 
     let maxHeight = size / 2;
 
     if($currUser != null) {
-        if($currUser.gamePref.orient == "2D") {
+        if($currUser.gamePref.orient == 2) {
             yRotation = 0;
             currDim = "3D";
             cyHeight = 0;
@@ -441,6 +444,8 @@
                             currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
                             possibleMoves = $gameBoard.possibleMoves(currPos);
 
+                            let index = $gameBoard.myCheckers.indexOf(currPos.id);
+
                             setTimeout(function() {
                                 switch($gameLevel) {
                                     case 1:
@@ -453,12 +458,21 @@
                                         $gameBoard.classMove();
                                         break;
                                     default:
-                                        $gameBoard.easyMove();
+                                        $gameBoard.medMove();
                                 }
 
                                 gameBoard.set($gameBoard);
-                                currPos = $gameBoard.getPiece(nextPos.xPos, nextPos.yPos);
-                                possibleMoves = $gameBoard.possibleMoves(currPos);
+
+                                if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
+                                    console.log("Match");
+                                    possibleMoves = $gameBoard.possibleMoves(currPos);
+                                } else {
+                                    console.log("No Match");
+                                    currPos = null;
+                                    nextPos = null;
+                                    possibleMoves = [];
+                                }
+
                             }, timeMove * 1000);
                         }
 
@@ -475,15 +489,15 @@
                 let yPos = checkers[i].j;
 
                 if($gamePref != null) {
-                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gameBoard.myCheckers.indexOf(i) != -1 && $gamePref.currPlayer == $gamePref.side && $gamePref.rangeMoves == $gamePref.numMoves && !$gamePref.paused) {
                         console.log("Clicked Checker at: " + xPos + ", " + yPos);
                         currPos = $gameBoard.getPieceFromId(i);
                         possibleMoves = $gameBoard.possibleMoves(currPos);
                         break;
                     }
                 } else {
-                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gameBoard.getSide(xPos, yPos) == "#ffffff") {
-                        console.log("Clicked Checker at: " + xPos + ", " + yPos);
+                    if(dist < checkers[i].r && !$gameBoard.isEmpty(xPos, yPos) && $gameBoard.getSide(xPos, yPos) == "#ffffff" && $gameBoard.myCheckers.indexOf(i) != -1) {
+                        console.log("Clicked Checker at: " + xPos + ", " + yPos);;
                         currPos = $gameBoard.getPieceFromId(i);
                         possibleMoves = $gameBoard.possibleMoves(currPos);
                         break;
@@ -526,8 +540,14 @@
     });
 </script>
 
+<div id="white" class="circle-count">
+    <h3>{12 - $gameBoard.myCheckers.length}</h3>
+</div>
 <button class="btn btn-primary btn-sm" on:click="{changeDimension}">{currDim}</button>
 <div id="board"></div>
+<div id="black" class="circle-count">
+    <h3>{12 - $gameBoard.otherCheckers.length}</h3>
+</div>
 
 <style>
     #board {
@@ -544,6 +564,33 @@
         right:25%;
         z-index:1;
         position:fixed;
+    }
+
+    h3 {
+        text-align:center;
+        margin-top:15%;
+    }
+
+    .circle-count {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        height:var(--cirDim);
+        width:var(--cirDim);
+        position:fixed;
+        z-index:1;
+        border-radius:50%;
+    }
+
+    #white {
+        left:25%;
+        top:10px;
+        background:white;
+    }
+
+    #black {
+        right:25%;
+        bottom:10px;
+        background:black;
+        color:white;
     }
 
     @media screen and (max-width: 800px) {
