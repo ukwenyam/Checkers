@@ -111,7 +111,9 @@
 <div id="gameStatus">
 
 	{#if $currUser != null}
-		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer == side ? $currUser.gamePref.myColor : "#000000"};"></i></h2>
+		<h2 id="player">Playing: 
+			<i class="fa fa-circle" style="color:{currPlayer == side ? $currUser.gamePref.myColor : "#000000"};"></i>
+		</h2>
 	{:else}
 		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer == side ? "#ffffff" : "#000000"};"></i></h2>
 	{/if}

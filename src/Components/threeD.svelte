@@ -3,6 +3,10 @@
     import { gameBoard, gamePref, currSocket, currUser, ratio, gameLevel } from '../Scripts/Init.js';
     import { spring } from 'svelte/motion';
     import { Position } from '../Scripts/Position.js';
+    import { Board } from '../Scripts/Board.js';
+
+    let winner;
+    let showWinner = false;
 
     let boardSquare;
     let numSquares = 8;
@@ -194,7 +198,7 @@
                                 } else if(prevXPos > currX && prevYPos < currY) {
                                     console.log("MOVING PIECE bottom left");
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos);
+                                    p5.translate(prevXPos - currX, prevYPos - currY);
                                     p5.rotateX(90);
                                     if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
@@ -203,7 +207,7 @@
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos, maxHeight + 1);
+                                    p5.translate(prevXPos - currX, prevYPos - currY, maxHeight + 1);
                                     p5.strokeWeight(2);
                                     if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
@@ -252,7 +256,7 @@
                                 } else if(prevXPos < currX && prevYPos < currY) {
                                     console.log("MOVING PIECE bottom right");
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos);
+                                    p5.translate(prevXPos - currX, prevYPos - currY);
                                     p5.rotateX(90);
                                     if($gameBoard.getSide(i, j) == "#000000")
                                         p5.stroke(255);
@@ -261,7 +265,7 @@
                                     p5.pop();
 
                                     p5.push();
-                                    p5.translate(currX - prevXPos, currY - prevYPos, maxHeight + 1);
+                                    p5.translate(prevXPos - currX, prevYPos - currY, maxHeight + 1);
                                     p5.strokeWeight(2);
                                     if($gameBoard.getSide(i, j) == "#000000") {
                                         p5.stroke("white");
@@ -438,6 +442,7 @@
                             console.log(possibleMoves);
 
                             let timeMove = Math.floor(Math.random() * (0.75 * 15)) + (0.25 * 15);
+                            timeMove = timeMove / 2;
 
                             console.log(timeMove);
 
@@ -447,33 +452,25 @@
                             let index = $gameBoard.myCheckers.indexOf(currPos.id);
 
                             setTimeout(function() {
-                                switch($gameLevel) {
-                                    case 1:
-                                        $gameBoard.medMove();
-                                        break;
-                                    case 2:
-                                        $gameBoard.hardMove();
-                                        break;
-                                    case 3:
-                                        $gameBoard.classMove();
-                                        break;
-                                    default:
-                                        $gameBoard.medMove();
-                                }
+
+                                winner = $gameBoard.computerMove(2);
 
                                 gameBoard.set($gameBoard);
 
-                                if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
-                                    console.log("Match");
-                                    possibleMoves = $gameBoard.possibleMoves(currPos);
+                                if(winner != null) {
+                                    showWinner = true;
                                 } else {
-                                    console.log("No Match");
-                                    currPos = null;
-                                    nextPos = null;
-                                    possibleMoves = [];
+                                    if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
+                                        console.log("Match");
+                                        possibleMoves = $gameBoard.possibleMoves(currPos);
+                                    } else {
+                                        console.log("No Match");
+                                        currPos = null;
+                                        nextPos = null;
+                                        possibleMoves = [];
+                                    }
                                 }
-
-                            }, timeMove * 1000);
+                            }, 3000);
                         }
 
                         break;
@@ -535,6 +532,12 @@
         }
     }
 
+    function resetGame() {
+        showWinner = false;
+        gameBoard.set(new Board(null, false));
+        gamePref.set(null);
+    }
+
     onMount(function() {
         let myp5 = new p5(board, "board");
     });
@@ -549,7 +552,38 @@
     <h3>{12 - $gameBoard.otherCheckers.length}</h3>
 </div>
 
+{#if showWinner}
+    <div id="winner">
+        <h2>{winner} won the Game</h2>
+        <button id="again" class="btn btn-primary" on:click="{resetGame}">Play Again</button>
+    </div>
+{/if}
+
 <style>
+    h2 {
+        text-align:center;
+        margin-top:33.33%;
+        margin-bottom:33.33%;
+        color:white;
+    }
+
+    #again {
+        width:50%;
+        margin-left:25%;
+    }
+
+    #winner {
+        width:calc(var(--boardSquare) / 2);
+        height:calc(var(--boardSquare) / 2);
+        background-color: #343a40;
+        z-index:99; 
+        border-radius:0.4rem;
+        top:calc((100% - (var(--boardSquare) / 2)) / 2);
+        left:calc((100% - (var(--boardSquare) / 2)) / 2);
+        position:fixed;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
     #board {
         width:var(--boardSquare);
         height:var(--boardSquare);
