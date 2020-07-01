@@ -1,32 +1,35 @@
 import { Piece } from './Piece.js';
 import { Position } from '../Scripts/Position.js';
 import { currUser, gamePref } from './Init.js';
+import { SimBoard } from './SimBoard.js';
 
 export class Board {
 
     constructor(state, inverted) {
 
-        let myColor, otherColor;
         this.currPiece = null;
         this.tries = 0;
         this.makingMove = false;
 
+        this.myColor = null;
+        this.otherColor = null;
+
+        this.board = [];
+        this.myCheckers = [];
+        this.otherCheckers = [];
+
         currUser.update(state => {
             if(state != null) {
-                myColor = state.gamePref.myColor;
-                otherColor = state.gamePref.otherColor;
+                this.myColor = state.gamePref.myColor;
+                this.otherColor = state.gamePref.otherColor;
             } else {
-                myColor = "#ffffff";
-                otherColor = "#000000";
+                this.myColor = "#ffffff";
+                this.otherColor = "#000000";
             }
             return state;
         });
 
         if(state == null && !inverted) {
-
-            this.board = [];
-            this.myCheckers = [];
-            this.otherCheckers = [];
 
             let i, j, k = 0;
 
@@ -45,10 +48,10 @@ export class Board {
 
                     } else  {
                         if(0 <= i && i <= 2) {
-                            this.board[i][j] = new Piece(i, j, otherColor, k, null);
+                            this.board[i][j] = new Piece(i, j, this.otherColor, k, null);
                             this.otherCheckers.push(k);
                         } else {
-                            this.board[i][j] = new Piece(i, j, myColor, k, null);
+                            this.board[i][j] = new Piece(i, j, this.myColor, k, null);
                             this.myCheckers.push(k);
                         }
                             
@@ -58,8 +61,6 @@ export class Board {
             }
 
         } else if(state != null && inverted == null) {
-
-            this.board = [];
 
             let i, j;
 
@@ -79,10 +80,6 @@ export class Board {
 
         } else if(state == null && inverted) {
 
-            this.board = [];
-            this.myCheckers = [];
-            this.otherCheckers = [];
-
             let i, j, k = 23;
 
             for(i = 0; i < 8; i++) {
@@ -101,10 +98,10 @@ export class Board {
                     } else  {
 
                         if(0 <= i && i <= 2) {
-                            this.board[i][j] = new Piece(i, j, otherColor, k, null);
+                            this.board[i][j] = new Piece(i, j, this.otherColor, k, null);
                             this.otherCheckers.push(k);
                         } else {
-                            this.board[i][j] = new Piece(i, j, myColor, k, null);
+                            this.board[i][j] = new Piece(i, j, this.myColor, k, null);
                             this.myCheckers.push(k);
                         }
                             
@@ -139,11 +136,11 @@ export class Board {
 	}
 
 
-    takePiece(piece, currPos, nextPos) {
+    takePiece(piece, nextPos) {
 
-        let isTaken = false;
-        let xPiece = null;
-        let yPiece = null;
+        let isTaken = false, currPos = piece.getPosition();
+
+        let xPiece, yPiece;
 
         if(nextPos.xPos < currPos.xPos && nextPos.yPos < currPos.yPos) {
 
@@ -151,7 +148,6 @@ export class Board {
             yPiece = currPos.yPos - 1;
 
             if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                //this.board[xPiece][yPiece] = null;
                 isTaken = true;
             }
         }
@@ -162,7 +158,6 @@ export class Board {
             yPiece = currPos.yPos + 1;
 
             if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                //this.board[xPiece][yPiece] = null;
                 isTaken = true;
             }
         }
@@ -173,7 +168,6 @@ export class Board {
             yPiece = currPos.yPos - 1;
 
             if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                //this.board[xPiece][yPiece] = null;
                 isTaken = true;
             }
         }
@@ -202,6 +196,28 @@ export class Board {
             this.board[xPiece][yPiece] = null;
         }
     }
+
+
+    allMovablePieces() {
+
+        console.log("Getting All Moveable Piece");
+
+        let piece, allPieces = [], possMoves;
+
+        let oppLength = this.otherCheckers.length;
+
+        for(let i = 0; i < oppLength; i++) {
+
+            piece = this.getPieceFromId(this.otherCheckers[i]);
+
+            possMoves = this.possibleMoves(piece);
+
+            if(possMoves.length > 0)
+                allPieces.push(piece);
+        }
+
+        return allPieces;
+    }
     
 
     possibleMoves(piece) {
@@ -212,22 +228,9 @@ export class Board {
         let xPos = piece.getPosition().xPos;
         let yPos = piece.getPosition().yPos;
 
-        let myColor, otherColor;
-
-        currUser.update(state => {
-            if(state != null) {
-                myColor = state.gamePref.myColor;
-                otherColor = state.gamePref.otherColor;
-            } else {
-                myColor = "#ffffff";
-                otherColor = "#000000";
-            }
-            return state;
-        });
-
         if(this.checkUpperLeft(xPos, yPos).oneSq) {
             if(this.board[xPos - 1][yPos - 1] == null) { 
-                if(piece.side == myColor || (piece.side == otherColor && piece.stack > 1)) {
+                if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
                     move = {
                         x: xPos - 1,
                         y: yPos - 1 
@@ -249,7 +252,7 @@ export class Board {
 
         if(this.checkUpperRight(xPos, yPos).oneSq) {
             if(this.board[xPos - 1][yPos + 1] == null) {
-                if(piece.side == myColor || (piece.side == otherColor && piece.stack > 1)) {
+                if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
                     move = {
                         x: xPos - 1,
                         y: yPos + 1 
@@ -271,7 +274,7 @@ export class Board {
 
         if(this.checkLowerLeft(xPos, yPos).oneSq) {
             if(this.board[xPos + 1][yPos - 1] == null) {
-                if(piece.side == otherColor || (piece.side == myColor && piece.stack > 1)) {
+                if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
                     move = {
                         x: xPos + 1,
                         y: yPos - 1 
@@ -293,7 +296,7 @@ export class Board {
 
         if(this.checkLowerRight(xPos, yPos).oneSq) {
             if(this.board[xPos + 1][yPos + 1] == null) {
-                if(piece.side == otherColor || (piece.side == myColor && piece.stack > 1)) {
+                if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
                     move = {
                         x: xPos + 1,
                         y: yPos + 1 
@@ -326,11 +329,18 @@ export class Board {
         if(possMoves.length > 0) {
 
             for(let i = 0; i < possMoves.length; i++) {
+
                 let xPos = possMoves[i].x;
                 let yPos = possMoves[i].y;
 
                 if(xPos == nextPos.xPos && yPos == nextPos.yPos) {
-                    this.takePiece(piece, piece.getPosition(), nextPos);
+
+                    let xDiff = nextPos.xPos - xPos;
+                    let yDiff = nextPos.yPos - yPos;
+
+                    if((xDiff > -1 && yDiff > -1) || (xDiff > 1 && yDiff > 1) || (xDiff > -1 && yDiff > 1) || (xDiff > 1 && yDiff > -1))
+                        this.takePiece(piece, nextPos);
+
                     legal = true;
                     break;
                 }
@@ -343,36 +353,23 @@ export class Board {
 
     doMove(piece, nextPos) {
 
-        let myColor, otherColor;
-
-        currUser.update(state => {
-            if(state != null) {
-                myColor = state.gamePref.myColor;
-                otherColor = state.gamePref.otherColor;
-            } else {
-                myColor = "#ffffff";
-                otherColor = "#000000";
-            }
-            return state;
-        });
-
         let moved = false, remove = null;
 
-        let checkersLength = piece.side == myColor ? this.otherCheckers.length : this.myCheckers.length;
+        let checkersLength = piece.side == this.myColor ? this.otherCheckers.length : this.myCheckers.length;
 
         if(this.isMoveLegal(piece, nextPos)) {
 
-            let newLength = piece.side == myColor ? this.otherCheckers.length : this.myCheckers.length;
+            let newLength = piece.side == this.myColor ? this.otherCheckers.length : this.myCheckers.length;
 
             if(newLength == checkersLength)
                 remove = this.scanBoard(piece, nextPos);
 
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
 
-            if(nextPos.xPos == 0 && newPiece.side == myColor && newPiece.stack == 1) 
+            if(nextPos.xPos == 0 && newPiece.side == this.myColor && newPiece.stack == 1) 
                 newPiece.incrementStack();
             
-            if(nextPos.xPos == 7 && newPiece.side == otherColor && newPiece.stack == 1) 
+            if(nextPos.xPos == 7 && newPiece.side == this.otherColor && newPiece.stack == 1) 
                 newPiece.incrementStack();
 
             this.board[nextPos.xPos][nextPos.yPos] = newPiece;
@@ -478,9 +475,6 @@ export class Board {
 
         let autoRemove = false;
 
-        let xNext = nextPos.xPos;
-        let yNext = nextPos.yPos;
-
         let xPos = currPiece.getPosition().xPos;
         let yPos = currPiece.getPosition().yPos;
 
@@ -562,19 +556,6 @@ export class Board {
 
     otherPlayerMove(piece, xDiff, yDiff) {
 
-        let myColor, otherColor;
-
-        currUser.update(state => {
-            if(state != null) {
-                myColor = state.gamePref.myColor;
-                otherColor = state.gamePref.otherColor;
-            } else {
-                myColor = "#ffffff";
-                otherColor = "#000000";
-            }
-            return state;
-        });
-
         let xPos = piece.getPosition().xPos;
         let yPos = piece.getPosition().yPos;
 
@@ -586,12 +567,12 @@ export class Board {
 
         let newPiece = new Piece(nextPosX, nextPosY, piece.side, piece.id, piece.stack);
 
-        if(newPiece.side == myColor) {
+        if(newPiece.side == this.myColor) {
             if(nextPosX == 0 && newPiece.side == myColor && newPiece.stack == 1) 
                 newPiece.incrementStack();
         } 
         
-        if(newPiece.side == otherColor) {
+        if(newPiece.side == this.otherColor) {
             if(nextPosX == 0 && newPiece.side == otherColor && newPiece.stack == 1) 
                 newPiece.incrementStack();
         }
@@ -662,27 +643,16 @@ export class Board {
 
     suicideMove(possMove, id) {
 
-        let myColor, otherColor, suicide = false;
+        let suicide = false;
 
         let xPos = possMove.x;
         let yPos = possMove.y;
-
-        currUser.update(state => {
-            if(state != null) {
-                myColor = state.gamePref.myColor;
-                otherColor = state.gamePref.otherColor;
-            } else {
-                myColor = "#ffffff";
-                otherColor = "#000000";
-            }
-            return state;
-        });
 
         console.log(possMove);
 
         if(xPos < 7 || yPos == 0 || yPos == 7) {
             if(this.checkLowerRight(xPos, yPos).oneSq) {
-                if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side == myColor) {
+                if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side == this.myColor) {
                     if(this.checkUpperLeft(xPos, yPos).oneSq) {
                         if(this.board[xPos - 1][yPos - 1] == null || (this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].id == id)) {
                             console.log("Found Opponent");
@@ -693,7 +663,7 @@ export class Board {
             }
     
             if(this.checkLowerLeft(xPos, yPos).oneSq) {
-                if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side == myColor) {
+                if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side == this.myColor) {
                     if(this.checkUpperRight(xPos, yPos).oneSq) {
                         if(this.board[xPos + 1][yPos - 1] == null || (this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].id == id)) {
                             console.log("Found Opponent");
@@ -704,7 +674,7 @@ export class Board {
             }
     
             if(this.checkUpperRight(xPos, yPos).oneSq) {
-                if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side == myColor) {
+                if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side == this.myColor) {
                     if(this.checkLowerLeft(xPos, yPos).oneSq) {
                         if(this.board[xPos - 1][yPos + 1] == null || (this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].id == id)) {
                             console.log("Found Opponent");
@@ -715,7 +685,7 @@ export class Board {
             }
     
             if(this.checkUpperLeft(xPos, yPos).oneSq) {
-                if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side == myColor) {
+                if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side == this.myColor) {
                     if(this.checkLowerRight(xPos, yPos).oneSq) {
                         if(this.board[xPos + 1][yPos + 1] == null || (this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].id == id)) {
                             console.log("Found Opponent");
@@ -732,80 +702,246 @@ export class Board {
             return null;
     }
 
-    computerMove(level) {
 
-        let winner;
+    totalPossibleMoves() {
+
+        let count = 0;
+
+        for(let i = 0; i < 8; i++) {
+            for(let j = 0; j < 8; j++) {
+                if(this.board[i][j] != null) {
+                    count += this.possibleMoves(this.board[i][j]).length;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    evaluateBoard(board) {
+
+        let playNumPieces = board.myCheckers.length;
+        let compKings = 0;
+        let compNumPieces = board.otherCheckers.length;
+        let playKings = 0;
+        let compPosSum = 0;
+        let playPosSum = 0;
+
+        let i, piece;
+
+        for(i = 0; i < board.myCheckers.length; i++) {
+
+            piece = board.getPieceFromId(board.myCheckers[i]);
+
+            if(piece.stack > 1) 
+                playKings++;
+
+            playPosSum += board.possibleMoves(piece).length;
+        }
+
+        for(i = 0; i < board.otherCheckers.length; i++) {
+
+            piece = board.getPieceFromId(board.otherCheckers[i]);
+
+            if(piece.stack > 1) 
+                compKings++;
+            
+            compPosSum += board.possibleMoves(piece).length;
+        }
+
+        let pieceDiff = compNumPieces - playNumPieces;
+        let kingDiff = compKings - playKings;
+
+        if(playNumPieces == 0)
+            playNumPieces = 0.01;
+
+        if(compNumPieces == 0)
+            compNumPieces = 0.01;
+
+        let avgPlayPieces = playPosSum / playNumPieces; 
+        let avgCompPieces = compPosSum / compNumPieces;
+
+        let avgPosDiff = avgCompPieces - avgPlayPieces;
+
+        let nodes = [pieceDiff, kingDiff, avgPosDiff];
+
+        let weights = [1000, 100, 10];
+
+        let score = 0;
+
+        for(i = 0; i < nodes.length; i++)
+            score += nodes[i] * weights[i];
+
+        return score;
+    }
+
+    miniMax(simBoard, depth, isMaximizing, alpha, beta) {
+
+        console.log(depth);
+        console.log(isMaximizing);
+
+        if(depth == 0) {
+
+            console.log("Evaluating Board");
+            return this.evaluateBoard(simBoard);
+
+        } else {
+
+            let gameSim, bestScore;
+
+            if(isMaximizing) {
+
+                console.log("Maximizing Move");
+
+                let allPieces = simBoard.allMovablePieces(simBoard.otherColor);
+
+                //console.log(allPieces);
+
+                for(let i = 0; i < allPieces.length; i++) {
+
+                    if(alpha >= beta)
+                        break;
+
+                    bestScore = -Infinity;
+
+                    let possMoves = simBoard.possibleMoves(allPieces[i]);
+
+                    for(let j = 0; j < possMoves.length; j++) {
+
+                        gameSim = new SimBoard(simBoard.board);
+
+                        gameSim.doMove(allPieces[i], possMoves[j]);
+
+                        console.log("Switching to Player");
+
+                        let score = this.miniMax(gameSim, depth - 1, !isMaximizing, alpha, beta);
+
+                        console.log(score);
+
+                        bestScore = Math.max(score, bestScore);
+
+                        alpha = Math.max(alpha, bestScore);
+
+                        if(alpha >= beta)
+                            break;
+                    }
+                }
+
+            } else {
+
+                console.log("Minimizing Move");
+
+                let allPieces = simBoard.allMovablePieces(simBoard.myColor);
+
+                //console.log(allPieces);
+
+                for(let i = 0; i < allPieces.length; i++) {
+
+                    if(alpha >= beta)
+                        break;
+
+                    bestScore = Infinity;
+
+                    let possMoves = simBoard.possibleMoves(allPieces[i]);
+
+                    for(let j = 0; j < possMoves.length; j++) {
+
+                        gameSim = new SimBoard(simBoard.board);
+
+                        gameSim.doMove(allPieces[i], possMoves[j]);
+
+                        console.log("Switching to Computer");
+
+                        let score = this.miniMax(gameSim, depth - 1, !isMaximizing, alpha, beta);
+
+                        console.log(score);
+
+                        bestScore = Math.min(score, bestScore);
+
+                        alpha = Math.min(alpha, bestScore);
+
+                        if(alpha >= beta)
+                            break;
+                    }
+                }
+            }
+
+            return bestScore;
+        }
+    }
+
+    computerMove() {
+
+        let winner = null;
 
         this.checkAllPieces();
 
         if(this.myCheckers.length > 1 && this.otherCheckers.length > 1) {
 
-            let origLevel = level;
+            let allPieces = this.allMovablePieces();
 
-            let moves = null, moved;
+            let depth = this.totalPossibleMoves();
 
-            if(moves == null && level == 2) {
+            let nextPos, piece;
 
-                moves = this.medMove(this.currPiece)
+            for(let i = 0; i < allPieces.length; i++) {
 
-                if(moves == null && this.currPiece == null) {
+                let alpha = -Infinity;
+                let beta = Infinity;
 
-                    moves = this.hardMove();
+                let bestScore = -Infinity;
 
-                    if(moves == null)
-                        level = 0;
-                }
-            } 
+                let possMoves = this.possibleMoves(allPieces[i]);
 
-            if(moves == null && level == 1) {
+                for(let j = 0; j < possMoves.length; j++) {
 
-                moves = this.medMove(this.currPiece);
+                    let gameSim = new SimBoard(this.board);
 
-                if(moves == null)
-                    level = 0;
-            }
-                
-            if(moves == null && level == 0 && this.currPiece == null) {
-                moves = this.easyMove();
-            }
+                    gameSim.doMove(allPieces[i], possMoves[j]);
 
-            let makeMove = setInterval(() => {
+                    let score = this.miniMax(gameSim, 4, false, alpha, beta);
 
-                if(moves != null) {
+                    console.log(score);
 
-                    clearInterval(makeMove);
-
-                    let origLength = this.myCheckers.length;
-
-                    moved = this.doMove(moves.piece, moves.nextPos);
-
-                    let lateLength = this.myCheckers.length;
-
-                    if(origLength > lateLength && origLevel > 0 && moved != null) {
-                        this.currPiece = moves.piece;
-                        this.computerMove(origLevel);
+                    if(score > bestScore) {
+                        console.log("Updating Score");
+                        bestScore = score;
+                        piece = allPieces[i];
+                        nextPos = new Position(possMoves[j].x, possMoves[j].y, 'E');
                     }
+                }
+            }
 
-                    if(moved != null && !moved.move && level == 0)
-                        this.computerMove(level);
+            let wait = setInterval(() => {
+
+                if(piece != null && nextPos != null) {
+
+                    console.log(piece.getPosition());
+                    console.log(nextPos);
+
+                    console.log("Making Move");
+
+                    clearInterval(wait);
+
+                    let moved = this.doMove(piece, nextPos);
+
+                    console.log(moved);
 
                     this.checkAllPieces();
-
-                    this.currPiece = null;
-
-                    winner = null;
                 }
             }, 500);
-                
+
+            return winner;
+
         } else {
 
             if(this.myCheckers.length <= 1) 
                 winner = "Opponent";
             else    
-                winner = "You"
-        }
+                winner = "You";
 
-        return winner;
+            return winner;
+        }
     }
 
     easyMove() {
@@ -834,7 +970,7 @@ export class Board {
 
         let smartMove = this.suicideMove(possMoves[randMove], piece.id);
 
-        if(smartMove != null && this.tries <= 2) {
+        if(smartMove != null && this.tries <= this.otherCheckers.length) {
 
             nextPos = new Position(smartMove.x, smartMove.y, 'E');
 
@@ -846,7 +982,7 @@ export class Board {
             }
         } else {
 
-            if(this.tries <= 2) {
+            if(this.tries <= this.otherCheckers.length) {
                 console.log("Trying Again");
                 this.tries += 1;
                 this.easyMove();

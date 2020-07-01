@@ -451,26 +451,31 @@
 
                             let index = $gameBoard.myCheckers.indexOf(currPos.id);
 
-                            setTimeout(function() {
+                            let comp = setInterval(() => {
 
-                                winner = $gameBoard.computerMove(2);
+                                if(!moving) {
 
-                                gameBoard.set($gameBoard);
+                                    clearInterval(comp);
 
-                                if(winner != null) {
-                                    showWinner = true;
-                                } else {
-                                    if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
-                                        console.log("Match");
-                                        possibleMoves = $gameBoard.possibleMoves(currPos);
+                                    winner = $gameBoard.computerMove();
+
+                                    gameBoard.set($gameBoard);
+
+                                    if(winner != null) {
+                                        showWinner = true;
                                     } else {
-                                        console.log("No Match");
-                                        currPos = null;
-                                        nextPos = null;
-                                        possibleMoves = [];
+                                        if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
+                                            console.log("Match");
+                                            possibleMoves = $gameBoard.possibleMoves(currPos);
+                                        } else {
+                                            console.log("No Match");
+                                            currPos = null;
+                                            nextPos = null;
+                                            possibleMoves = [];
+                                        }
                                     }
                                 }
-                            }, 3000);
+                            }, 500);
                         }
 
                         break;
@@ -533,6 +538,8 @@
     }
 
     function resetGame() {
+        currPos = null;
+        nextPos = null;
         showWinner = false;
         gameBoard.set(new Board(null, false));
         gamePref.set(null);
