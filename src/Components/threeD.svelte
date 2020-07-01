@@ -451,31 +451,25 @@
 
                             let index = $gameBoard.myCheckers.indexOf(currPos.id);
 
-                            let comp = setInterval(() => {
+                            setTimeout(() => {
+                                winner = $gameBoard.computerMove();
 
-                                if(!moving) {
+                                gameBoard.set($gameBoard);
 
-                                    clearInterval(comp);
-
-                                    winner = $gameBoard.computerMove();
-
-                                    gameBoard.set($gameBoard);
-
-                                    if(winner != null) {
-                                        showWinner = true;
+                                if(winner != null) {
+                                    showWinner = true;
+                                } else {
+                                    if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
+                                        console.log("Match");
+                                        possibleMoves = $gameBoard.possibleMoves(currPos);
                                     } else {
-                                        if(currPos != null && currPos.id == $gameBoard.myCheckers[index]) {
-                                            console.log("Match");
-                                            possibleMoves = $gameBoard.possibleMoves(currPos);
-                                        } else {
-                                            console.log("No Match");
-                                            currPos = null;
-                                            nextPos = null;
-                                            possibleMoves = [];
-                                        }
+                                        console.log("No Match");
+                                        currPos = null;
+                                        nextPos = null;
+                                        possibleMoves = [];
                                     }
                                 }
-                            }, 500);
+                            }, 3000);
                         }
 
                         break;
