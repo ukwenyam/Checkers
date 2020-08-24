@@ -12,14 +12,18 @@
 	if($gamePref.oppID != null && $gamePref.opp == null) {
 		$currSocket.emit('join-game', { 
 			gameID: $gamePref.gameID, 
-			email: $currUser.email,
-			name: $currUser.name
+			email: $currUser.profile.email,
+			name: $currUser.profile.name
 		});
 	}
 
-    let clockTime = $gamePref.time;
+	let rangeMoves;
 
-	let lastNumMoves = $gamePref.numMoves;
+	if($gamePref.finished) {
+		rangeMoves = $gameHistory.length - 1;
+	}
+
+	let lastNumMoves = $gameBoard.numMoves;
 	
 	let currPos, nextPos;
 
@@ -31,73 +35,58 @@
 
 			clearInterval(timeInterval);
 
-            console.log('Switching Player');
+			console.log('Switching Player');
 
             gamePref.update(state => {
-                state.timer = state.time;
-                state.currPlayer = state.currPlayer == 0 ? 1 : 0;
+				state.rangeMoves = $gameBoard.numMoves;
+				state.currPlayer = state.currPlayer == 0 ? 1 : 0;
+				state.timer = state.time;
                 return state;
             });
 
-			console.log($gamePref.currPlayer);
-
 			timeInterval = setInterval(countDown, 1000);
         }
-	});
-
-	$currSocket.on('piece-move', (data) => {
-
-		if(data.gameID == $gamePref.gameID && data.oppID == $currUser.email) {
-
-			console.log(data);
-
-			if(data.remove != null)
-				$gameBoard.removePiece($gameBoard.getPieceFromId(data.id));
-			
-			let piece = $gameBoard.getPieceFromId(data.id);
-
-			$gameBoard.otherPlayerMove(piece, data.xDiff, data.yDiff);
-
-			gameBoard.set($gameBoard);
-
-			$gamePref.states.push($gameBoard.saveBoardState());
-
-			gamePref.update(state => {
-				state.numMoves += 1;
-				state.rangeMoves += 1;
-				return state;
-			});
-		}
 	});
 
 	let timeInterval = setInterval(countDown, 1000);
 
 	function countDown() {
 
-		if($gamePref.rangeMoves == $gamePref.numMoves && $gamePref.paused == false) {
+		if($gamePref != null) {
 
-			//console.log($gamePref.timer);
+			if(!$gamePref.finished && $gamePref.secondsPlayed % 300 == 0 && $gamePref.secondsPlayed >= 300) {
+				if($gameBoard.numMoves > lastNumMoves) {
+					saveGame(true);
+					lastNumMoves = $gameBoard.numMoves;
+				}
+			}
 
-			if($gamePref.timer > 0) {
+			if(!$gamePref.finished && $gamePref.rangeMoves == $gameBoard.numMoves && !$gamePref.paused && $gamePref.currPlayer == $gamePref.side) {
+
+				console.log($currUser.profile.name);
+
+				if($gamePref.timer > 0) {
+					gamePref.update(state => {
+						state.timer -= 1;
+						return state;
+					});
+				} else {
+					switchPlayer();
+					currPos = null, nextPos = null;
+				}
+			}
+
+			if(!$gamePref.paused && !$gamePref.finished) {
 				gamePref.update(state => {
-					state.timer -= 1;
 					state.secondsPlayed += 1;
 					return state;
 				});
-			} else {
-				switchPlayer();
-				currPos = null, nextPos = null;
 			}
 		}
 	}
 
 	function viewBoardHistory() {
-
-		let state = $gamePref.states[$gamePref.rangeMoves];
-
-		gameBoard.set(new Board(state, null));
-
-		setCirclePositions();
+		gameBoard.set(new Board($gameHistory[rangeMoves], null));
 	}
 
 	function switchPlayer() {
@@ -109,37 +98,30 @@
             $currSocket.emit('start-game', $gamePref.gameID);
 	}
 
-    setInterval(function(){
-        if($gamePref.numMoves > lastNumMoves) {
-			saveGame(true);
-			lastNumMoves = $gamePref.numMoves;
-		}
-    }, 300000);
-
     function saveGame(auto) {
-        if($gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0) 
+        if($gamePref.side == $gamePref.currPlayer && $gameBoard.numMoves > 0) 
 			$currSocket.emit('game-save', {gameID: $gamePref.gameID, auto: auto, oppID: $gamePref.oppID});
     }
 </script>
 
 <div id="gameStatus">
-	<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer == $gamePref.side ? $currUser.gamePref.myColor : $currUser.gamePref.otherColor};"></i></h2>
+	{#if $gamePref.finished == false}
+		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{$gamePref.currPlayer == $gamePref.side ? $currUser.gamePreferences.myColor : $currUser.gamePreferences.otherColor};"></i></h2>
+	{/if}
 
-	<h2 id="moves">Moves: {$gamePref.numMoves}</h2>
+	<h2 id="moves">Moves: {$gameBoard.numMoves}</h2>
 
-	<h2 id="time">Timer: {$gamePref.timer}</h2>
+	{#if $gamePref.finished == false}
+		<h2 id="time">Timer: {$gamePref.timer}</h2>
+	{/if}
 </div>
 
-<h4 class="players" style="top:0;%">{$gamePref.opp != null ? $gamePref.opp : "Waiting for Other Player"}</h4>
-
-<ThreeD currPos={currPos} nextPos={nextPos}/>
-
-<h4 class="players" style="bottom:0;">{$currUser.name}</h4>
+<ThreeD currPos={currPos} nextPos={nextPos} />
 
 {#if $gamePref.finished}
     <div id="state">
-        <h2 id="rangeBar">Game State at Move: {$gamePref.rangeMoves}</h2>
-        <input class="custom-range" orient="vertical" disabled="{!$gamePref.paused}" on:change="{viewBoardHistory}" bind:value={$gamePref.rangeMoves} type="range" min="0" max="{$gamePref.numMoves}" step="1">
+        <h2 id="rangeBar">Game State at Move: {$gameBoard.numMoves}</h2>
+        <input class="custom-range" orient="vertical" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{$gameHistory.length - 1}" step="1">
     </div>
 {:else}
     <div id="gameBtn" class="container">
@@ -147,9 +129,7 @@
             <button class="btn btn-success btn-lg start" on:click="{startGame}">Start Game</button>
         {/if}
 
-        {#if $gamePref.side == $gamePref.currPlayer && $gamePref.numMoves > 0}
-            <button class="btn btn-primary btn-lg switch" on:click="{switchPlayer}">Switch Turn</button>
-
+        {#if $gamePref.side == $gamePref.currPlayer && $gameBoard.numMoves > 1}
             <button class="btn btn-warning btn-lg save" on:click="{() => saveGame(false)}">Save Game</button>
 
             <button class="btn btn-danger btn-lg forfeit" on:click="{() => saveGame(false)}">Forfeit Game</button>
@@ -158,10 +138,6 @@
 {/if}
 
 <style> 
-	.players {
-		left:47.5%;
-		position:fixed;
-	}
 
 	.fa-circle {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -226,14 +202,14 @@
 
 	#time {
 		position:fixed;
-		top:50%;
+		top:75%;
 		left:7.5%;
 	}
 
 	#state {
 		position:fixed;
-		top:50%;
-		right:7.5%
+		top:25%;
+		right:5%
 	}
 
 	#rangeBar {

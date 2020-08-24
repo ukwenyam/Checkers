@@ -6,7 +6,7 @@ export function invokeFunction(load) {
 
         currUser.update(state => {
             if(state != null)
-                load.id = state.email;
+                load.id = state.profile.email;
             return state;
         });
 

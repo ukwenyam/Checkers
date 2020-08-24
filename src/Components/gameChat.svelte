@@ -8,7 +8,7 @@
     import Loader from './loader.svelte';
     import Player from './audioPlayer.svelte';
 
-    $currSocket.emit('go-online', $currUser.email);
+    $currSocket.emit('go-online', $currUser.profile.email);
 
     let div, autoscroll;
     let message;
@@ -22,8 +22,8 @@
     if(currChat != null) {
         chatID = currChat.id;
         chatMsgs = currChat.history;
-        chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
-        userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
+        chatUser = currChat.priName == $currUser.profile.name ? currChat.secName : currChat.priName;
+        userID = currChat.priEmail == $currUser.profile.email ? currChat.secEmail : currChat.priEmail;
     }
 
     beforeUpdate(() => {
@@ -35,12 +35,12 @@
     });
     
     $currSocket.on('typing', (id) => {
-        if(id == $currUser.email)
+        if(id == $currUser.profile.email)
             isTyping = true;
     });
 
     $currSocket.on('no-typing', (id) => {
-        if(id == $currUser.email)
+        if(id == $currUser.profile.email)
             isTyping = false;
     }); 
 
@@ -66,8 +66,8 @@
 
             chatID = currChat.id;
             chatMsgs = currChat.history;
-            chatUser = currChat.priName == $currUser.name ? currChat.secName : currChat.priName;
-            userID = currChat.priEmail == $currUser.email ? currChat.secEmail : currChat.priEmail;
+            chatUser = currChat.priName == $currUser.profile.name ? currChat.secName : currChat.priName;
+            userID = currChat.priEmail == $currUser.profile.email ? currChat.secEmail : currChat.priEmail;
         }
     }
 
@@ -79,7 +79,7 @@
 
             calleeName.set(chatUser); calleeID.set(userID);
 
-            callerName.set($currUser.name); callerID.set($currUser.email);
+            callerName.set($currUser.profile.name); callerID.set($currUser.profile.email);
 
             showCallBar.set(true); showCallee.set(true); 
 
@@ -107,8 +107,8 @@
                             calleeID: userID, 
                             calleeName: chatUser,  
                             signal: data, 
-                            callerName: $currUser.name, 
-                            callerID: $currUser.email 
+                            callerName: $currUser.profile.name, 
+                            callerID: $currUser.profile.email 
                         });
                     }
                 });
@@ -147,9 +147,9 @@
                 chatID: chatID,
                 userID: userID,
                 func: "saveChat",
-                id: $currUser.email,
+                id: $currUser.profile.email,
                 msg: {
-                    msgid: $currUser.email,
+                    msgid: $currUser.profile.email,
                     date: moment().format("YYYYMMDD, HH:mm"),
                     message: message
                 }
@@ -179,9 +179,9 @@
         <div id="allChats">
             {#each $allChats as chat}
                 <button class="user btn btn-lg btn-dark" on:click="{() => viewChat(chat, false)}">
-                    <img alt="propic" src="{chat.priName == $currUser.name ? 'https://api.adorable.io/avatars/285/' + chat.secEmail + '.png' : 'https://api.adorable.io/avatars/285/' + chat.priEmail + '.png'}"/>
+                    <img alt="propic" src="{chat.priName == $currUser.profile.name ? 'https://api.adorable.io/avatars/285/' + chat.secEmail + '.png' : 'https://api.adorable.io/avatars/285/' + chat.priEmail + '.png'}"/>
                     <div class="chatPrev">
-                        <h5 style="text-align:left;margin-bottom:0px;">{chat.priName == $currUser.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}
+                        <h5 style="text-align:left;margin-bottom:0px;">{chat.priName == $currUser.profile.name ? chat.secName.toUpperCase() : chat.priName.toUpperCase()}
                             {#if chat.online}
                                 <span class="indicator online"></span>
                             {/if}

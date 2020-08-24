@@ -3,12 +3,18 @@ import io from 'socket.io-client';
 import { Board } from './Board.js';
 import env from '../env.json';
 
+if(localStorage.getItem('offGames') == null) {
+    const allOffGames = [];
+    localStorage.setItem('offGames', JSON.stringify(allOffGames));
+}
+
 export const currSocket = writable(null);
 
-if(window.location.hostname.includes('localhost'))
+if(window.location.hostname.includes('localhost')) {
     currSocket.set(io(env.local, {transports: ['websocket'], upgrade: false}));
-else
+} else {
     currSocket.set(io(env.server, {transports: ['websocket'], upgrade: false}));
+}
 
 export const ratio = readable(screen.width / screen.height);
 
@@ -54,7 +60,9 @@ export const gameBoard = writable(null);
 
 export const gameLevel = writable(0);
 
-export const gameHistory = writable(null);
+export const gameHistory = writable([]);
+
+export const gameMoves = writable([]);
 
 export const gamePref = writable(null);
 
@@ -73,6 +81,33 @@ export const viewGameList = writable(false);
 export const showLogin = writable(false);
 
 export const viewCallStream = writable(false);
+
+if(navigator.onLine) {
+
+    (async () => {
+        const allOffGames = await JSON.parse(localStorage.getItem('offGames'));
+        
+
+        if(allOffGames.length > 0) {
+
+            for(let i = 0; i < allOffGames.length; i++) {
+                let request = {
+                    func: "saveTrainData",
+                    fullGame: allOffGames[i],
+                    id: null
+                }
+        
+                currSocket.update(state => {
+                    state.emit('save-game', request);
+                    return state;
+                });
+            }
+        }
+
+        allOffGames = [];
+        localStorage.setItem('offGames', JSON.stringify(allOffGames));
+    });
+}
 
 window.onbeforeunload = async function() {
 
@@ -100,6 +135,11 @@ window.onbeforeunload = async function() {
 
     await gameHistory.update(state => {
         indexes.history = state;
+        return state;
+    });
+
+    await gameMoves.update(state => {
+        indexes.moves = state;
         return state;
     });
 
@@ -140,9 +180,11 @@ window.onload = async function() {
             await gameBoard.set(null);
         
         if(indexes.board != null)
-            await gameBoard.set(new Board(indexes.board.board, null));
+            await gameBoard.set(new Board(indexes.board, null));
 
         await gameHistory.set(indexes.history);
+
+        await gameMoves.set(indexes.moves);
 
         await gamePref.set(indexes.pref);
 

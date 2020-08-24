@@ -1,7 +1,6 @@
 <script>
     import { currUser, page, showLogin, gameTab, peer, currSocket, ratio } from '../Scripts/Init.js';
     import { invokeFunction } from '../Scripts/Cloud.js';
-    import { User } from '../Scripts/User.js';
     import Loader from '../Components/loader.svelte';
     import { getUserGames, getLeagueTable, getAllChats } from '../Scripts/Functions.js';
     import env from '../env.json';
@@ -141,10 +140,12 @@
             if(response.msg != null) {
                 let data = response.msg;
 
-                data.email = logEmail;
+                data.profile.email = logEmail;
 
-                currUser.set(new User(data));
+                data.isAuth = true;
 
+                currUser.set(data);
+                
                 checkNotifications();
                 getAllChats(); 
                 getUserGames(); 
@@ -158,11 +159,13 @@
                 loading = false;
                 showLogin.set(false);
 
-                let index = document.getElementById("index");
-                index.setAttribute("style", "top:0;");
+                if($ratio < 1) {
+                    let index = document.getElementById("index");
+                    index.setAttribute("style", "top:0;");
 
-                let enter = document.getElementById("enter");
-                enter.setAttribute("style", "top:-100%;");
+                    let enter = document.getElementById("enter");
+                    enter.setAttribute("style", "top:-100%;");
+                }
             } else {
                 errMsg = response.err;
                 console.log(response.err);

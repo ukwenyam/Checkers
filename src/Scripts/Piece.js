@@ -18,10 +18,6 @@ export class Piece {
         return this.positon;
     }
 
-    setPosition(xPos, yPos) {
-        this.positon = new Position(xPos, yPos);
-    }
-
     incrementStack() {
         this.stack = 2;
     }

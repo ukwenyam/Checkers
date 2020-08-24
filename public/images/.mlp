@@ -1,0 +1,15 @@
+<!DOCTYPE MeshLabDocument>
+<MeshLabProject>
+ <MeshGroup>
+  <MLMesh filename="tinker.obj" visible="1" label="tinker.obj">
+   <MLMatrix44>
+1 0 0 0 
+0 1 0 0 
+0 0 1 0 
+0 0 0 1 
+</MLMatrix44>
+   <RenderingOption solidColor="192 192 192 255" wireWidth="1" pointSize="3" boxColor="234 234 234 255" pointColor="131 149 69 255" wireColor="64 64 64 255">100001010000000010000100010001011010001010100000000100111010000000001001</RenderingOption>
+  </MLMesh>
+ </MeshGroup>
+ <RasterGroup/>
+</MeshLabProject>

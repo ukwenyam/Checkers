@@ -37,55 +37,55 @@
         </tr>
         <tr>
             <th style="text-align:left;">Total Points</th>
-            <td>{$currUser.totalPoints}</td>
+            <td>{$currUser.stats.totalPoints}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Wins</th>
-            <td>{$currUser.wins}</td>
+            <td>{$currUser.stats.wins}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Draws</th>
-            <td>{$currUser.draws}</td>
+            <td>{$currUser.stats.draws}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Losses</th>
-            <td>{$currUser.losses}</td>
+            <td>{$currUser.stats.losses}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Games Played</th>
-            <td>{$currUser.gamesPlayed}</td>
+            <td>{$currUser.stats.gamesPlayed}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Total Moves</th>
-            <td>{$currUser.gamesPlayed}</td>
+            <td>{$currUser.stats.gamesPlayed}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Avg. Moves Per Game</th>
-            <td>{$currUser.avgMovesPerGame}</td>
+            <td>{$currUser.stats.avgMovesPerGame}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Most Moves</th>
-            <td>{$currUser.mostMoves}</td>
+            <td>{$currUser.stats.mostMoves}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Least Moves</th>
-            <td>{$currUser.leastMoves}</td>
+            <td>{$currUser.stats.leastMoves}</td>
         </tr>
         <tr>
             <th style="text-align:left;">Total Time Played</th>
-            <td>{$currUser.totalTimePlayed} minutes</td>
+            <td>{$currUser.stats.totalTimePlayed} minutes</td>
         </tr>
         <tr>
             <th style="text-align:left;">Avg. Time Played Per Game</th>
-            <td>{$currUser.avgTimePlayPerGame} minutes</td>
+            <td>{$currUser.stats.avgTimePlayPerGame} minutes</td>
         </tr>
         <tr>
             <th style="text-align:left;">Least Time Played</th>
-            <td>{$currUser.leastTimePlayed} minutes</td>
+            <td>{$currUser.stats.leastTimePlayed} minutes</td>
         </tr>
         <tr>
             <th style="text-align:left;">Most Time Played</th>
-            <td>{$currUser.mostTimePlayed} minutes</td>
+            <td>{$currUser.stats.mostTimePlayed} minutes</td>
         </tr>
     </table>
 </div>
@@ -114,29 +114,29 @@
             <th>Points</th>
         </tr>
         {#each $leaderBoard as user, i}
-            {#if user.name != $currUser.name}
+            {#if user.profile.name != $currUser.profile.name}
                 <tr>
                     <td>{i + 1}</td>
-                    <td>{user.name}</td>
+                    <td>{user.profile.name}</td>
                     {#if $ratio > 1}
-                        <td>{user.gamesPlayed}</td>
+                        <td>{user.stats.gamesPlayed}</td>
                     {/if}
-                    <td>{user.wins}</td>
-                    <td>{user.draws}</td>
-                    <td>{user.losses}</td>
-                    <td>{user.totalPoints}</td>
+                    <td>{user.stats.wins}</td>
+                    <td>{user.stats.draws}</td>
+                    <td>{user.stats.losses}</td>
+                    <td>{user.stats.totalPoints}</td>
                 </tr>
             {:else}
                 <tr>
                     <th>{i + 1}</th>
-                    <th>{user.name}</th>
+                    <th>{user.profile.name}</th>
                     {#if $ratio > 1}
-                        <th>{user.gamesPlayed}</th>
+                        <th>{user.stats.gamesPlayed}</th>
                     {/if}
-                    <th>{user.wins}</th>
-                    <th>{user.draws}</th>
-                    <th>{user.losses}</th>
-                    <th>{user.totalPoints}</th>
+                    <th>{user.stats.wins}</th>
+                    <th>{user.stats.draws}</th>
+                    <th>{user.stats.losses}</th>
+                    <th>{user.stats.totalPoints}</th>
                 </tr>
             {/if}
         {/each}

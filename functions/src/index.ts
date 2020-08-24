@@ -3,13 +3,8 @@ import * as functions from 'firebase-functions';
 import * as respond from './response';
 const generator = require('generate-password');
 const firebase = require('firebase');
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
 const { Storage } = require('@google-cloud/storage');
 const stream = require('stream');
-
-// Connection URL
-const url = 'mongodb+srv://Chidelma:Tasseobi96@autocluster-cl1yh.mongodb.net/CheckasIO?retryWrites=true&w=majority';
 
 firebase.initializeApp({
     "apiKey" : "AIzaSyBSStZGTofCfLQDJeGFYnZgYs1sUIW0GhU",
@@ -76,8 +71,10 @@ export const createUser = functions.https.onRequest(async (request, response) =>
 
     if(!user.exists) {
         docRef.set({
-            name: evt.name,
-            picture: null,
+            profile : {
+                name: evt.name,
+                picture: 'https://api.adorable.io/avatars/285/' + evt.email + '.png'
+            },
             stats : {
                 wins: 0,
                 draws: 0,
@@ -98,7 +95,8 @@ export const createUser = functions.https.onRequest(async (request, response) =>
                 otherColor: "#000000",
                 compTime: 60,
                 orient: 2
-            }
+            },
+            lastGame: []
         }).then(function() {
             res.send({msg: "SUCCESS"});
         }).catch(function(error:any) {
@@ -183,8 +181,10 @@ export const updateProfile = functions.https.onRequest((request, response) => {
                                             });
 
                     db.collection("USERS").doc(evt.email).update({
-                        picture: signedUrls[0],
-                        name: evt.name
+                        profile: {
+                            picture: signedUrls[0],
+                            name: evt.name
+                        }
                     }).then(function() {
                         res.send({msg: "SUCCESS"});
                     }).catch(function(error:any) {
@@ -193,7 +193,10 @@ export const updateProfile = functions.https.onRequest((request, response) => {
                 });
             } else {
                 db.collection("USERS").doc(evt.email).update({
-                    name: evt.name
+                    profile: {
+                        name: evt.name,
+                        picture: 'https://api.adorable.io/avatars/285/' + evt.email + '.png'
+                    }
                 }).then(function() {
                     res.send({msg: "SUCCESS"});
                 }).catch(function(error:any) {
@@ -280,37 +283,31 @@ export const createGame = functions.https.onRequest(async (request, response) =>
             excludeSimilarCharacters: true
         });
 
-        MongoClient.connect(url, async function(err:any, client:any) {
-            assert.equal(null, err);
+        const docRef:any = db.collection("GAMES").doc(gameID);
 
-            const collection:any = client.db("CheckasIO").collection("GAMES");
+        const currPlayer:number = Math.floor(Math.random() * 2) === 0 ? 0 : 1;
 
-            const currPlayer:number = Math.floor(Math.random() * 2) === 0 ? 0 : 1;
+        const game:any = { 
+            gameHistory: [],
+            priPlayer: evt.name,
+            priEmail: evt.email,
+            secPlayer: null,
+            secEmail: null,
+            priMoves: 0,
+            secMoves: 0,
+            time: Number(evt.time),
+            date: evt.date,
+            minutesPlayed: 0,
+            finished: false,
+            currPlayer: currPlayer,
+            winner: null
+        }
 
-            const game:any = { 
-                _id: gameID,
-                priHistory: [],
-                secHistory: [],
-                priPlayer: evt.name,
-                priEmail: evt.email,
-                secPlayer: null,
-                secEmail: null,
-                priMoves: 0,
-                secMoves: 0,
-                time: Number(evt.time),
-                date: evt.date,
-                minutesPlayed: 0,
-                finished: false,
-                currPlayer: currPlayer
-            }
-            
-            collection.insertOne(game).then(function(result:any) {
-                res.send({msg: game});
-            }).catch(function(error:any) {
-                res.send({err: error})
-            });
-
-            client.close();
+        docRef.set(game).then(function() {
+            game.id = gameID;
+            res.send({msg: game});
+        }).catch(function(error:any) {
+            res.send({err: error})
         });
     } else {
         res.send({err: "Code 007"});
@@ -326,70 +323,54 @@ export const joinGame = functions.https.onRequest(async (request, response) => {
 
     if(user.exists) {
 
-        MongoClient.connect(url, async function(err:any, client:any) {
+        db.collection("GAMES").doc(evt.gameID).update({
+            secPlayer: evt.name,
+            secEmail: evt.email
+        }).then(async function() {
 
-            assert.equal(null, err);
+            const game:any = await db.collection("GAMES").doc(evt.gameID).get();
 
-            const collection:any = client.db("CheckasIO").collection("GAMES");
-            
-            collection.updateOne({ _id: evt.gameID },
-                { $set: { "secPlayer": evt.name, "secEmail": evt.email }
-            }).then(async function(result:any) {
+            let gameChat:any = null;
 
-                const cursor:any = collection.find({ _id: evt.gameID });
+            let querySnapshot:any = await db.collection("CHATS").where("priEmail", "==", game.data().priEmail).where("secEmail", "==", evt.email).get();
 
-                let game:any = null;
-
-                await cursor.forEach(function(doc:any) {
-                    game = doc;
-                });
-
-                let gameChat:any = null;
-
-                let querySnapshot:any = await db.collection("CHATS").where("priEmail", "==", game.priEmail).where("secEmail", "==", evt.email).get();
-
-                await querySnapshot.forEach(function(chat:any) {
-                    gameChat = chat.data();
-                    gameChat.id = chat.id;
-                });
-
-                querySnapshot = await db.collection("CHATS").where("priEmail", "==", evt.email).where("secEmail", "==", game.priEmail).get();
-
-                await querySnapshot.forEach(function(chat:any) {
-                    gameChat = chat.data();
-                    gameChat.id = chat.id;
-                });
-
-                if(gameChat === null) {
-
-                    const chatID:any = generator.generate({
-                        length: 10,
-                        numbers: true,
-                        excludeSimilarCharacters: true
-                    });
-
-                    db.collection("CHATS").doc(chatID).set({
-                        priName: game.priPlayer,
-                        priEmail: game.priEmail,
-                        secName: evt.name,
-                        secEmail: evt.email,
-                        history: []
-                    }).then(async function() {
-                        res.send({msg: game});
-                    }).catch(function(error:any) {
-                        res.send({err: error.message});
-                    });
-
-                } else {
-                    res.send({msg: game});
-                }
-
-                client.close();
-                
-            }).catch(function() {
-                client.close();
-                res.send({err: "Error occured"});
+            await querySnapshot.forEach(function(chat:any) {
+                gameChat = chat.data();
+                gameChat.id = chat.id;
             });
+
+            querySnapshot = await db.collection("CHATS").where("priEmail", "==", evt.email).where("secEmail", "==", game.data().priEmail).get();
+
+            await querySnapshot.forEach(function(chat:any) {
+                gameChat = chat.data();
+                gameChat.id = chat.id;
+            });
+
+            if(gameChat === null) {
+
+                const chatID:any = generator.generate({
+                    length: 10,
+                    numbers: true,
+                    excludeSimilarCharacters: true
+                });
+
+                db.collection("CHATS").doc(chatID).set({
+                    priName: game.data().priPlayer,
+                    priEmail: game.data().priEmail,
+                    secName: evt.name,
+                    secEmail: evt.email,
+                    history: []
+                }).then(async function() {
+                    res.send({msg: game.data()});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+
+            } else {
+                res.send({msg: game.data()});
+            }
+        }).catch(function(error:any) {
+            res.send({err: error.message});
         });
     } else {
         res.send({err: "Code 007"});
@@ -423,45 +404,49 @@ export const saveGame = functions.https.onRequest(async (request, response) => {
 
     if(user.exists) {
 
-        MongoClient.connect(url, async function(err:any, client:any) {
+        if(evt.initiator) {
+            db.collection("GAMES").doc(evt.gameID).update({
+                gameHistory: evt.gameHistory,
+                minutesPlayed: Number(evt.minutes),
+                currPlayer: evt.currPlayer,
+                priMoves: evt.myMoves
+            }).then(function() {
+                res.send({msg: "SUCCESS"});
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        } else {
+            db.collection("GAMES").doc(evt.gameID).update({
+                gameHistory: evt.gameHistory,
+                minutesPlayed: Number(evt.minutes),
+                currPlayer: evt.currPlayer,
+                secMoves: evt.myMoves
+            }).then(function() {
+                res.send({msg: "SUCCESS"});
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        }
+    } else {
+        res.send({err: "Code 007"});
+    }
+});
 
-            assert.equal(null, err);
+export const saveUserGame = functions.https.onRequest(async (request, response) => {
 
-            const collection:any = client.db("CheckasIO").collection("GAMES");
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
 
-            if(evt.initiator) {
-                collection.updateOne({ _id: evt.gameID },
-                    { $set: { 
-                        "priHistory": evt.gameHistory, 
-                        "minutesPlayed": Number(evt.minutes),
-                        "currPlayer": evt.currPlayer,
-                        "priMoves": evt.myMoves,
-                        "numMoves": evt.numMoves
-                    }
-                }).then(function(result:any) {
-                    res.send({msg: "SUCCESS"});
-                }).catch(function(error:any) {
-                    res.send({err: error});
-                });
+    const user:any = await db.collection("USERS").doc(evt.id).get();
 
-                client.close();
-            } else {
-                collection.updateOne({ _id: evt.gameID },
-                    { $set: { 
-                        "secHistory": evt.gameHistory, 
-                        "minutesPlayed": Number(evt.minutes),
-                        "currPlayer": evt.currPlayer,
-                        "secMoves": evt.myMoves,
-                        "numMoves": evt.numMoves
-                    }
-                }).then(function(result:any) {
-                    res.send({msg: "SUCCESS"});
-                }).catch(function(error:any) {
-                    res.send({err: error});
-                });
+    if (user.exists) {
 
-                client.close();
-            }
+        db.collection("USERS").doc(evt.id).update({
+            lastGame: evt.lastGame
+        }).then(function() {
+            res.send({msg: "SUCCESS"});
+        }).catch(function(error:any) {
+            res.send({err: error.message});
         });
 
     } else {
@@ -502,16 +487,16 @@ export const checkersLeague = functions.https.onRequest(async (request, response
 
         let i:number = 0, position:number = 0;
 
-        let snapShot:any = await db.collection("USERS").orderBy("totalPoints", "desc").get();
+        let snapShot:any = await db.collection("USERS").orderBy("stats.totalPoints", "desc").get();
 
         await snapShot.forEach(function(docu:any) {
             i++;
-            if(docu.data().name === evt.name) {
+            if(docu.data().profile.name === evt.name) {
                 position = i; return;
             }
         });
 
-        snapShot = await db.collection("USERS").orderBy("totalPoints", "desc").limit(50).get();
+        snapShot = await db.collection("USERS").orderBy("stats.totalPoints", "desc").limit(50).get();
 
         await snapShot.forEach(function(dou:any) {
             users.push(dou.data());
@@ -531,16 +516,43 @@ export const finishGame = functions.https.onRequest(async (request, response) =>
     const user:any = await db.collection("USERS").doc(evt.id).get();
 
     if(user.exists) {
-        db.collection("GAMES").doc(evt.gameID).update({
-            gameHistory: evt.gameHistory,
-            minutesPlayed: Number(evt.minutes),
-            chatHistory: evt.chatHistory,
-            finished: true
-        }).then(function() {
-            res.send({msg: "SUCCESS"});
-        }).catch(function(error:any) {
-            res.send({err: error.message});
-        });
+
+        if(evt.gameHistory == null) {
+            db.collection("GAMES").doc(evt.gameID).update({
+                priMoves: evt.myMoves,
+            }).then(function() {
+                res.send({msg: "SUCCESS"});
+            }).catch(function(error:any) {
+                res.send({err: error.message});
+            });
+        } else {
+            if(evt.initiator) {
+                db.collection("GAMES").doc(evt.gameID).update({
+                    gameHistory: evt.gameHistory,
+                    minutesPlayed: Number(evt.minutes),
+                    priMoves: evt.myMoves,
+                    finished: true,
+                    winner: evt.winner
+                }).then(function() {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+            } else {
+                db.collection("GAMES").doc(evt.gameID).update({
+                    gameHistory: evt.gameHistory,
+                    minutesPlayed: Number(evt.minutes),
+                    secMoves: evt.myMoves,
+                    finished: true,
+                    winner: evt.winner
+                }).then(function() {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+            }
+        }
+
     } else {
         res.send({err: "Code 007"});
     }
@@ -614,6 +626,43 @@ export const retrieveUserChats = functions.https.onRequest(async (request, respo
     }
 });
 
+export const saveTrainData = functions.https.onRequest(async (request, response) => {
+
+    const res:any = respond.setResponse(response);
+    const evt:any = request.body;
+
+    const gameID:any = generator.generate({
+        length: 10,
+        numbers: true,
+        excludeSimilarCharacters: true
+    });
+
+    const docRef:any = db.collection("AIDATA").doc(gameID);
+
+    docRef.set({ fullGame: evt.fullGame }).then(async function() {
+        if(evt.id != null) {
+
+            const user:any = await db.collection("USERS").doc(evt.id).get();
+
+            if (user.exists) {
+                db.collection("USERS").doc(evt.id).update({
+                    lastGame: []
+                }).then(function() {
+                    res.send({msg: "SUCCESS"});
+                }).catch(function(error:any) {
+                    res.send({err: error.message});
+                });
+            } else {
+                res.send({err: "Code 007"});
+            }
+        } else {
+            res.send({msg: "SUCCESS"});
+        }
+    }).catch(function(error:any) {
+        res.send({err: error})
+    });
+});
+
 export const retrieveUserGames = functions.https.onRequest(async (request, response) => {
 
     const res:any = respond.setResponse(response);
@@ -625,43 +674,35 @@ export const retrieveUserGames = functions.https.onRequest(async (request, respo
 
         const games:any = [];
 
-        MongoClient.connect(url, async function(err:any, client:any) {
-            
-            assert.equal(null, err);
+        let querySnapshot:any = await db.collection("GAMES").where("priEmail", "==", evt.email).get();
 
-            const collection:any = client.db("CheckasIO").collection("GAMES");
-            
-            const cursor:any = collection.find({ 
-                $or: [ { priEmail: evt.email }, { secEmail: evt.email } ]
-            });
-
-            await cursor.forEach(function(doc:any) {
-                if(doc.priEmail == evt.email) {
-                    if(doc.finished) {
-                        games.push(doc);
-                    } else {
-                        const game:any = doc;
-                        game.numMoves = game.priHistory.length > 0 ? game.priHistory.length - 1 : 0;
-                        game.gameHistory = game.priHistory.length > 0 ? game.priHistory[game.priHistory.length - 1] : [];
-                        games.push(game);
-                    }
-                } else {
-                    if(doc.finished) {
-                        games.push(doc);
-                    } else {
-                        const game:any = doc;
-                        game.numMoves = game.secHistory.length > 0 ? game.secHistory.length - 1 : 0;
-                        game.gameHistory = game.secHistory.length > 0 ? game.secHistory[game.secHistory.length - 1] : [];
-                        games.push(game);
-                    }
-                }
-            });
-
-            res.send({msg: games});
-
-            client.close();
+        await querySnapshot.forEach(function(game:any) {
+            const currGame:any = game.data();
+            currGame.id = game.id;
+            if(currGame.finished) {
+                games.push(currGame);
+            } else {
+                currGame.gameHistory = currGame.priHistory.length > 0 ? currGame.priHistory[currGame.priHistory.length - 1] : [];
+                games.push(currGame);
+            }
         });
+
+        querySnapshot = await db.collection("GAMES").where("secEmail", "==", evt.email).get();
+
+        await querySnapshot.forEach(function(doc:any) {
+            const currGame:any = doc.data();
+            currGame.id = doc.id;
+            if(currGame.finished) {
+                games.push(currGame);
+            } else {
+                currGame.gameHistory = currGame.secHistory.length > 0 ? currGame.secHistory[currGame.secHistory.length - 1] : [];
+                games.push(currGame);
+            }
+        });
+
+        res.send({msg: games});
     } else {
         res.send({err: "Code 007"});
     }
 });
+

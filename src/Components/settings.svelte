@@ -3,15 +3,15 @@
     import { invokeFunction } from '../Scripts/Cloud.js';
     import Loader from './loader.svelte';
 
-    let Name = $currUser.name;
-    let Picture = $currUser.picture;
+    let Name = $currUser.profile.name;
+    let Picture = $currUser.profile.picture;
     let authPassword;
     let oldPassword, newPassword;
     let imageLabel = 'Choose Profile Photo';
 
-    let myColor = $currUser.gamePref.myColor, otherColor = $currUser.gamePref.otherColor;
-    let compTime = $currUser.gamePref.compTime;
-    let myOrient = $currUser.gamePref.orient;
+    let myColor = $currUser.gamePreferences.myColor, otherColor = $currUser.gamePreferences.otherColor;
+    let compTime = $currUser.gamePreferences.compTime;
+    let myOrient = $currUser.gamePreferences.orient;
     let difficulty = $gameLevel;
 
     let request;
@@ -47,7 +47,7 @@
                 name: Name,
                 picture: Picture.includes('adorable') ? null : Picture,
                 password: authPassword,
-                email: $currUser.email
+                email: $currUser.profile.email
             }
 
             invokeFunction(request).then((response) => {
@@ -58,7 +58,7 @@
                     authPassword = '';
 
                     currUser.update(state => {
-                        state.name = Name;
+                        state.profile.name = Name;
                         return state;
                     });
 
@@ -83,7 +83,7 @@
 
             request = {
                 func: "resetPassword",
-                email: $currUser.email,
+                email: $currUser.profile.email,
                 password: oldPassword,
                 newPass: newPassword
             }
@@ -123,10 +123,10 @@
                     console.log(response.msg);
                     loading = false;
                     currUser.update(state => {
-                        state.gamePref.myColor = myColor;
-                        state.gamePref.otherColor = otherColor;
-                        state.gamePref.compTime = compTime;
-                        state.gamePref.orient = myOrient;
+                        state.gamePreferences.myColor = myColor;
+                        state.gamePreferences.otherColor = otherColor;
+                        state.gamePreferences.compTime = compTime;
+                        state.gamePreferences.orient = myOrient;
                         return state;
                     });
 
@@ -146,7 +146,7 @@
     }
 
     function signOut() {
-        $currSocket.emit('go-offline', $currUser.email);
+        $currSocket.emit('go-offline', $currUser.profile.email);
         currUser.set(null);
         gameTab.set(0);
     }
@@ -179,7 +179,7 @@
 
     <h5 style="text-align:center">Profile</h5>
 
-    <h6 style="text-align:center;">Account ID: <span>{$currUser.email}</span></h6>
+    <h6 style="text-align:center;">Account ID: <span>{$currUser.profile.email}</span></h6>
 
     <img alt="propic" src="{Picture}"/>
 
@@ -213,7 +213,7 @@
     {/if}
 
     {#if $ratio < 1}
-        <button class="btn btn-danger middle" on:click="{signOut}">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
+        <button class="btn btn-danger middle" on:click="{signOut}">Logout ({$currUser.profile.name}) <i class="fa fa-sign-out"></i></button>
     {/if}
 </div>
 
@@ -232,39 +232,12 @@
         <input type="color" bind:value="{otherColor}" />
     </h6>
 
-    <hr/>
-
-    <h6 style="width:100%;">Time Per Turn versus Computer:
-        {#if $ratio < 1}
-            <br/><br/>
-        {/if}
-        <div class="form-check form-check-inline">
-            <input on:change="{() => (compTime = 15)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1">
-            <label class="form-check-label" for="inlineRadio1">15</label>
-        </div>
-
-        <div class="form-check form-check-inline">
-            <input on:change="{() => (compTime = 30)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2">
-            <label class="form-check-label" for="inlineRadio2">30</label>
-        </div>
-
-        <div class="form-check form-check-inline">
-            <input on:change="{() => (compTime = 45)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-            <label class="form-check-label" for="inlineRadio3">45</label>
-        </div>
-
-        <div class="form-check form-check-inline">
-            <input on:change="{() => (compTime = 60)}" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3">
-            <label class="form-check-label" for="inlineRadio3">60</label>
-        </div>
-    </h6>
-
     <h6 style="width:100%;text-align:center;margin-top:20px;">{compTime} seconds</h6>
     <input class="custom-range" bind:value="{compTime}" type="range" min="15" max="60" step="1">
 
     <hr/>
 
-    <h6 style="width:100%;">Board Orientation:
+    <h6 style="width:100%;">Default Board Orientation:
         <div class="form-check form-check-inline">
             <input on:change="{() => (myOrient = 2)}" class="form-check-input" type="radio" name="inlineRadio" id="inlineRadio4">
             <label class="form-check-label" for="inlineRadio2">2D</label>

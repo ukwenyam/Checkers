@@ -1,7 +1,7 @@
 <script>
-    import { gamePref, gameBoard, currSocket, gameHistory, peer, showCallee, showCallBar, callerSignal, onCall,
+    import { gamePref, gameBoard, currSocket, gameHistory, peer, showCallee, showCallBar, callerSignal, onCall, gameMoves,
             gameTab, page, currUser, allChats, viewCreateGame, smallPopUp, callerName, callerID, showCaller, showPlayer } from '../Scripts/Init.js';
-    import { getAllChats, blink_text, getUserGames } from '../Scripts/Functions.js';
+    import { getAllChats, blink_text, getUserGames, normalizeState } from '../Scripts/Functions.js';
     import Notify from './Notification.svelte';
 
     let i, showNotify = false;
@@ -10,7 +10,7 @@
 
     $currSocket.on('online-user', (data) => {
 
-        if($currUser != null && $currUser.isAuth && $allChats != null && $allChats.length > 0 && data != $currUser.email) {
+        if($currUser != null && $currUser.isAuth && $allChats != null && $allChats.length > 0 && data != $currUser.profile.email) {
             for(i = 0; i < $allChats.length; i++) {
                 if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && !$allChats[i].online) {
                     allChats.update(state => {
@@ -26,13 +26,13 @@
                 } 
             }
 
-            $currSocket.emit('go-online', $currUser.email);
+            $currSocket.emit('go-online', $currUser.profile.email);
         }
     });
 
     $currSocket.on('offline-user', (data) => {
 
-        if($currUser != null && $currUser.isAuth && $allChats != null && $allChats.length > 0 && data != $currUser.email) {
+        if($currUser != null && $currUser.isAuth && $allChats != null && $allChats.length > 0 && data != $currUser.profile.email) {
             for(i = 0; i < $allChats.length; i++) {
                 if(($allChats[i].priEmail == data || $allChats[i].secEmail == data) && $allChats[i].online) {
                     allChats.update(state => {
@@ -48,13 +48,13 @@
                 } 
             }
 
-            $currSocket.emit('go-online', $currUser.email);
+            $currSocket.emit('go-online', $currUser.profile.email);
         }
     });
 
     $currSocket.on('recv-msg', async (data) => {
 
-        if(data.userID == $currUser.email || data.id == $currUser.email) {
+        if(data.userID == $currUser.profile.email || data.id == $currUser.profile.email) {
             console.log('Received: ' + data.msg.message);
             for(i = 0; i < $allChats.length; i++) {
                 if($allChats[i].id == data.chatID) {
@@ -66,10 +66,10 @@
                 }
             }
 
-            if(data.userID == $currUser.email) {
+            if(data.userID == $currUser.profile.email) {
                 header = $allChats[i].priEmail == $currUser.email ? $allChats[i].secName.toUpperCase() : $allChats[i].priName.toUpperCase();
                 body = data.msg.message;
-                icon = $allChats[i].priEmail == $currUser.email ? 'https://api.adorable.io/avatars/285/' + $allChats[i].secEmail + '.png' : 'https://api.adorable.io/avatars/285/' + $allChats[i].priEmail + '.png';
+                icon = $allChats[i].priEmail == $currUser.profile.email ? 'https://api.adorable.io/avatars/285/' + $allChats[i].secEmail + '.png' : 'https://api.adorable.io/avatars/285/' + $allChats[i].priEmail + '.png';
                 showNotify = true;
                 setTimeout(closeNotify, 3000);
             }
@@ -88,7 +88,7 @@
 
     $currSocket.on('recv-call', (data) => {
 
-        if(data.calleeID == $currUser.email && !$onCall) {
+        if(data.calleeID == $currUser.profile.email && !$onCall) {
             console.log("receving call from " + data.callerName);
             callerName.set(data.callerName);
             callerID.set(data.callerID);
@@ -106,7 +106,7 @@
 
     $currSocket.on('call-accepted', data => {
 
-        if(data.callerID == $currUser.email && !$onCall) {
+        if(data.callerID == $currUser.profile.email && !$onCall) {
             console.log("Call Accepted");
             showCallee.set(false); showCallBar.set(false);
             $peer.signal(data.signal);
@@ -115,7 +115,7 @@
 
     $currSocket.on('end-call', data => {
 
-        if(data.callerID == $currUser.email || data.calleeID == $currUser.email) {
+        if(data.callerID == $currUser.profile.email || data.calleeID == $currUser.profile.email) {
             console.log("Ending call");
 
             if($onCall) {
@@ -146,7 +146,7 @@
 
             getAllChats();
 
-            $currSocket.emit('send-first-user', { gameID: $gamePref.gameID, name: $currUser.name });
+            $currSocket.emit('send-first-user', { gameID: $gamePref.gameID, name: $currUser.profile.name });
 
             viewCreateGame.set(false); smallPopUp.set(false);
 
@@ -199,15 +199,21 @@
                 setTimeout(closeNotify, 3000);
             }
 
-			console.log("Game Saved");
+            console.log("Game Saved");
+            
+            let gameState = []
+
+            for(let i = 0; i < $gameHistory.length; i++) {
+                let { state, pieceId } = normalizeState($gameHistory[i]);
+                gameState.push({ board: state, move: $gameMoves[i], gameIds: pieceId });
+            }
 
 			let request = {
 				func: "saveGame",
-				id: $currUser.email,
+				id: $currUser.profile.email,
 				gameID: $gamePref.gameID,
 				initiator: $gamePref.initiator,
-				gameHistory: $gamePref.states,
-				numMoves: $gamePref.numMoves,
+				gameHistory: gameState,
 				myMoves: $gamePref.myMoves,
 				minutes: Math.ceil($gamePref.secondsPlayed / 60),
 				currPlayer: $gamePref.currPlayer
@@ -222,7 +228,8 @@
 
     $currSocket.on('refresh-list', () => {
         console.log("Refreshing Game list");
-        getUserGames()
+        if($currUser != null && $currUser.isAuth)
+            getUserGames()
     });
 </script>
 

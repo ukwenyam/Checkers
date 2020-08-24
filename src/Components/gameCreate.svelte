@@ -21,8 +21,8 @@
 
         request = {
             func: "createGame",
-            email: $currUser.email,
-            name: $currUser.name,
+            email: $currUser.profile.email,
+            name: $currUser.profile.name,
             time: Time,
             date: moment().format("YYYY-MM-DD")
         }
@@ -38,12 +38,14 @@
                 let game = response.msg;
                 game.time = Time;
                 game.side = 0;
-                game.name = $currUser.name;
-                game.email = $currUser.email;
+                game.name = $currUser.profile.name;
+                game.email = $currUser.profile.email;
+
+                gameHistory.set([]);
+
+                gamePref.set(new Game(game, true));
 
                 gameBoard.set(new Board(null, false));
-
-                gamePref.set(new Game(game, $gameBoard.saveBoardState(), true));
 
                 loading = false;
             } else {

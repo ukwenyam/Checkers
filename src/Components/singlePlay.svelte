@@ -7,92 +7,87 @@
 	import { invokeFunction } from '../Scripts/Cloud.js';
 	import { fly, fade } from 'svelte/transition';
 	import Blur from './blurScreen.svelte';
-    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page, gameTab } from '../Scripts/Init.js';
+	import { normalizeState, localizeState } from '../Scripts/Functions';
+    import { gameBoard, gameHistory, gamePref, currSocket, currUser, page, gameTab, gameMoves, ratio } from '../Scripts/Init.js';
 
-    gameBoard.set(new Board(null, false));
+	let rangeMoves = 0, numMoves = 0;
 
-    let currPlayer = 0, side = 0;
+	gameBoard.set(new Board(null, false));
 
-    let clockTime = 60, timer = 60, time = 60;
-
-    let numMoves = 0, rangeMoves = 0, lastNumMoves = 0;
+	let checkLogin = setInterval(function() {
+		if($currUser != null && $currUser.isAuth) {
+			if($currUser.lastGame.length > 0) 
+				setLastGame();
+			clearInterval(checkLogin);
+		}
+	}, 2000);
 	
 	let currPos, nextPos;
 
-    let paused = true;
-
-	let timeInterval = setInterval(countDown, 1000);
-
 	let screenWidth = screen.width;
 
-	function countDown() {
+	let onlineStatus = navigator.onLine;
 
-		if(rangeMoves == numMoves && paused == false) {
+	function setLastGame() {
 
-			//console.log($gamePref.timer);
+		gameMoves.set([]);
+		gameHistory.set([]);
 
-			if(timer > 0) {
+		let lastGameIndex = $currUser.lastGame.length - 1;
 
-                timer--;
+		for(let i = 0; i < lastGameIndex + 1; i++) {
 
-			} else {
-                clearInterval(timeInterval);
-                
-                currPlayer = currPlayer == 0 ? 1 : 0;
+			gameMoves.update(state => {
+                state.push($currUser.lastGame[i].move);
+                return state;
+            });
 
-                timer = clockTime;
-
-				currPos = null, nextPos = null;
-				lockedPiece = false;
-
-				timeInterval = setInterval(countDown, 1000);
-			}
+            gameHistory.update(state => {
+                state.push(new Board(localizeState($currUser.lastGame[i].board, $currUser.lastGame[i].gameIds, i, false), null));
+                return state;
+			});
 		}
+
+		gameBoard.set(new Board($gameHistory[lastGameIndex], null));
+
+		rangeMoves = $gameMoves.length - 1, numMoves = $gameMoves.length - 1;	
 	}
 
 	function viewBoardHistory() {
-
-		gameBoard.set(new Board($gameHistory[$gamePref.rangeMoves], null));
+		gameBoard.set(new Board($gameHistory[rangeMoves], null));
 	}
 
-	function switchPlayer() {
-
-        if(side == currPlayer) {
-
-			clearInterval(timeInterval);
-            
-            currPlayer = currPlayer == 0 ? 1 : 0;
-
-            timer = clockTime;
-
-            currPos = null, nextPos = null;
-			lockedPiece = false;
-			
-			timeInterval = setInterval(countDown, 1000);
-        }
-    }
-    
-    function startGame() {
-
-        if(side == currPlayer) {
-
-            paused = !paused;
-        }
-	}
-
-    setInterval(function(){
-        if(numMoves > lastNumMoves) {
-			saveGame(true);
-			lastNumMoves = numMoves;
+    setInterval(function() {
+        if(rangeMoves == numMoves) {
+			//saveGame(true);
+			rangeMoves = $gameBoard.numMoves;
+			numMoves = $gameBoard.numMoves;
 		}
-    }, 300000);
 
-    function saveGame(auto) {
+		onlineStatus = navigator.onLine;
+    }, 2000);
 
-        if(side == currPlayer && numMoves > 0) {
+    async function saveGame(auto) {
 
-			clearInterval(timeInterval);
-        }
+		let lastGame = [];
+
+		for(let i = 0; i < $gameHistory.length; i++) {
+			let { state, pieceId } = normalizeState($gameHistory[i]);
+			lastGame.push({ board: state, move: $gameMoves[i], gameIds: pieceId });
+		}
+
+		if(navigator.onLine) {
+				
+			let request = {
+				func: "saveUserGame",
+				lastGame: lastGame,
+				id: $currUser.profile.email
+			}
+
+			$currSocket.emit('save-game', request);
+		} else {
+			await localStorage.setItem('lastGame', JSON.stringify(lastGame));
+		}
 	}
 
 	function viewEntry() {
@@ -109,59 +104,27 @@
 </script>
 
 <div id="gameStatus">
-
-	{#if $currUser != null}
-		<h2 id="player">Playing: 
-			<i class="fa fa-circle" style="color:{currPlayer == side ? $currUser.gamePref.myColor : "#000000"};"></i>
-		</h2>
-	{:else}
-		<h2 id="player">Playing: <i class="fa fa-circle" style="color:{currPlayer == side ? "#ffffff" : "#000000"};"></i></h2>
-	{/if}
-
 	<h2 id="moves">Moves: {numMoves}</h2>
-
-	<h2 id="time">Timer: {time}</h2>
 </div>
 
-<h4 id="comp" class="players" style="top:0;%">Computer</h4>
-
-<ThreeD currPos={currPos} nextPos={nextPos} />
-
-<h4 id="me" class="players" style="bottom:0;">{$currUser != null ? $currUser.name : "ME"}</h4>
+<ThreeD currPos={currPos} nextPos={nextPos} rangeMoves={rangeMoves} numMoves={numMoves} />
 
 <div id="gameBtn" class="container">
-    {#if paused}
-        <button class="btn btn-success btn-lg start" on:click="{() => (paused = !paused)}">Start Game</button>
+	{#if $currUser == null && screenWidth <= 800}
+		<button class="btn btn-primary btn-lg login" on:click="{viewEntry}">Login/Register <i class="fa fa-sign-in"></i></button>
+	{/if}
 
-        <div id="state">
-            <h2 id="rangeBar">Game State at Move: {rangeMoves}</h2>
-            <input class="custom-range" orient="vertical" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{numMoves}" step="1">
-        </div>
-
-		{#if $currUser == null && screenWidth <= 800}
-			<button class="btn btn-primary btn-lg login" on:click="{viewEntry}">Login/Register <i class="fa fa-sign-in"></i></button>
-		{/if}
-    {:else}
-        <button class="btn btn-warning btn-lg pause" on:click="{() => (paused = !paused)}">Pause Game</button>
-
-        <button class="btn btn-primary btn-lg switch" on:click="{switchPlayer}">Switch Turn</button>
-
-        <button class="btn btn-secondary btn-lg forfeit" on:click="{() => saveGame(false)}">Save Game</button>
-    {/if}
+	{#if $currUser != null && numMoves > 1 && onlineStatus}
+		<button class="btn btn-secondary btn-lg forfeit" on:click="{() => saveGame(false)}">Save Game</button>
+	{/if}
+	
+	<div id="state">
+		<h2 id="rangeBar">Game State at Move: {rangeMoves}</h2>
+		<input class="custom-range" orient="vertical" on:change="{viewBoardHistory}" bind:value={rangeMoves} type="range" min="0" max="{numMoves}" step="1">
+	</div>
 </div>
 
 <style>
-	.players {
-		left:47.5%;
-		position:fixed;
-		z-index:1;
-	}
-
-	.fa-circle {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		border-radius:50%;
-	}
-
 	#gameStatus {
 		width: calc((100% - 800px)/2);
 		height:800px;
@@ -177,27 +140,6 @@
 		position:fixed;
 		right:0;
     }
-    
-    .start {
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		top: 33.33%;
-		right:7.5%;
-		position:fixed;
-	}
-
-    .pause {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		position:fixed;
-		right:7.5%;
-		top:25%;
-	}
-
-    .switch {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		position:fixed;
-		right:7.5%;
-		top:50%;
-    }
 	
 	.forfeit {
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -206,27 +148,15 @@
 		top:75%;
 	}
 	
-	#player {
-		top:25%;
-		position:fixed;
-		margin-left:7.5%;
-	}
-
 	#moves {
 		position:fixed;
-		top:50%;
-		margin-left:7.5%;
-	}
-
-	#time {
-		position:fixed;
-		top:75%;
+		top:33.33%;
 		margin-left:7.5%;
 	}
 
 	#state {
 		position:fixed;
-		top:66.66%;
+		top:25%;
 		right:5%;
 	}
 
@@ -267,51 +197,14 @@
             position:unset;
         }
 
-        #player {
-            font-size:20px;
-            margin-top:0px;
-            text-align:center;
-			width:33.33%;
-			float:left;
-			position:unset;
-			margin-left:-5px;
-        }
-        
-        #time {
-			font-size:20px;
-            margin-top:0px;
-            width:33.33%;
-			margin-left:33.33%;
-			position:unset;
-			text-align:center;
-        }
 
         #moves {
-			float:right;
 			font-size:20px;
             margin-top:0px;
             text-align:center;
-			width:33.33%;
+			width:100%;
 			position:unset;
-        }
-        
-        #comp {
-			margin-top:10px;
-			width:90%;
-			float:left;
-			text-indent:10%;
-        }
-        
-        .players {
-            left:unset;
-            position:unset;
-            top:unset;
-            bottom:unset;
-			text-align:center;
-        }
-
-        #me {
-            margin-top:10px;
+			float:right;
         }
         
         #gameBtn {
@@ -322,13 +215,6 @@
             right:unset;
         }
 
-        .start {
-			margin-left:25%;
-			width:50%;
-			margin-top:10px;
-			position:unset;
-        }
-
         #state {
 			width:100%;
 			text-align: center;
@@ -336,28 +222,11 @@
 			position:unset;
         }
 
-        .pause {
-            margin-top:10px;
-            position:unset;
-            float:left;
-            margin-left:0px;
-            width:35%;
-        }
-
-        .switch {
-            margin-top:10px;
-            margin-left: 0px;
-            position:unset;
-            float:right;
-            width:35%;
-        }
-
         .forfeit {
             margin-top:20px;
-            margin-left:0px;
-            float:right;
+            margin-left:25%;
             position:unset;
-            width:35%;
+            width:50%;
 		}
 		
 		.login {

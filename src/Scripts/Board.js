@@ -1,15 +1,12 @@
 import { Piece } from './Piece.js';
 import { Position } from '../Scripts/Position.js';
-import { currUser, gamePref } from './Init.js';
-import { SimBoard } from './SimBoard.js';
+import { currUser } from './Init.js';
 
 export class Board {
 
     constructor(state, inverted) {
 
-        this.currPiece = null;
-        this.tries = 0;
-        this.makingMove = false;
+        this.numMoves = 0;
 
         this.myColor = null;
         this.otherColor = null;
@@ -20,8 +17,8 @@ export class Board {
 
         currUser.update(state => {
             if(state != null) {
-                this.myColor = state.gamePref.myColor;
-                this.otherColor = state.gamePref.otherColor;
+                this.myColor = state.gamePreferences.myColor;
+                this.otherColor = state.gamePreferences.otherColor;
             } else {
                 this.myColor = "#ffffff";
                 this.otherColor = "#000000";
@@ -70,14 +67,21 @@ export class Board {
 
                 for(j = 0; j < 8; j++) {
 
-                    if(state[i][j] != null) {
-                        this.board[i][j] = new Piece(i, j, state[i][j].side, state[i][j].id, state[i][j].stack);
+                    if(state.board[i][j] != null) {
+                        this.board[i][j] = new Piece(i, j, state.board[i][j].side, state.board[i][j].id, state.board[i][j].stack);
                     } else {
                         this.board[i][j] = null;
                     }
                 }
             }
 
+            this.numMoves = state.numMoves;
+
+            if(state.myCheckers != null)
+                this.myCheckers = state.myCheckers;
+
+            if(state.otherCheckers != null)
+                this.otherCheckers = state.otherCheckers;
         } else if(state == null && inverted) {
 
             let i, j, k = 23;
@@ -132,95 +136,169 @@ export class Board {
 			}
 		}
 
-		return state;
-	}
+        let game = new Board(null, false);
 
+        game.board = state;
 
-    takePiece(piece, nextPos) {
+        game.numMoves = this.numMoves;
 
-        let isTaken = false, currPos = piece.getPosition();
+        game.myCheckers = this.myCheckers;
+        game.otherCheckers = this.otherCheckers;
 
-        let xPiece, yPiece;
+        game.myColor = this.myColor;
+        game.otherColor = this.otherColor;
 
-        if(nextPos.xPos < currPos.xPos && nextPos.yPos < currPos.yPos) {
+		return game;
+    }
 
-            xPiece = currPos.xPos - 1;
-            yPiece = currPos.yPos - 1;
+    normalizeBoard() {
 
-            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                isTaken = true;
+        let state = [];
+        let i, j, k;
+
+        for(i = 0; i < 5; i++) {
+
+            if(i == 0) {
+
+                for(j = 0; j < 8; j++) {
+                    for(k = 0; k < 8; k++) {
+                        if(this.board[j][k] != null && this.board[j][k].side == this.otherColor && this.board[j][k].stack == 2) {
+                            state.push(1);
+                        } else {
+                            state.push(0);
+                        }
+                    }
+                }
+
+            } else if(i == 1) {
+
+                for(j = 0; j < 8; j++) {
+                    for(k = 0; k < 8; k++) {
+                        if(this.board[j][k] != null && this.board[j][k].side == this.otherColor && this.board[j][k].stack == 1) {
+                            state.push(1);
+                        } else {
+                            state.push(0);
+                        }
+                    }
+                }
+
+            } else if(i == 2) {
+
+                for(j = 0; j < 8; j++) {
+                    for(k = 0; k < 8; k++) {
+                        if(this.board[j][k] == null) {
+                            state.push(1);
+                        } else {
+                            state.push(0);
+                        }
+                    }
+                }
+
+            } else if(i == 3) {
+
+                for(j = 0; j < 8; j++) {
+                    for(k = 0; k < 8; k++) {
+                        if(this.board[j][k] != null && this.board[j][k].side == this.myColor && this.board[j][k].stack == 1) {
+                            state.push(1);
+                        } else {
+                            state.push(0);
+                        }
+                    }
+                }
+
+            } else if(i == 4) {
+
+                for(j = 0; j < 8; j++) {
+                    for(k = 0; k < 8; k++) {
+                        if(this.board[j][k] != null && this.board[j][k].side == this.myColor && this.board[j][k].stack == 2) {
+                            state.push(1);
+                        } else {
+                            state.push(0);
+                        }
+                    }
+                }
+
             }
         }
 
-        if(nextPos.xPos < currPos.xPos && nextPos.yPos > currPos.yPos) {
-
-            xPiece = currPos.xPos - 1;
-            yPiece = currPos.yPos + 1;
-
-            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                isTaken = true;
-            }
-        }
-
-        if(nextPos.xPos > currPos.xPos && nextPos.yPos < currPos.yPos) {
-
-            xPiece = currPos.xPos + 1;
-            yPiece = currPos.yPos - 1;
-
-            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                isTaken = true;
-            }
-        }
-
-        if(nextPos.xPos > currPos.xPos && nextPos.yPos > currPos.yPos) {
-
-            xPiece = currPos.xPos + 1;
-            yPiece = currPos.yPos + 1;
-
-            if(this.board[xPiece][yPiece] != null && this.board[xPiece][yPiece].side != piece.side) {
-                isTaken = true;
-            }
-        }
-
-        if(isTaken) {
-
-            let myIndex = this.myCheckers.indexOf(this.board[xPiece][yPiece].id);
-            let oppIndex = this.otherCheckers.indexOf(this.board[xPiece][yPiece].id)
-
-            if(oppIndex != -1) 
-                this.otherCheckers.splice(oppIndex, 1);
-
-            if(myIndex != -1) 
-                this.myCheckers.splice(myIndex, 1);
-                
-            this.board[xPiece][yPiece] = null;
-        }
+        return state;
     }
 
 
-    allMovablePieces() {
+    takePiece(piece) {
 
-        console.log("Getting All Moveable Piece");
+        let xPos = piece.getPosition().xPos;
+        let yPos = piece.getPosition().yPos;
 
-        let piece, allPieces = [], possMoves;
+        let myIndex = this.myCheckers.indexOf(this.board[xPos][yPos].id);
+        let oppIndex = this.otherCheckers.indexOf(this.board[xPos][yPos].id);
 
-        let oppLength = this.otherCheckers.length;
+        if(oppIndex != -1) 
+            this.otherCheckers.splice(oppIndex, 1);
 
-        for(let i = 0; i < oppLength; i++) {
+        if(myIndex != -1) 
+            this.myCheckers.splice(myIndex, 1);
+            
+        this.board[xPos][yPos] = null;
+    }
 
-            piece = this.getPieceFromId(this.otherCheckers[i]);
 
-            possMoves = this.possibleMoves(piece);
+    allMovablePieces(side) {
 
-            if(possMoves.length > 0)
-                allPieces.push(piece);
+        let i, piece, allPieces = [], possMoves;
+
+        if(side == this.otherColor) {
+
+            for(i = 0; i < this.otherCheckers.length; i++) {
+
+                piece = this.getPieceFromId(this.otherCheckers[i]);
+    
+                //console.log(piece);
+    
+                possMoves = this.possibleMoves(piece, null);
+    
+                if(possMoves.length > 0)
+                    allPieces.push(piece);
+            }
+        } else {
+
+            for(i = 0; i < this.myCheckers.length; i++) {
+
+                piece = this.getPieceFromId(this.myCheckers[i]);
+    
+                //console.log(piece);
+    
+                possMoves = this.possibleMoves(piece, null);
+    
+                if(possMoves.length > 0)
+                    allPieces.push(piece);
+            }
         }
 
         return allPieces;
     }
     
 
-    possibleMoves(piece) {
+    checkPieceHistory(piece, history) {
+
+        let been = false;
+
+        for(let i = 0; i < history.length; i++) {
+
+            let xPos = history[i].getPosition().xPos;
+            let yPos = history[i].getPosition().yPos;
+
+            if(xPos == piece.xPos && piece.yPos == yPos) {
+                been = true;
+                break;
+            }
+        }
+
+        return been;
+    }
+    
+
+    possibleMoves(piece, prevPos) {
 
         let moves = [];
         let move;
@@ -228,92 +306,294 @@ export class Board {
         let xPos = piece.getPosition().xPos;
         let yPos = piece.getPosition().yPos;
 
-        if(this.checkUpperLeft(xPos, yPos).oneSq) {
-            if(this.board[xPos - 1][yPos - 1] == null) { 
-                if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
-                    move = {
-                        x: xPos - 1,
-                        y: yPos - 1 
-                    }
-                    moves.push(move);
-                }
-            }
-        }
-
         if(this.checkUpperLeft(xPos, yPos).twoSq) {
-            if(this.board[xPos - 2][yPos - 2] == null && this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side) {
-                move = {
-                    x: xPos - 2,
-                    y: yPos - 2 
-                }
-                moves.push(move);
-            }
-        }
 
-        if(this.checkUpperRight(xPos, yPos).oneSq) {
-            if(this.board[xPos - 1][yPos + 1] == null) {
-                if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
+            if(prevPos != null) {
+
+                let newPos = new Position(xPos - 2, yPos - 2, piece.side);
+
+                if(!this.checkPieceHistory(newPos, prevPos)) {
+                    if(this.board[xPos - 2][yPos - 2] == null && this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side) {
+                        move = {
+                            x: xPos - 2,
+                            y: yPos - 2,
+                            piece: {
+                                x: xPos - 1,
+                                y: yPos - 1
+                            }
+                        }
+                        moves.push(move);
+        
+                        let newMoves = [];
+        
+                        prevPos.push(piece);
+                        
+                        piece = new Piece(move.x, move.y, piece.side, piece.side, piece.stack);
+        
+                        newMoves = this.possibleMoves(piece, prevPos);
+        
+                        if(newMoves.length > 0)
+                            for(let i = 0; i < newMoves.length; i++)
+                                moves.push(newMoves[i]);
+                    }
+                }
+
+            } else {
+
+                if(this.board[xPos - 2][yPos - 2] == null && this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side) {
                     move = {
-                        x: xPos - 1,
-                        y: yPos + 1 
+                        x: xPos - 2,
+                        y: yPos - 2,
+                        piece: {
+                            x: xPos - 1,
+                            y: yPos - 1
+                        }
                     }
                     moves.push(move);
+    
+                    let newMoves = [], prevPos = [];
+    
+                    prevPos.push(piece);
+                    
+                    piece = new Piece(move.x, move.y, piece.side, piece.side, piece.stack);
+    
+                    newMoves = this.possibleMoves(piece, prevPos);
+    
+                    if(newMoves.length > 0)
+                        for(let i = 0; i < newMoves.length; i++)
+                            moves.push(newMoves[i]);
                 }
             }
         }
 
-        if(this.checkUpperRight(xPos, yPos).twoSq) {
-            if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
-                move = {
-                    x: xPos - 2,
-                    y: yPos + 2 
-                }
-                moves.push(move);
-            }
-        }
+        if(this.checkUpperRight(xPos, yPos).twoSq ) {
 
-        if(this.checkLowerLeft(xPos, yPos).oneSq) {
-            if(this.board[xPos + 1][yPos - 1] == null) {
-                if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
+            if(prevPos != null) {
+
+                let newPos = new Position(xPos - 2, yPos + 2, piece.side);
+
+                if(!this.checkPieceHistory(newPos, prevPos)) {
+                    if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
+                        move = {
+                            x: xPos - 2,
+                            y: yPos + 2,
+                            piece: {
+                                x: xPos - 1,
+                                y: yPos + 1
+                            } 
+                        }
+                        moves.push(move);
+        
+                        let newMoves = [];
+                        
+                        prevPos.push(piece);
+                        
+                        piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+        
+                        newMoves = this.possibleMoves(piece, prevPos);
+        
+                        if(newMoves.length > 0)
+                            for(let i = 0; i < newMoves.length; i++)
+                                moves.push(newMoves[i]);
+                    }
+                }
+            } else {
+
+                if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
                     move = {
-                        x: xPos + 1,
-                        y: yPos - 1 
+                        x: xPos - 2,
+                        y: yPos + 2,
+                        piece: {
+                            x: xPos - 1,
+                            y: yPos + 1
+                        } 
                     }
                     moves.push(move);
+                    
+                    let newMoves = [], prevPos = [];
+    
+                    prevPos.push(piece);
+                    
+                    piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+    
+                    newMoves = this.possibleMoves(piece, prevPos);
+    
+                    if(newMoves.length > 0)
+                        for(let i = 0; i < newMoves.length; i++)
+                            moves.push(newMoves[i]);
                 }
-            } 
+            }
         }
 
         if(this.checkLowerLeft(xPos, yPos).twoSq) {
-            if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
-                move = {
-                    x: xPos + 2,
-                    y: yPos - 2 
-                }
-                moves.push(move);
-            }
-        }
 
-        if(this.checkLowerRight(xPos, yPos).oneSq) {
-            if(this.board[xPos + 1][yPos + 1] == null) {
-                if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
+            if(prevPos != null) {
+
+                let newPos = new Position(xPos + 2, yPos - 2, piece.side);
+
+                if(!this.checkPieceHistory(newPos, prevPos)) {
+                    if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
+                        move = {
+                            x: xPos + 2,
+                            y: yPos - 2,
+                            piece: {
+                                x: xPos + 1,
+                                y: yPos - 1
+                            } 
+                        }
+                        moves.push(move);
+        
+                        let newMoves = [];
+                        
+                        prevPos.push(piece);
+                        
+                        piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+        
+                        newMoves = this.possibleMoves(piece, prevPos);
+        
+                        if(newMoves.length > 0)
+                            for(let i = 0; i < newMoves.length; i++)
+                                moves.push(newMoves[i]);
+                    }
+                }
+            } else {
+
+                if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
                     move = {
-                        x: xPos + 1,
-                        y: yPos + 1 
+                        x: xPos + 2,
+                        y: yPos - 2,
+                        piece: {
+                            x: xPos + 1,
+                            y: yPos - 1
+                        } 
                     }
                     moves.push(move);
+    
+                    let newMoves = [], prevPos = [];
+    
+                    prevPos.push(piece);
+                    
+                    piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+    
+                    newMoves = this.possibleMoves(piece, prevPos);
+    
+                    if(newMoves.length > 0)
+                        for(let i = 0; i < newMoves.length; i++)
+                            moves.push(newMoves[i]);
                 }
-            } 
+            }
         }
 
         if(this.checkLowerRight(xPos, yPos).twoSq) {
-            if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
-                move = {
-                    x: xPos + 2,
-                    y: yPos + 2 
+
+            if(prevPos != null) {
+
+                let newPos = new Position(xPos + 2, yPos + 2, piece.side);
+
+                if(!this.checkPieceHistory(newPos, prevPos)) {
+                    if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
+                        move = {
+                            x: xPos + 2,
+                            y: yPos + 2,
+                            piece: {
+                                x: xPos + 1,
+                                y: yPos + 1
+                            } 
+                        }
+                        moves.push(move);
+        
+                        let newMoves = [];
+                        
+                        prevPos.push(piece);
+                        
+                        piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+        
+                        newMoves = this.possibleMoves(piece, prevPos);
+        
+                        if(newMoves.length > 0)
+                            for(let i = 0; i < newMoves.length; i++)
+                                moves.push(newMoves[i]);
+                    }
                 }
-                moves.push(move);
+
+            } else {
+
+                if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
+                    move = {
+                        x: xPos + 2,
+                        y: yPos + 2,
+                        piece: {
+                            x: xPos + 1,
+                            y: yPos + 1
+                        } 
+                    }
+                    moves.push(move);
+    
+                    let newMoves = [], prevPos = [];
+    
+                    prevPos.push(piece);
+                    
+                    piece = new Piece(move.x, move.y, piece.side, piece.id, piece.stack);
+    
+                    newMoves = this.possibleMoves(piece, prevPos);
+    
+                    if(newMoves.length > 0)
+                        for(let i = 0; i < newMoves.length; i++)
+                            moves.push(newMoves[i]);
+                }
             }
+        }
+
+        if(moves.length == 0) {
+
+            if(this.checkUpperLeft(xPos, yPos).oneSq && prevPos == null) {
+                if(this.board[xPos - 1][yPos - 1] == null) { 
+                    if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
+                        move = {
+                            x: xPos - 1,
+                            y: yPos - 1
+                        }
+                        moves.push(move);
+                    }
+                }
+            }
+
+            if(this.checkUpperRight(xPos, yPos).oneSq && prevPos == null) {
+                if(this.board[xPos - 1][yPos + 1] == null) {
+                    if(piece.side == this.myColor || (piece.side == this.otherColor && piece.stack > 1)) {
+                        move = {
+                            x: xPos - 1,
+                            y: yPos + 1 
+                        }
+                        moves.push(move);
+                    }
+                }
+            }
+
+            if(this.checkLowerLeft(xPos, yPos).oneSq && prevPos == null) {
+                if(this.board[xPos + 1][yPos - 1] == null) {
+                    if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
+                        move = {
+                            x: xPos + 1,
+                            y: yPos - 1 
+                        }
+                        moves.push(move);
+                    }
+                } 
+            }
+
+            if(this.checkLowerRight(xPos, yPos).oneSq && prevPos == null) {
+                if(this.board[xPos + 1][yPos + 1] == null) {
+                    if(piece.side == this.otherColor || (piece.side == this.myColor && piece.stack > 1)) {
+                        move = {
+                            x: xPos + 1,
+                            y: yPos + 1 
+                        }
+                        moves.push(move);
+                    }
+                } 
+            }
+
         }
 
         return moves;
@@ -322,46 +602,206 @@ export class Board {
 
     isMoveLegal(piece, nextPos) {
 
-        let legal = false, possMoves = [];
+        let legal = false, tookPiece = false;
 
-        possMoves = this.possibleMoves(piece);
+        let possMoves = this.aStarSearch(piece, nextPos, this.possibleMoves(piece, null));
 
-        if(possMoves.length > 0) {
+        for(let i = 0; i < possMoves.length; i++) {
 
-            for(let i = 0; i < possMoves.length; i++) {
+            let xPos = possMoves[i].x;
+            let yPos = possMoves[i].y;
 
-                let xPos = possMoves[i].x;
-                let yPos = possMoves[i].y;
+            if(possMoves[i].piece != null) {
 
-                if(xPos == nextPos.xPos && yPos == nextPos.yPos) {
+                let xCoord = possMoves[i].piece.x;
+                let yCoord = possMoves[i].piece.y;
 
-                    let xDiff = nextPos.xPos - xPos;
-                    let yDiff = nextPos.yPos - yPos;
+                let side = piece.side == this.myColor ? this.otherColor : this.myColor;
+                let id = this.getId(xCoord, yCoord);
+                let stack = this.getStack(xCoord, yCoord);
 
-                    if((xDiff > -1 && yDiff > -1) || (xDiff > 1 && yDiff > 1) || (xDiff > -1 && yDiff > 1) || (xDiff > 1 && yDiff > -1))
-                        this.takePiece(piece, nextPos);
+                this.takePiece(new Piece(xCoord, yCoord, side, id, stack));
 
-                    legal = true;
-                    break;
+                tookPiece = true;
+                this.numMoves++;
+            }
+
+            if(xPos == nextPos.xPos && yPos == nextPos.yPos && !legal) {
+                if(!tookPiece)
+                    this.numMoves++;
+                legal = true;
+            }
+        }
+
+        return {
+            legal: legal,
+            tookPiece: tookPiece
+        }
+    }
+
+    euclideanDistance(p1, p2) {
+
+        let xdiff = Math.pow((p1.xPos - p2.xPos), 2);
+        let ydiff = Math.pow((p1.yPos - p2.yPos), 2);
+
+        return Math.sqrt(xdiff + ydiff);
+    }
+
+    removeFromArray(arr, elem) {
+        let idx = -1;
+
+        for(let i = 0; i < arr.length; i++) {
+            if(elem.xPos == arr[i].xPos && elem.yPos == arr[i].yPos) {
+                idx = i;
+            }
+        }
+
+        arr.splice(idx, 1);
+    }
+
+    posExist(arr, elem) {
+
+        let found = false;
+
+        for(let i = 0; i < arr.length; i++) {
+            if(elem.xPos == arr[i].xPos && elem.yPos == arr[i].yPos) {
+                found = true;
+            }
+        }
+
+        return found;
+    }
+
+    aStarSearch(src, dest, possMoves) {
+
+        let closedSet = [];
+        let openSet = [];
+
+        let boardGrid = [];
+
+        for(let i = 0; i < 8; i++) {
+            boardGrid[i] = [];
+            for(let j = 0; j < 8; j++) {
+                boardGrid[i][j] = new Position(i, j, 'E');
+            }
+        }
+
+        for(let i = 0; i < 8; i++) {
+            for(let j = 0; j < 8; j++) {
+                boardGrid[i][j].addNeighbors(boardGrid);
+            }
+        }
+
+        for(let i = 0; i < 8; i++) {
+            for(let j = 0; j < 8; j++) {
+                for(let k = 0; k < possMoves.length; k++) {
+                    if((possMoves[k].x == boardGrid[i][j].xPos && possMoves[k].y == boardGrid[i][j].yPos) || (possMoves[k].piece != null && possMoves[k].piece.x == boardGrid[i][j].xPos && possMoves[k].piece.y == boardGrid[i][j].yPos)) {
+                        boardGrid[i][j].wall = false;
+                    }
                 }
             }
         }
 
-        return legal;
-    }
+        let start = boardGrid[src.getPosition().xPos][src.getPosition().yPos];
 
+        let end = boardGrid[dest.xPos][dest.yPos];
+
+        let current = null;
+
+        start.wall = false;
+        end.wall = false;
+
+        openSet.push(start);
+
+        while(openSet.length > 0) {
+
+            let winner = 0;
+
+            for(let i = 0; i < openSet.length; i++) {
+                if(openSet[i].f < openSet[winner].f) {
+                    winner = i;
+                }
+            }
+
+            current = openSet[winner];
+
+            if(current.xPos == end.xPos && current.yPos == end.yPos) {
+                break;
+            }
+
+            this.removeFromArray(openSet, current);
+            closedSet.push(current);
+
+            let neighbors = current.neighbors;
+
+            for(let i = 0; i < neighbors.length; i++) {
+
+                let neighbor = neighbors[i];
+
+                if(!neighbor.wall && !this.posExist(closedSet, neighbor)) {
+
+                    let tempG = current.g + this.euclideanDistance(neighbor, current);
+
+                    let newPath = false;
+
+                    if(this.posExist(openSet, neighbor)) {
+                        if(tempG < neighbor.g) {
+                            neighbor.g = tempG;
+                            newPath = true;
+                        }
+                    } else {
+                        neighbor.g = tempG;
+                        newPath = true;
+                        openSet.push(neighbor);
+                    }
+
+                    if(newPath) {
+                        neighbor.h = this.euclideanDistance(neighbor, end);
+                        neighbor.f = neighbor.g + neighbor.h;
+                        neighbor.previous = current;
+                    }
+                }
+            }
+        }
+
+        let path = [];
+
+        let temp = current;
+        path.push(temp);
+        while(temp.previous) {
+            path.push(temp.previous);
+            temp = temp.previous;
+        }
+
+        let newPossMoves = [];
+
+        for(let i = 0; i < possMoves.length; i++) {
+            for(let j = 0; j < path.length; j++) {
+                if(possMoves[i].x == path[j].xPos && possMoves[i].y == path[j].yPos) {
+                    newPossMoves.push(possMoves[i]);
+                }
+            }
+        }
+
+        return newPossMoves;
+    }
+ 
 
     doMove(piece, nextPos) {
 
         let moved = false, remove = null;
 
+        let anotherMove = false;
+
         let checkersLength = piece.side == this.myColor ? this.otherCheckers.length : this.myCheckers.length;
 
-        if(this.isMoveLegal(piece, nextPos)) {
+        let result = this.isMoveLegal(piece, nextPos);
+
+        if(result.legal) {
 
             let newLength = piece.side == this.myColor ? this.otherCheckers.length : this.myCheckers.length;
 
-            if(newLength == checkersLength)
+            if(newLength == checkersLength && piece.remove == null)
                 remove = this.scanBoard(piece, nextPos);
 
             let newPiece = new Piece(nextPos.xPos, nextPos.yPos, piece.side, piece.id, piece.stack);
@@ -378,26 +818,61 @@ export class Board {
 
             this.board[currPos.xPos][currPos.yPos] = null;
 
+            if(result.tookPiece) {
+
+                let possMoves = this.possibleMoves(newPiece, null);
+
+                for(let i = 0; i < possMoves.length; i++) {
+                    if(possMoves[i].piece != null) {
+                        anotherMove = true;
+                        break;
+                    }
+                }
+            }
+
             moved = true;
         }
 
-        return { move: moved, id: remove };
+        return { move: moved, id: remove, took: anotherMove };
     } 
 
-    scanBoard(piece, nextPos) {
+    scanBoard(piece) {
 
         let i, j;
 
         let remove = null;
+ 
+        let allPieces = this.allMovablePieces(piece.side);
 
-        for(i = 0; i < 8; i++) {
-            for(j = 0; j < 8; j++) {
-                if(this.board[i][j] != null && this.board[i][j].id != piece.id && this.board[i][j].side == piece.side) {
-                    if(this.checkPiece(this.board[i][j], piece, nextPos)) {
-                        remove = piece.id;
-                        break;
+        if(allPieces.length > 0) {
+
+            let removePieces = [];
+
+            for(i = 0; i < allPieces.length; i++) {
+
+                if(allPieces[i].id != piece.id) {
+
+                    let moves = this.possibleMoves(allPieces[i], null);
+
+                    if(moves.length > 0) {
+
+                        for(j = 0; j < moves.length; j++) {
+
+                            if(moves[j].piece != null) {
+                                removePieces.push(allPieces[i]);
+                            }
+                        }
                     }
                 }
+            }
+
+            if(removePieces.length > 0) {
+
+                let index = Math.floor(Math.random() * removePieces.length);
+
+                remove = removePieces[index].id;
+
+                this.takePiece(removePieces[index]);
             }
         }
 
@@ -468,70 +943,6 @@ export class Board {
         }
     }
 
-
-    checkPiece(currPiece, piece, nextPos) {
-
-        //console.log(currPiece.id);
-
-        let autoRemove = false;
-
-        let xPos = currPiece.getPosition().xPos;
-        let yPos = currPiece.getPosition().yPos;
-
-        if(this.checkUpperLeft(xPos, yPos).twoSq) {
-            //console.log("Upper Left");
-            if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side != piece.side && this.board[xPos - 2][yPos - 2] == null) {
-                //this.board[xPos][yPos] = null;
-                autoRemove = true;
-                //console.log("Upper Left");
-            }
-        }
-
-        if(this.checkLowerRight(xPos, yPos).twoSq) {
-            //console.log("Lower Right");
-            if(!autoRemove && this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side != piece.side && this.board[xPos + 2][yPos + 2] == null) {
-                //this.board[xPos][yPos] = null;
-                autoRemove = true;
-                //console.log("Lower Right");
-            }
-        }
-
-        if(this.checkUpperRight(xPos, yPos).twoSq) {
-            //console.log("Upper Right");
-            if(!autoRemove && this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side != piece.side && this.board[xPos - 2][yPos + 2] == null) {
-                //this.board[xPos][yPos] = null;
-                autoRemove = true;
-                //console.log("Upper Right");
-            }
-        }
-
-        if(this.checkLowerLeft(xPos, yPos).twoSq) {
-            //console.log("Lower Left");
-            if(!autoRemove && this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side != piece.side && this.board[xPos + 2][yPos - 2] == null) {
-                //this.board[xPos][yPos] = null;
-                autoRemove = true;
-                //console.log("Lower Left");
-            }
-        }
-
-        if(autoRemove) {
-
-            let myIndex = this.myCheckers.indexOf(this.board[xPos][yPos].id);
-            let oppIndex = this.otherCheckers.indexOf(this.board[xPos][yPos].id);
-
-            if(myIndex != -1) 
-                this.myCheckers.splice(myIndex, 1);
-
-            if(oppIndex != -1)
-                this.otherCheckers.splice(oppIndex, 1);
-
-            this.board[xPos][yPos] = null;
-        }
-
-        return autoRemove;
-    }
-
-
     checkAllPieces() {
 
         let i, piece;
@@ -553,50 +964,14 @@ export class Board {
         }
     }
 
-
-    otherPlayerMove(piece, xDiff, yDiff) {
-
-        let xPos = piece.getPosition().xPos;
-        let yPos = piece.getPosition().yPos;
-
-        let nextPosX = xPos + xDiff;
-        let nextPosY = yPos + yDiff;
-
-        //console.log(xPos + ", " + yPos + " --> " + nextPosX+ ", " + nextPosY);
-        //console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
-
-        let newPiece = new Piece(nextPosX, nextPosY, piece.side, piece.id, piece.stack);
-
-        if(newPiece.side == this.myColor) {
-            if(nextPosX == 0 && newPiece.side == myColor && newPiece.stack == 1) 
-                newPiece.incrementStack();
-        } 
-        
-        if(newPiece.side == this.otherColor) {
-            if(nextPosX == 0 && newPiece.side == otherColor && newPiece.stack == 1) 
-                newPiece.incrementStack();
-        }
-
-        this.board[nextPosX][nextPosY] = newPiece;
-
-        if(xDiff == 2 && yDiff == 2) {
-
-            nextPosX = xPos + (xDiff / 2);
-            nextPosY = yPos + (yDiff / 2);
-
-            this.board[nextPosX][nextPosY] = null;
-        }
-
-        this.board[xPos][yPos] = null;
-    }
-
-
     isEmpty(xpos, ypos) {
 
-        if(this.board[xpos][ypos] != null)
-            return false;
-        else
-            return true;
+        let empty = false;
+
+        if(this.board[xpos][ypos] == null)
+            empty = true;
+
+        return empty;
     }
 
     getId(i, j) {
@@ -605,6 +980,10 @@ export class Board {
 
     getSide(i, j) {
         return this.board[i][j].side;
+    }
+
+    getStack(i, j) {
+        return this.board[i][j].stack;
     }
 
     getPiece(i, j) {
@@ -637,517 +1016,299 @@ export class Board {
         return piece;
     }
 
-    getBoard() {
-        return this.board;
-    }
-
-    suicideMove(possMove, id) {
-
-        let suicide = false;
-
-        let xPos = possMove.x;
-        let yPos = possMove.y;
-
-        console.log(possMove);
-
-        if(xPos < 7 || yPos == 0 || yPos == 7) {
-            if(this.checkLowerRight(xPos, yPos).oneSq) {
-                if(this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].side == this.myColor) {
-                    if(this.checkUpperLeft(xPos, yPos).oneSq) {
-                        if(this.board[xPos - 1][yPos - 1] == null || (this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].id == id)) {
-                            console.log("Found Opponent");
-                            suicide = true;
-                        }
-                    }
-                }
-            }
-    
-            if(this.checkLowerLeft(xPos, yPos).oneSq) {
-                if(this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].side == this.myColor) {
-                    if(this.checkUpperRight(xPos, yPos).oneSq) {
-                        if(this.board[xPos + 1][yPos - 1] == null || (this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].id == id)) {
-                            console.log("Found Opponent");
-                            suicide = true;
-                        }
-                    }
-                }
-            }
-    
-            if(this.checkUpperRight(xPos, yPos).oneSq) {
-                if(this.board[xPos + 1][yPos - 1] != null && this.board[xPos + 1][yPos - 1].side == this.myColor) {
-                    if(this.checkLowerLeft(xPos, yPos).oneSq) {
-                        if(this.board[xPos - 1][yPos + 1] == null || (this.board[xPos - 1][yPos + 1] != null && this.board[xPos - 1][yPos + 1].id == id)) {
-                            console.log("Found Opponent");
-                            suicide = true;
-                        }
-                    }
-                }
-            }
-    
-            if(this.checkUpperLeft(xPos, yPos).oneSq) {
-                if(this.board[xPos - 1][yPos - 1] != null && this.board[xPos - 1][yPos - 1].side == this.myColor) {
-                    if(this.checkLowerRight(xPos, yPos).oneSq) {
-                        if(this.board[xPos + 1][yPos + 1] == null || (this.board[xPos + 1][yPos + 1] != null && this.board[xPos + 1][yPos + 1].id == id)) {
-                            console.log("Found Opponent");
-                            suicide = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        if(!suicide)
-            return possMove;
-        else
-            return null;
-    }
-
-
-    totalPossibleMoves() {
-
-        let count = 0;
-
-        for(let i = 0; i < 8; i++) {
-            for(let j = 0; j < 8; j++) {
-                if(this.board[i][j] != null) {
-                    count += this.possibleMoves(this.board[i][j]).length;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    evaluateBoard(board) {
-
-        let playNumPieces = board.myCheckers.length;
-        let compKings = 0;
-        let compNumPieces = board.otherCheckers.length;
-        let playKings = 0;
-        let compPosSum = 0;
-        let playPosSum = 0;
-
-        let i, piece;
-
-        for(i = 0; i < board.myCheckers.length; i++) {
-
-            piece = board.getPieceFromId(board.myCheckers[i]);
-
-            if(piece.stack > 1) 
-                playKings++;
-
-            playPosSum += board.possibleMoves(piece).length;
-        }
-
-        for(i = 0; i < board.otherCheckers.length; i++) {
-
-            piece = board.getPieceFromId(board.otherCheckers[i]);
-
-            if(piece.stack > 1) 
-                compKings++;
-            
-            compPosSum += board.possibleMoves(piece).length;
-        }
-
-        let pieceDiff = compNumPieces - playNumPieces;
-        let kingDiff = compKings - playKings;
-
-        if(playNumPieces == 0)
-            playNumPieces = 0.01;
-
-        if(compNumPieces == 0)
-            compNumPieces = 0.01;
-
-        let avgPlayPieces = playPosSum / playNumPieces; 
-        let avgCompPieces = compPosSum / compNumPieces;
-
-        let avgPosDiff = avgCompPieces - avgPlayPieces;
-
-        let nodes = [pieceDiff, kingDiff, avgPosDiff];
-
-        let weights = [1000, 100, 10];
-
-        let score = 0;
-
-        for(i = 0; i < nodes.length; i++)
-            score += nodes[i] * weights[i];
-
-        return score;
-    }
-
-    miniMax(simBoard, depth, isMaximizing, alpha, beta) {
-
-        console.log(depth);
-        console.log(isMaximizing);
-
-        if(depth == 0) {
-
-            console.log("Evaluating Board");
-            return this.evaluateBoard(simBoard);
-
-        } else {
-
-            let gameSim, bestScore;
-
-            if(isMaximizing) {
-
-                console.log("Maximizing Move");
-
-                let allPieces = simBoard.allMovablePieces(simBoard.otherColor);
-
-                //console.log(allPieces);
-
-                for(let i = 0; i < allPieces.length; i++) {
-
-                    if(alpha >= beta)
-                        break;
-
-                    bestScore = -Infinity;
-
-                    let possMoves = simBoard.possibleMoves(allPieces[i]);
-
-                    for(let j = 0; j < possMoves.length; j++) {
-
-                        gameSim = new SimBoard(simBoard.board);
-
-                        gameSim.doMove(allPieces[i], possMoves[j]);
-
-                        console.log("Switching to Player");
-
-                        let score = this.miniMax(gameSim, depth - 1, !isMaximizing, alpha, beta);
-
-                        console.log(score);
-
-                        bestScore = Math.max(score, bestScore);
-
-                        alpha = Math.max(alpha, bestScore);
-
-                        if(alpha >= beta)
-                            break;
-                    }
-                }
-
-            } else {
-
-                console.log("Minimizing Move");
-
-                let allPieces = simBoard.allMovablePieces(simBoard.myColor);
-
-                //console.log(allPieces);
-
-                for(let i = 0; i < allPieces.length; i++) {
-
-                    if(alpha >= beta)
-                        break;
-
-                    bestScore = Infinity;
-
-                    let possMoves = simBoard.possibleMoves(allPieces[i]);
-
-                    for(let j = 0; j < possMoves.length; j++) {
-
-                        gameSim = new SimBoard(simBoard.board);
-
-                        gameSim.doMove(allPieces[i], possMoves[j]);
-
-                        console.log("Switching to Computer");
-
-                        let score = this.miniMax(gameSim, depth - 1, !isMaximizing, alpha, beta);
-
-                        console.log(score);
-
-                        bestScore = Math.min(score, bestScore);
-
-                        alpha = Math.min(alpha, bestScore);
-
-                        if(alpha >= beta)
-                            break;
-                    }
-                }
-            }
-
-            return bestScore;
-        }
-    }
-
-    computerMove() {
-
+    finishState() {
+        
         let winner = null;
+        let finished = false;
+
+        let myPieces = this.allMovablePieces(this.myColor);
+        let opPieces = this.allMovablePieces(this.otherColor);
+
+        if(this.myCheckers.length < this.otherCheckers.length && this.myCheckers.length == 0) {
+            finished = true;
+            winner = "Opponent";
+        } else if(this.myCheckers.length > this.otherCheckers.length && this.otherCheckers.length == 0)  {
+            finished = true;
+            winner = "You";
+        } else if(myPieces.length == 0) {
+            finished = true;
+            winner = "Opponent";
+        } else if(opPieces.length == 0) {
+            finished = true;
+            winner = "You";
+        } else if(this.myCheckers.length == 1 && this.otherCheckers.length == 1) {
+            
+            let opPiece = this.getPieceFromId(this.otherCheckers[0]);
+            let myPiece = this.getPieceFromId(this.myCheckers[0]);
+
+            let dist = this.euclideanDistance(opPiece.getPosition(), myPiece.getPosition());
+
+            if(dist > 1) {
+                finished = true;
+                winner = "Draw";
+            }
+        }
+
+        return {
+            winner: winner,
+            finished: finished
+        }
+    }
+
+    computerMove(model) {
+
+        let currPiece, currNextPos, taken = false;
 
         this.checkAllPieces();
 
-        if(this.myCheckers.length > 1 && this.otherCheckers.length > 1) {
+        let state = this.normalizeBoard();
 
-            let allPieces = this.allMovablePieces();
+        let output = model.predict(tf.tensor2d([state])).dataSync();
 
-            let depth = this.totalPossibleMoves();
+        let newOut = []
+        for(let i = 0; i < output.length; i++)
+            newOut.push(output[i])
 
-            let nextPos, piece;
+        output = newOut;
 
-            for(let i = 0; i < allPieces.length; i++) {
+        const pred = [];
+        while(output.length) pred.push(output.splice(0,8));
 
-                let alpha = -Infinity;
-                let beta = Infinity;
+        let frst = pred[0].indexOf(Math.max(...pred[0]));
+        let scnd = pred[1].indexOf(Math.max(...pred[1]));
+        let thrd = pred[2].indexOf(Math.max(...pred[2]));
+        let frth = pred[3].indexOf(Math.max(...pred[3]));
 
-                let bestScore = -Infinity;
+        console.log(frst, scnd, thrd, frth);
 
-                let possMoves = this.possibleMoves(allPieces[i]);
+        try {
 
-                for(let j = 0; j < possMoves.length; j++) {
+            if(this.board[frst][scnd] != null && this.board[frst][scnd].side == this.otherColor) {
 
-                    let gameSim = new SimBoard(this.board);
+                let pieceId = this.getId(frst, scnd);
 
-                    gameSim.doMove(allPieces[i], possMoves[j]);
+                let stack = this.getStack(frst, scnd);
 
-                    let score = this.miniMax(gameSim, 4, false, alpha, beta);
+                let piece = new Piece(frst, scnd, this.otherColor, pieceId, stack);
 
-                    console.log(score);
+                let nextPos = new Position(thrd, frth, 'E');
 
-                    if(score > bestScore) {
-                        console.log("Updating Score");
-                        bestScore = score;
-                        piece = allPieces[i];
-                        nextPos = new Position(possMoves[j].x, possMoves[j].y, 'E');
-                    }
+                currPiece = piece;
+
+                currNextPos = nextPos;
+
+                let res = this.doMove(piece, nextPos);
+
+                taken = res.took;
+
+                if(!res.move) {
+
+                    let move = this.bestMove();
+
+                    console.log(move.piece, move.nextPos);
+
+                    let res = this.doMove(move.piece, move.nextPos);
+
+                    currPiece = move.piece;
+
+                    currNextPos = move.nextPos;
+
+                    taken = res.took;
                 }
+            } else {
+
+                let move = this.bestMove();
+
+                console.log(move.piece, move.nextPos);
+
+                let res = this.doMove(move.piece, move.nextPos);
+
+                currPiece = move.piece;
+
+                currNextPos = move.nextPos;
+
+                taken = res.took;
             }
 
-            let wait = setInterval(() => {
+        } catch(err) {
 
-                if(piece != null && nextPos != null) {
+            console.log(err.message);
 
-                    console.log(piece.getPosition());
-                    console.log(nextPos);
+            console.log("Computer Making Move");
 
-                    console.log("Making Move");
+            let move = this.bestMove();
 
-                    clearInterval(wait);
+            console.log(move.piece, move.nextPos);
 
-                    let moved = this.doMove(piece, nextPos);
+            let res = this.doMove(move.piece, move.nextPos);
 
-                    console.log(moved);
+            currPiece = move.piece;
 
-                    this.checkAllPieces();
-                }
-            }, 500);
+            currNextPos = move.nextPos;
 
-            return winner;
+            taken = res.took;
+        }
 
-        } else {
-
-            if(this.myCheckers.length <= 1) 
-                winner = "Opponent";
-            else    
-                winner = "You";
-
-            return winner;
+        return {
+            piece: currPiece,
+            nextPos: currNextPos,
+            took: taken
         }
     }
 
-    easyMove() {
 
-        console.log("Computer Making Easy Move");
-        let randIndex, piece, possMoves = [], nextPos, randMove, result;
+    bestMove() {
 
-        do {
-            console.log("Looking for another piece");
-            randIndex = Math.floor(Math.random() * this.otherCheckers.length);
-            piece = this.getPieceFromId(this.otherCheckers[randIndex]);
+        let piece = null, nextPos = null, move;
 
-            if(piece != null) {
-                possMoves = this.possibleMoves(piece);
+        console.log("Trying First");
 
-                if(possMoves.length > 0) {
-                    randMove = Math.floor(Math.random() * possMoves.length);
-                    break;
-                }
-            } 
-        } while(possMoves.length == 0);
+        move = this.firstPrior();
 
-        console.log("Making Move");
-        
-        console.log(piece.getPosition());
+        if(move.piece == null && move.nextPos == null) {
 
-        let smartMove = this.suicideMove(possMoves[randMove], piece.id);
+            console.log("Trying Second");
 
-        if(smartMove != null && this.tries <= this.otherCheckers.length) {
+            move = this.secondPrior();
 
-            nextPos = new Position(smartMove.x, smartMove.y, 'E');
+            if(move.piece == null && move.nextPos == null) {
 
-            this.tries = 0;
+                console.log("Trying Third");
 
-            result = {
-                piece: piece,
-                nextPos: nextPos
+                move = this.thirdPrior();
+
+                piece = move.piece;
+                nextPos = move.nextPos;
+
+            } else {
+
+                piece = move.piece;
+                nextPos = move.nextPos;
+
             }
+
         } else {
 
-            if(this.tries <= this.otherCheckers.length) {
-                console.log("Trying Again");
-                this.tries += 1;
-                this.easyMove();
-            } 
+            piece = move.piece;
+            nextPos = move.nextPos;
 
-            console.log("Taking Risk");
-            
-            nextPos = new Position(possMoves[randMove].x, possMoves[randMove].y, 'E');
+        }
 
-            this.tries = 0;
-
-            result = {
-                piece: piece,
-                nextPos: nextPos
-            }
-        } 
-
-        return result;
+        return {
+            piece: piece,
+            nextPos: nextPos
+        }
     }
 
-    medMove(currPiece) {
+    firstPrior() {
 
-        console.log("Computer Making Medium Move");
-        let nextPos = null, piece, possMoves = [], result = null;
-        console.log(this.otherCheckers);
+        let piece = null, nextPos = null;
 
-        if(currPiece != null) {
+        let allPieces = this.allMovablePieces(this.otherColor);
 
-            piece = currPiece;
+        for(let i = 0; i < allPieces.length; i++) {
 
-            console.log(piece);
-            possMoves = this.possibleMoves(piece);
-            console.log(possMoves);
+            if(piece != null && nextPos != null)
+                break;
 
-            if(possMoves.length > 0) {
+            let possMoves = this.possibleMoves(allPieces[i], null);
 
-                let xPos = piece.getPosition().xPos;
-                let yPos = piece.getPosition().yPos;
+            for(let j = 0; j < possMoves.length; j++) {
 
-                for(let j = 0; j < possMoves.length; j++) {
-                    
-                    let xDiff = xPos - possMoves[j].x;
-                    let yDiff = yPos - possMoves[j].y;
-
-                    console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
-
-                    if((xDiff > 1 && yDiff > 1) || (xDiff < -1 && yDiff < -1) || (xDiff < -1 && yDiff > 1) || (xDiff > 1 && yDiff < -1)) {
-                        console.log("Taking Piece");
-                        nextPos = new Position(possMoves[j].x, possMoves[j].y, 'E');
-
-                        result = {
-                            piece: piece,
-                            nextPos: nextPos
-                        };
-
-                        break;
-                    }
+                if(possMoves[j].piece != null) {
+                    piece = allPieces[i];
+                    nextPos = new Position(possMoves[j].x, possMoves[j].y, 'E');
+                    break;
                 }
             }
-        } else {
+        }
 
-            for(let i = 0; i < this.otherCheckers.length; i++) {
+        return {
+            piece: piece,
+            nextPos: nextPos
+        }
+    }
 
-                if(nextPos != null)
+    secondPrior() {
+
+        let piece = null, nextPos = null;
+
+        let myPieces = this.allMovablePieces(this.myColor);
+        let opPieces = this.allMovablePieces(this.otherColor);
+
+        for(let i = 0; i < myPieces.length; i++) {
+            for(let j = 0; j < opPieces.length; j++) {
+
+                if(piece != null && nextPos != null)
                     break;
-    
-                piece = this.getPieceFromId(this.otherCheckers[i]);
-                if(piece != null) {
-                    console.log(piece);
-                    possMoves = this.possibleMoves(piece);
-                    console.log(possMoves);
-        
-                    if(possMoves.length > 0) {
-                        let xPos = piece.getPosition().xPos;
-                        let yPos = piece.getPosition().yPos;
-        
-                        for(let j = 0; j < possMoves.length; j++) {
-                            
-                            let xDiff = xPos - possMoves[j].x;
-                            let yDiff = yPos - possMoves[j].y;
-    
-                            console.log("xDiff:" + xDiff + ", yDiff:" + yDiff);
-        
-                            if((xDiff > 1 && yDiff > 1) || (xDiff < -1 && yDiff < -1) || (xDiff < -1 && yDiff > 1) || (xDiff > 1 && yDiff < -1)) {
-                                console.log("Taking Piece");
-                                nextPos = new Position(possMoves[j].x, possMoves[j].y, 'E');
 
-                                result = {
-                                    piece: piece,
-                                    nextPos: nextPos
-                                };
+                let opMoves = this.possibleMoves(opPieces[j], null);
+                let myMoves = this.possibleMoves(myPieces[i], null);
 
+                for(let x = 0; x < opMoves.length; x++) {
+                    for(let y = 0; y < myMoves.length; y++) {
+                        if(opMoves[x].x == myMoves[y].x && myMoves[y].y == opMoves[x].y) {
+                            if(myMoves[y].piece != null && opMoves[x].piece == null) {
+                                piece = opPieces[j];
+                                nextPos = new Position(opMoves[x].x, opMoves[x].y, 'E');
                                 break;
                             }
-                        }
+                        } 
                     }
                 }
             }
         }
 
-        return result;
+        return {
+            piece: piece,
+            nextPos: nextPos
+        }
     }
 
 
-    hardMove() {
+    thirdPrior() {
 
-        console.log("Computer Making Hard Move");
+        let piece = null, nextPos = null;
 
-        let nextPos = null, myPiece, oppPiece, result = null;
+        let count = 1;
 
-        for(let i = 0; i < this.myCheckers.length; i++) {
-            for(let j = 0; j < this.otherCheckers.length; j++) {
+        while(true) {
 
-                if(result != null)
-                    break;
+            let found = false;
 
-                myPiece = this.getPieceFromId(i);
-                oppPiece = this.getPieceFromId(j);
+            let allPieces = this.allMovablePieces(this.otherColor);
 
-                if(myPiece != null && oppPiece != null) {
+            if(allPieces.length > 0) {
+                let randIndex = Math.floor(Math.random() * allPieces.length);
 
-                    let myPossMoves = this.possibleMoves(myPiece);
-                    let oppPossMoves = this.possibleMoves(oppPiece);
+                piece = allPieces[randIndex];
+                let possMoves = this.possibleMoves(piece, null);
 
-                    if(myPossMoves.length > 0 && oppPossMoves.length > 0) {
+                let randMove = Math.floor(Math.random() * possMoves.length);
+                nextPos = new Position(possMoves[randMove].x, possMoves[randMove].y, 'E');
 
-                        let myXPos = myPiece.getPosition().xPos;
-                        let myYPos = myPiece.getPosition().yPos;
+                let myPieces = this.allMovablePieces(this.myColor);
 
-                        let oppXPos = oppPiece.getPosition().xPos;
-                        let oppYPos = oppPiece.getPosition().yPos;
+                for(let i = 0; i < myPieces.length; i++) {
 
-                        for(let x = 0; x < myPossMoves.length; x++) {
-                            for(let y = 0; y < oppPossMoves.length; y++) {
-                                if(myPossMoves[x].x == oppPossMoves[y].x && myPossMoves[x].y == oppPossMoves[y].y) {
+                    let myMoves = this.possibleMoves(myPieces[i], null);
 
-                                    let myXDiff = myXPos - myPossMoves[x].x;
-                                    let myYDiff = myYPos - myPossMoves[x].y;
-
-                                    let oppXDiff = oppXPos - oppPossMoves[y].x;
-                                    let oppYDiff = oppYPos - oppPossMoves[y].y;
-
-                                    //console.log("myXDiff:" + myXDiff + ", myYDiff:" + myYDiff);
-                                    //console.log("oppXDiff:" + oppXDiff + ", oppYDiff:" + oppYDiff);
-
-                                    if((myXDiff > 1 && myYDiff > 1) || (myXDiff < -1 && myYDiff > 1) || (myXDiff < -1 && myYDiff < -1) || (myXDiff > 1 && myYDiff < -1)) {
-
-                                        if((oppXDiff == -1 && oppYDiff == -1) || (oppXDiff == 1 && oppYDiff == -1)) {
-                                            nextPos = new Position(myPossMoves[x].x, myPossMoves[x].y, 'E');
-                                            result = {
-                                                piece: myPiece,
-                                                nextPos: nextPos
-                                            }
-                                            console.log("Found Blockage");
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    for(let j = 0; j < myMoves.length; j++) {
+                        if(myMoves[j].x == nextPos.xPos && myMoves[j].y == nextPos.yPos) 
+                            found = true;
                     }
                 }
             }
+
+            if(!found || count > allPieces.length || allPieces.length == 0) 
+                break
+
+            count++;
         }
 
-        return result;
+        return {
+            piece: piece,
+            nextPos: nextPos
+        }
     }
 }

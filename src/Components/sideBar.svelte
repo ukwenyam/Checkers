@@ -57,30 +57,24 @@
 
     function viewGames() {
 
-        if($leaderBoard.length > 0) {
+        closeNav();
 
-            closeNav();
+        setTimeout(() => { bigPopUp.set(true); }, 1);
 
-            setTimeout(() => { bigPopUp.set(true); }, 1);
+        setTimeout(() => { viewGameList.set(true); }, 1);
 
-            setTimeout(() => { viewGameList.set(true); }, 1);
-
-            gameTab.set(1);
-        }
+        gameTab.set(1);
     }
 
     function viewLeagueBoard() {
 
-        if($leaderBoard.length > 0) {
+        closeNav();
 
-            closeNav();
+        setTimeout(() => { bigPopUp.set(true); }, 1);
 
-            setTimeout(() => { bigPopUp.set(true); }, 1);
+        setTimeout(() => { leaderBoardView = true; }, 1);
 
-            setTimeout(() => { leaderBoardView = true; }, 1);
-
-            gameTab.set(2);
-        }
+        gameTab.set(2);
     }
 
     function viewSettings() {
@@ -95,7 +89,7 @@
     }
 
     function signOut() {
-        $currSocket.emit('go-offline', $currUser.email);
+        $currSocket.emit('go-offline', $currUser.profile.email);
         currUser.set(null);
     }
 </script>
@@ -126,7 +120,7 @@
     </div>
 
     <div class="menu-item logout">
-        <button class="btn btn-lg btn-dark" on:click="{signOut}">Logout ({$currUser.name}) <i class="fa fa-sign-out"></i></button>
+        <button class="btn btn-lg btn-dark" on:click="{signOut}">Logout ({$currUser.profile.name}) <i class="fa fa-sign-out"></i></button>
     </div>
 </div>
 

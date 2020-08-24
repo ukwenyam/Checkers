@@ -23,21 +23,24 @@
             request = {
                 func: "joinGame",
                 gameID: gamePassword,
-                email: $currUser.email,
-                name: $currUser.name
+                email: $currUser.profile.email,
+                name: $currUser.profile.name
             }
 
             invokeFunction(request).then((response) => {
                 console.log(response);
                 if(response.msg != null) {
                     let game = response.msg;
-                    if(game.priEmail != $currUser.email) {
-                        game.name = $currUser.name;
-                        game.email = $currUser.email;
-                        game.side = 1;
+                    if(game.priEmail != $currUser.profile.email) {
 
+                        game.name = $currUser.profile.name;
+                        game.email = $currUser.profile.email;
+                        game.side = 1;
+                        game.id = gamePassword;
+
+                        gamePref.set(new Game(game, false));
+                        gameHistory.set([]);
                         gameBoard.set(new Board(null, true));
-                        gamePref.set(new Game(game, $gameBoard.saveBoardState(), false));
 
                         loading = false;
                         smallPopUp.set(false);
